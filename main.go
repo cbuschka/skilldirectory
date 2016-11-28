@@ -33,6 +33,21 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
+func makeFileHandler(fn func(http.ResponseWriter, *http.Request, string), fileName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fn(w, r, fileName)
+	}
+}
+
+func handleURL(w http.ResponseWriter, r *http.Request) error {
+	path := r.URL.Path
+	switch path {
+	case "/", "/index", "/index.html":
+		return nil
+	}
+	return fmt.Errorf("Bad path: %s", r.URL.Path)
+}
+
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 	m := validPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
@@ -60,6 +75,16 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	renderTemplate(w, "view", p)
 }
 
+func serveFile(w http.ResponseWriter, r *http.Request, title string) {
+	err := handleURL(w, r)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	title = "static/view/" + title + ".html"
+	http.ServeFile(w, r, title)
+}
+
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
@@ -73,7 +98,6 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p := &Page{Title: title, Body: []byte(body)}
 	err := p.save()
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -97,6 +121,8 @@ func AssetHelper(path string) []byte {
 }
 
 func main() {
+	http.HandleFunc("/", makeFileHandler(serveFile, "index"))
+	http.HandleFunc("/index", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
