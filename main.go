@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"skilldir/data"
 	"skilldir/model"
 )
 
 var templates = template.Must(template.ParseGlob("templates/*"))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+$)")
+var dataConnector = data.FileWriter{}
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -117,11 +119,12 @@ func testAddSkills() {
 	testSkillName := "Test"
 	testSkillType := "language"
 	newSkill := model.NewSkill(testSkillName, testSkillType)
-	err := newSkill.Save()
+	err := dataConnector.Save("skills", newSkill.Name, newSkill)
 	if err != nil {
 		fmt.Println(err)
 	}
-	readSkill, err := model.ReadSkill(testSkillName)
+	readSkill := model.Skill{}
+	err = dataConnector.Read("skills", newSkill.Name, &readSkill)
 	if err != nil {
 		fmt.Println(err)
 	} else {
