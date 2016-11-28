@@ -7,20 +7,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"skilldir/model"
 )
 
 var templates = template.Must(template.ParseGlob("templates/*"))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+$)")
-
-type Page struct {
-	Title string
-	Body  []byte
-}
-
-func (p *Page) save() error {
-	filename := p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
-}
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -57,13 +48,13 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 	return m[2], nil
 }
 
-func loadPage(title string) (*Page, error) {
+func loadPage(title string) (*model.Page, error) {
 	filename := title + ".txt"
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return &Page{Title: title, Body: body}, nil
+	return &model.Page{Title: title, Body: body}, nil
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
@@ -88,15 +79,15 @@ func serveFile(w http.ResponseWriter, r *http.Request, title string) {
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
-		p = &Page{Title: title}
+		p = &model.Page{Title: title}
 	}
 	renderTemplate(w, "edit", p)
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
-	p := &Page{Title: title, Body: []byte(body)}
-	err := p.save()
+	p := &model.Page{Title: title, Body: []byte(body)}
+	err := p.Save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -104,27 +95,36 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+func renderTemplate(w http.ResponseWriter, tmpl string, p *model.Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-func AssetHelper(path string) []byte {
-	data, err := Asset(path)
-	if err != nil {
-		panic(err)
-	}
-	return data
-
-}
-
 func main() {
+	testAddSkills()
 	http.HandleFunc("/", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/index", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 	http.ListenAndServe(":8080", nil)
+}
+
+func testAddSkills() {
+	fmt.Println("Adding Skill")
+	testSkillName := "Test"
+	testSkillType := "language"
+	newSkill := model.NewSkill(testSkillName, testSkillType)
+	err := newSkill.Save()
+	if err != nil {
+		fmt.Println(err)
+	}
+	readSkill, err := model.ReadSkill(testSkillName)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("Name: %s Type: %s", readSkill.Name, readSkill.SkillType)
+	}
 }
