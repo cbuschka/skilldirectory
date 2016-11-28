@@ -13,7 +13,7 @@ import (
 
 var templates = template.Must(template.ParseGlob("templates/*"))
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+$)")
-var dataConnector = data.FileWriter{}
+var skillsConnector = data.NewAccessor(data.NewFileWriter("skills/"))
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -118,20 +118,19 @@ func testAddSkills() {
 	fmt.Println("Adding Skill")
 	testSkillName := "Test"
 	testSkillType := "language"
-	testPath := "skills"
 	newSkill := model.NewSkill(testSkillName, testSkillType)
-	err := dataConnector.Save(testPath, newSkill.Name, newSkill)
+	err := skillsConnector.Save(newSkill.Name, newSkill)
 	if err != nil {
 		fmt.Println(err)
 	}
 	readSkill := model.Skill{}
-	err = dataConnector.Read(testPath, newSkill.Name, &readSkill)
+	err = skillsConnector.Read(newSkill.Name, &readSkill)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("Name: %s Type: %s\n", readSkill.Name, readSkill.SkillType)
-	err = dataConnector.Delete(testPath, readSkill.Name)
+	err = skillsConnector.Delete(readSkill.Name)
 	if err != nil {
 		fmt.Println(err)
 	}

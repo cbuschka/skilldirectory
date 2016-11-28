@@ -6,15 +6,16 @@ import (
 	"os"
 )
 
-type DataAccess interface {
-	Save(string, string, interface{}) error
-	Read(string, string, interface{}) error
+type FileWriter struct {
+	path string
 }
 
-type FileWriter struct{}
+func NewFileWriter(path string) FileWriter {
+	return FileWriter{path}
+}
 
-func (f FileWriter) Save(pathName, fileName string, object interface{}) error {
-	path := pathHelper(pathName, fileName)
+func (f FileWriter) Save(key string, object interface{}) error {
+	path := f.pathHelper(key)
 	b, err := json.Marshal(object)
 	if err != nil {
 		return err
@@ -22,8 +23,8 @@ func (f FileWriter) Save(pathName, fileName string, object interface{}) error {
 	return ioutil.WriteFile(path, b, 0600)
 }
 
-func (f FileWriter) Read(pathName, fileName string, object interface{}) error {
-	path := pathHelper(pathName, fileName)
+func (f FileWriter) Read(key string, object interface{}) error {
+	path := f.pathHelper(key)
 	data, err := ioutil.ReadFile(path)
 	if err == nil {
 		json.Unmarshal(data, &object)
@@ -31,12 +32,12 @@ func (f FileWriter) Read(pathName, fileName string, object interface{}) error {
 	return err
 }
 
-func (f FileWriter) Delete(pathName, fileName string) error {
-	path := pathHelper(pathName, fileName)
+func (f FileWriter) Delete(key string) error {
+	path := f.pathHelper(key)
 	return os.Remove(path)
 
 }
 
-func pathHelper(pathName, name string) string {
-	return pathName + "/" + name + ".txt"
+func (f FileWriter) pathHelper(key string) string {
+	return f.path + key + ".txt"
 }
