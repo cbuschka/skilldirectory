@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 )
 
 type DataAccess interface {
@@ -28,6 +29,11 @@ func (f FileWriter) Read(pathName, fileName string, object interface{}) error {
 		json.Unmarshal(data, &object)
 	}
 	return err
+}
+
+func (f FileWriter) Delete(pathName, fileName string) error {
+	path := pathHelper(pathName, fileName)
+	return os.Remove(path)
 
 }
 

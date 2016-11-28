@@ -118,16 +118,23 @@ func testAddSkills() {
 	fmt.Println("Adding Skill")
 	testSkillName := "Test"
 	testSkillType := "language"
+	testPath := "skills"
 	newSkill := model.NewSkill(testSkillName, testSkillType)
-	err := dataConnector.Save("skills", newSkill.Name, newSkill)
+	err := dataConnector.Save(testPath, newSkill.Name, newSkill)
 	if err != nil {
 		fmt.Println(err)
 	}
 	readSkill := model.Skill{}
-	err = dataConnector.Read("skills", newSkill.Name, &readSkill)
+	err = dataConnector.Read(testPath, newSkill.Name, &readSkill)
 	if err != nil {
 		fmt.Println(err)
-	} else {
-		fmt.Printf("Name: %s Type: %s", readSkill.Name, readSkill.SkillType)
+		return
 	}
+	fmt.Printf("Name: %s Type: %s\n", readSkill.Name, readSkill.SkillType)
+	err = dataConnector.Delete(testPath, readSkill.Name)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("File removed")
+
 }
