@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"skilldir/data"
@@ -12,13 +13,14 @@ import (
 )
 
 var templates = template.Must(template.ParseGlob("templates/*"))
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+$)")
+var validPath = regexp.MustCompile("^/(edit|save|view|skills)/([a-zA-Z0-9]+$)")
 var skillsConnector = data.NewAccessor(data.NewFileWriter("skills/"))
 
 func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := validPath.FindStringSubmatch(r.URL.Path)
 		if m == nil {
+			log.Panicf("Doesn't pass valid path test: %s\n", r.URL.Path)
 			http.NotFound(w, r)
 			return
 		}
@@ -59,6 +61,15 @@ func loadPage(title string) (*model.Page, error) {
 	return &model.Page{Title: title, Body: body}, nil
 }
 
+func loadSkill(title string) (*model.Skill, error) {
+	skill := model.Skill{}
+	err := skillsConnector.Read(title, &skill)
+	if err != nil {
+		return nil, err
+	}
+	return &skill, nil
+}
+
 func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 	p, err := loadPage(title)
 	if err != nil {
@@ -66,6 +77,16 @@ func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
 		return
 	}
 	renderTemplate(w, "view", p)
+}
+
+func skillsHandler(w http.ResponseWriter, r *http.Request, title string) {
+	log.Printf("Handling Skills Request")
+	p, err := loadSkill(title)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	renderTemplate(w, "skilltemplate", p)
 }
 
 func serveFile(w http.ResponseWriter, r *http.Request, title string) {
@@ -79,6 +100,7 @@ func serveFile(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request, title string) {
+	fmt.Println("Test")
 	p, err := loadPage(title)
 	if err != nil {
 		p = &model.Page{Title: title}
@@ -97,18 +119,24 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-func renderTemplate(w http.ResponseWriter, tmpl string, p *model.Page) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", p)
+func renderTemplate(w http.ResponseWriter, tmpl string, object interface{}) {
+	err := templates.ExecuteTemplate(w, tmpl+".html", object)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 func main() {
+	addSkillsToView()
 	http.HandleFunc("/", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/index", makeFileHandler(serveFile, "index"))
+	http.HandleFunc("/skills/", makeHandler(skillsHandler))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 	http.ListenAndServe(":8080", nil)
+}
+
+func addSkillsToView() {
+	skillsConnector.Save("Golang", model.NewSkill("Golang", "language"))
 }
