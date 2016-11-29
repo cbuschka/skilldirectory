@@ -105,35 +105,10 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *model.Page) {
 }
 
 func main() {
-	testAddSkills()
 	http.HandleFunc("/", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/index", makeFileHandler(serveFile, "index"))
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 	http.ListenAndServe(":8080", nil)
-}
-
-func testAddSkills() {
-	fmt.Println("Adding Skill")
-	testSkillName := "Test"
-	testSkillType := "language"
-	newSkill := model.NewSkill(testSkillName, testSkillType)
-	err := skillsConnector.Save(newSkill.Name, newSkill)
-	if err != nil {
-		fmt.Println(err)
-	}
-	readSkill := model.Skill{}
-	err = skillsConnector.Read(newSkill.Name, &readSkill)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("Name: %s Type: %s\n", readSkill.Name, readSkill.SkillType)
-	err = skillsConnector.Delete(readSkill.Name)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("File removed")
-
 }
