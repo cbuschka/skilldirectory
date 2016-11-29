@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -52,15 +51,6 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 	return m[2], nil
 }
 
-func loadPage(title string) (*model.Page, error) {
-	filename := title + ".txt"
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return &model.Page{Title: title, Body: body}, nil
-}
-
 func loadSkill(title string) (*model.Skill, error) {
 	skill := model.Skill{}
 	err := skillsConnector.Read(title, &skill)
@@ -68,15 +58,6 @@ func loadSkill(title string) (*model.Skill, error) {
 		return nil, err
 	}
 	return &skill, nil
-}
-
-func ViewHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := loadPage(title)
-	if err != nil {
-		http.Redirect(w, r, "/edit/"+title, http.StatusNotFound)
-		return
-	}
-	renderTemplate(w, "view", p)
 }
 
 func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
