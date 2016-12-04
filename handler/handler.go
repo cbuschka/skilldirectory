@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"regexp"
 	"skilldir/data"
-	"skilldir/model"
 )
 
 var validPath = regexp.MustCompile("^/(edit|save|view|skills)/([a-zA-Z0-9]+$)")
@@ -49,25 +48,6 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 		return "", errors.New("Invalid Page Title")
 	}
 	return m[2], nil
-}
-
-func loadSkill(title string) (*model.Skill, error) {
-	skill := model.Skill{}
-	err := skillsConnector.Read(title, &skill)
-	if err != nil {
-		return nil, err
-	}
-	return &skill, nil
-}
-
-func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
-	log.Printf("Handling Skills Request")
-	p, err := loadSkill(title)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	renderTemplate(w, "skilltemplate", p)
 }
 
 func ServeFile(w http.ResponseWriter, r *http.Request, title string) {
