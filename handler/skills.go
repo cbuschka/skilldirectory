@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 
 	"skilldirectory/model"
+	"github.com/satori/go.uuid"
 )
 
 func loadSkill(title string) (*model.Skill, error) {
@@ -54,6 +55,7 @@ func addSkill(r *http.Request) error {
 	if !model.IsValidSkillType(skill.SkillType) {
 		return fmt.Errorf("Invalid Skill Type: %s", skill.SkillType)
 	}
+	skill.Id = uuid.NewV4().String()
 	err = skillsConnector.Save(skill.Name, skill)
 	if err != nil {
 		log.Printf("Save skill: %s error: %s", skill.Name, err)
