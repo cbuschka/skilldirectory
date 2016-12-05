@@ -5,7 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"skilldir/model"
 )
@@ -21,22 +23,17 @@ func loadSkill(title string) (*model.Skill, error) {
 
 func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 	log.Printf("Handling Skills Request: %s", r.Method)
+	var err error
 	switch r.Method {
 	case http.MethodGet:
-		b, err := getSkills()
-		if err != nil {
-			log.Printf("getSkills: %v", err)
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
-		w.Write(b)
+		err = performGet(w, r)
+
 	case http.MethodPost:
-		err := addSkill(r)
-		if err != nil {
-			log.Printf("addSkill: %v", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		err = addSkill(r)
+	}
+	if err != nil {
+		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
+		http.Error(w, err.Error(), http.StatusNotFound)
 	}
 }
 
@@ -60,7 +57,15 @@ func addSkill(r *http.Request) error {
 	return nil
 }
 
-func getSkills() ([]byte, error) {
+func performGet(w http.ResponseWriter, r *http.Request) error {
+	path := checkForId(r.URL)
+	if path == "" {
+		return getAllSkills(w)
+	}
+	return getSkill(w, path)
+}
+
+func getAllSkills(w http.ResponseWriter) error {
 	skills := []model.Skill{}
 	filepath.Walk("skills/", func(path string, f os.FileInfo, err error) error {
 		if !f.IsDir() {
@@ -76,7 +81,26 @@ func getSkills() ([]byte, error) {
 	b, err := json.Marshal(skills)
 	if err != nil {
 		log.Printf("Marshal skills error: %s", err.Error())
-		return nil, err
+		return err
 	}
-	return b, nil
+	w.Write(b)
+	return nil
+}
+
+func getSkill(w http.ResponseWriter, id string) error {
+	skill, err := loadSkill(id)
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(skill)
+	if err != nil {
+		return err
+	}
+	w.Write(b)
+	return nil
+}
+
+func checkForId(url *url.URL) string {
+	_, path := path.Split(url.RequestURI())
+	return path
 }
