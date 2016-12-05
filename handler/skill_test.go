@@ -8,10 +8,7 @@ import (
 
 type FakeDataAccessor struct {}
 func (f FakeDataAccessor)Save(s string, i interface{}) error {return nil}
-func (f FakeDataAccessor) Read(s string, i interface{}) error {
-  fmt.Println("READ")
-  return nil
-}
+func (f FakeDataAccessor) Read(s string, i interface{}) error {return nil}
 func (f FakeDataAccessor) Delete(s string) error {return nil}
 
 func TestLoadSkill(t *testing.T) {
