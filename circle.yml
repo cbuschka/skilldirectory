@@ -10,9 +10,11 @@ machine:
 
 dependencies:
   override:
+    - sudo add-apt-repository ppa:masterminds/glide -y
     - sudo apt-get update
     - mkdir -p "${GOPATH}/src/${IMPORT_PATH}"
     - rsync -azC --delete ./ "${GOPATH}/src/${IMPORT_PATH}/"
 
 test:
-  - cd "${GOPATH}/src/${IMPORT_PATH}/" && go build -x -a -installsuffix cgo -o ${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}
+  override:
+    - cd "${GOPATH}/src/${IMPORT_PATH}/" && go build -x -a -installsuffix cgo -o ${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}
