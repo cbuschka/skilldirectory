@@ -22,7 +22,6 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 			http.NotFound(w, r)
 			return
 		}
-		fmt.Println(m)
 		fn(w, r, m[2])
 	}
 }
