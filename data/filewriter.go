@@ -39,5 +39,5 @@ func (f FileWriter) Delete(key string) error {
 }
 
 func (f FileWriter) pathHelper(key string) string {
-	return f.path + key + ".txt"
+	return f.path + key
 }
