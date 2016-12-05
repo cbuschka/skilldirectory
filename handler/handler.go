@@ -3,15 +3,13 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"regexp"
-	"skilldir/data"
+	"skilldirectory/data"
 )
 
 var validPath = regexp.MustCompile("^/(skills)|(/([a-zA-Z0-9]+$))")
-var templates = template.Must(template.ParseGlob("templates/*"))
 var skillsConnector = data.NewAccessor(data.NewFileWriter("skills/"))
 
 func MakeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
@@ -22,7 +20,6 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 			http.NotFound(w, r)
 			return
 		}
-		fmt.Println(m)
 		fn(w, r, m[2])
 	}
 }
@@ -49,22 +46,4 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 		return "", errors.New("Invalid Page Title")
 	}
 	return m[2], nil
-}
-
-func ServeFile(w http.ResponseWriter, r *http.Request, title string) {
-	err := handleURL(w, r)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-	title = "static/view/" + title + ".html"
-	http.ServeFile(w, r, title)
-}
-
-func renderTemplate(w http.ResponseWriter, tmpl string, object interface{}) {
-	err := templates.ExecuteTemplate(w, tmpl+".html", object)
-	if err != nil {
-		log.Panicf("Template Error: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
 }

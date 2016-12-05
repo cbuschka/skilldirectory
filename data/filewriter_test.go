@@ -1,7 +1,7 @@
 package data
 
 import (
-	"skilldir/model"
+	"skilldirectory/model"
 	"testing"
 )
 
