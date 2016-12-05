@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -67,8 +66,7 @@ func performGet(w http.ResponseWriter, r *http.Request) error {
 	if path == "" {
 		return getAllSkills(w)
 	}
-	fmt.Println("Return one skill")
-	return nil
+	return getSkill(w, path)
 }
 
 func getAllSkills(w http.ResponseWriter) error {
@@ -93,11 +91,19 @@ func getAllSkills(w http.ResponseWriter) error {
 	return nil
 }
 
-func getSkill(w http.ResponseWriter, path string) {
-
+func getSkill(w http.ResponseWriter, id string) error {
+	skill, err := loadSkill(id)
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(skill)
+	if err != nil {
+		return err
+	}
+	w.Write(b)
+	return nil
 }
 
-// Returns true if there is an id
 func checkForId(url *url.URL) string {
 	_, path := path.Split(url.RequestURI())
 	return path
