@@ -20,4 +20,4 @@ test:
     - cd "${GOPATH}/src/${IMPORT_PATH}/"
     - echo ${IMPORT_PATH}
     - echo $PWD
-    #  && go build -x -a -installsuffix cgo -o ${CIRCLE_ARTIFACTS}/${CIRCLE_PROJECT_REPONAME}
+    - go build
