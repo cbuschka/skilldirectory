@@ -1,0 +1,3 @@
+package: skilldirectory
+import:
+- package: github.com/satori/go.uuid
