@@ -5,4 +5,4 @@ echo "Buildling..."
 go build
 
 echo "Running Skill Directory..."
-./skilldir
+./skilldirectory

@@ -2,7 +2,7 @@ package router
 
 import (
 	"net/http"
-	"skilldir/handler"
+	"skilldirectory/handler"
 )
 
 type Route struct {
