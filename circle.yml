@@ -14,5 +14,7 @@ dependencies:
     - rsync -azC --delete ./ "${GOPATH}/src/${IMPORT_PATH}/"
 
 test:
+  pre:
+    - cd "${GOPATH}/src/${IMPORT_PATH}/" && glide install
   override:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && go get ./... && go test ./... && go build
