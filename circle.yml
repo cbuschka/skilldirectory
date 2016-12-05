@@ -2,7 +2,7 @@ machine:
   services:
     - docker
   environment:
-    IMPORT_PATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+    IMPORT_PATH: "$CIRCLE_PROJECT_REPONAME"
     CGO_ENABLED: 0
     GOPATH: /home/ubuntu/.go_workspace
 
