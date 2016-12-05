@@ -9,7 +9,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"skilldir/model"
+
+	"skilldirectory/model"
 )
 
 func loadSkill(title string) (*model.Skill, error) {

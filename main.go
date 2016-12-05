@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-	"skilldir/router"
+	"skilldirectory/router"
 )
 
 func main() {
