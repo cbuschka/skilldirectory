@@ -23,21 +23,17 @@ func loadSkill(title string) (*model.Skill, error) {
 
 func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 	log.Printf("Handling Skills Request: %s", r.Method)
+	var err error
 	switch r.Method {
 	case http.MethodGet:
-		err := performGet(w, r)
-		if err != nil {
-			log.Printf("getSkills: %v", err)
-			http.Error(w, err.Error(), http.StatusNotFound)
-			return
-		}
+		err = performGet(w, r)
+
 	case http.MethodPost:
-		err := addSkill(r)
-		if err != nil {
-			log.Printf("addSkill: %v", err)
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		err = addSkill(r)
+	}
+	if err != nil {
+		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
+		http.Error(w, err.Error(), http.StatusNotFound)
 	}
 }
 
