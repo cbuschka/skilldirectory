@@ -10,7 +10,7 @@ import (
 	"skilldir/data"
 )
 
-var validPath = regexp.MustCompile("^/(edit|save|view|skills)/([a-zA-Z0-9]+$)")
+var validPath = regexp.MustCompile("^/(skills)|(/([a-zA-Z0-9]+$))")
 var templates = template.Must(template.ParseGlob("templates/*"))
 var skillsConnector = data.NewAccessor(data.NewFileWriter("skills/"))
 
@@ -22,6 +22,7 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 			http.NotFound(w, r)
 			return
 		}
+		fmt.Println(m)
 		fn(w, r, m[2])
 	}
 }

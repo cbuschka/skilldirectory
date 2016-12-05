@@ -12,7 +12,6 @@ type Route struct {
 }
 
 var routes = []Route{
-	Route{"index", "/", handler.MakeFileHandler(handler.ServeFile, "index")},
 	Route{"skills", "/skills/", handler.MakeHandler(handler.SkillsHandler)},
 }
 
