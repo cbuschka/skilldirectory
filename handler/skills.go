@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -49,6 +50,9 @@ func addSkill(r *http.Request) error {
 	if err != nil {
 		log.Println(err)
 		return err
+	}
+	if !model.IsValidSkillType(skill.SkillType) {
+		return fmt.Errorf("Invalid Skill Type: %s", skill.SkillType)
 	}
 	err = skillsConnector.Save(skill.Name, skill)
 	if err != nil {
