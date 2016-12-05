@@ -15,4 +15,4 @@ dependencies:
 
 test:
   override:
-    - cd "${GOPATH}/src/${IMPORT_PATH}/" && go test ./... && go build
+    - cd "${GOPATH}/src/${IMPORT_PATH}/" && go get ./... && go test ./... && go build
