@@ -5,10 +5,6 @@ type Skill struct {
 	SkillType string
 }
 
-type SkillType interface {
-	getName() string
-}
-
 var skillTypeList = []string{"scripted", "compiled", "orchestration", "database"}
 
 func NewSkill(name, skillType string) Skill {
