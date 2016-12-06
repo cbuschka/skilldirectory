@@ -19,4 +19,5 @@ test:
   pre:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && glide install
   override:
+    - go version
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && go test ./... && go build
