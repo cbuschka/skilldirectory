@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 // Implments DataAccessor Type
@@ -41,4 +42,20 @@ func (f FileWriter) Delete(key string) error {
 
 func (f FileWriter) pathHelper(key string) string {
 	return f.path + key
+}
+
+func (f FileWriter) ReadAll(path string, readType ReadAllInterface) ([]interface{}, error) {
+	returnObjects := []interface{}{}
+	object := readType.GetType()
+	filepath.Walk(path, func(path string, fi os.FileInfo, err error) error {
+		if !fi.IsDir() {
+			err1 := f.Read(fi.Name(), &object)
+			if err1 != nil {
+				return err1
+			}
+			returnObjects = append(returnObjects, object)
+		}
+		return nil
+	})
+	return returnObjects, nil
 }

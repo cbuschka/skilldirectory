@@ -9,20 +9,23 @@ import (
   "skilldirectory/model"
   "encoding/json"
   "bytes"
+
 )
 
 type MockDataAccessor struct {}
-func (m MockDataAccessor)Save(s string, i interface{}) error {return nil}
+func (m MockDataAccessor) Save(s string, i interface{}) error {return nil}
 func (m MockDataAccessor) Read(s string, i interface{}) error {return nil}
 func (m MockDataAccessor) Delete(s string) error {return nil}
+func (m MockDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {return nil, nil}
 
 type MockErrorDataAccessor struct {}
-func (e MockErrorDataAccessor)Save(s string, i interface{}) error {return fmt.Errorf("")}
+func (e MockErrorDataAccessor) Save(s string, i interface{}) error {return fmt.Errorf("")}
 func (e MockErrorDataAccessor) Read(s string, i interface{}) error {return fmt.Errorf("")}
 func (e MockErrorDataAccessor) Delete(s string) error {return fmt.Errorf("")}
+func (e MockErrorDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {return nil, fmt.Errorf("")}
+
 
 func TestLoadSkill(t *testing.T) {
-  fmt.Println("PASS")
   skillsConnector = data.NewAccessor(MockDataAccessor{})
   _, err := loadSkill("1234")
   if err != nil {
@@ -31,7 +34,6 @@ func TestLoadSkill(t *testing.T) {
 }
 
 func TestLoadSkillError(t *testing.T) {
-  fmt.Println("PASS")
   skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
   _, err := loadSkill("1234")
   if err == nil {
@@ -78,8 +80,52 @@ func TestSkillsHandlerError(t *testing.T) {
   }
 }
 
-func TestAddSkill(t *testing.T) {
+func TestInvalidSkill(t *testing.T) {
   skillsConnector = data.NewAccessor(MockDataAccessor{})
+  b,_ := json.Marshal(model.NewSkill("", "", "BadSkillType"))
+  reader := bytes.NewReader(b)
+  r := httptest.NewRequest(http.MethodPost, "/", reader)
+  err := addSkill(r)
+  if err == nil {
+    t.Errorf("Expecting an error for BadSkillType")
+  }
+}
 
+func TestNilSkill(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockDataAccessor{})
+  r := httptest.NewRequest(http.MethodPost, "/", nil)
+  err := addSkill(r)
+  if err == nil {
+    t.Errorf("Expecting an error for nil body")
+  }
+}
 
+func TestAddSkillError(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+  b,_ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+  reader := bytes.NewReader(b)
+  r := httptest.NewRequest(http.MethodPost, "/", reader)
+  err := addSkill(r)
+  if err == nil {
+    t.Errorf("Expecting an error for BadSkillType")
+  }
+}
+
+func TestPerformGet(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockDataAccessor{})
+  r := httptest.NewRequest(http.MethodGet, "/skills", nil)
+
+  w := httptest.NewRecorder()
+  performGet(w,r)
+}
+
+func TestPerformGetError(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+  r := httptest.NewRequest(http.MethodGet, "/skills", nil)
+
+  w := httptest.NewRecorder()
+  err := performGet(w,r)
+  if err == nil {
+    t.Errorf("Expecting error for TestPerform")
+  }
 }

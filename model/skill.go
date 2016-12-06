@@ -32,3 +32,11 @@ func IsValidSkillType(skillType string) bool {
 	}
 	return false
 }
+
+func (s Skill)GetType()interface{} {
+	return Skill{}
+}
+//
+// func(s Skill)GetSlice()[]interface{} {
+// 	return []Skill{}
+// }
