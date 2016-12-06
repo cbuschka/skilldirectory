@@ -4,6 +4,11 @@ machine:
     IMPORT_PATH: "$CIRCLE_PROJECT_REPONAME"
     CGO_ENABLED: 0
     GOPATH: /home/ubuntu/.go_workspace
+  post:
+    - mkdir -p downloads
+    - test -e download/$GODIST || curl -o download/$GODIST https://storage.googleapis.com/golang/$GODIST
+    - sudo rm -rf /usr/local/go
+    - sudo tar -C /usr/local -xzf download/$GODIST
 
 
 dependencies:
