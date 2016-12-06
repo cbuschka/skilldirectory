@@ -9,9 +9,6 @@ import (
   "skilldirectory/model"
   "encoding/json"
   "bytes"
-
-
-
 )
 
 type MockDataAccessor struct {}
@@ -57,7 +54,7 @@ func TestSkillsHandlerGETSuccess(t *testing.T) {
 
 func TestSkillsHandlerPOSTSuccess(t *testing.T) {
   skillsConnector = data.NewAccessor(MockDataAccessor{})
-  b,_ := json.Marshal(model.NewSkill("", "", "scripted"))
+  b,_ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
   reader := bytes.NewReader(b)
   r := httptest.NewRequest(http.MethodPost, "/", reader)
   w := httptest.NewRecorder()
@@ -79,4 +76,10 @@ func TestSkillsHandlerError(t *testing.T) {
   if w.Result().StatusCode != 404 {
     t.Errorf("Expected 404 from bad request")
   }
+}
+
+func TestAddSkill(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockDataAccessor{})
+
+
 }

@@ -6,7 +6,12 @@ type Skill struct {
 	SkillType string
 }
 
-var skillTypeList = []string{"scripted", "compiled", "orchestration", "database"}
+const (
+	ScriptedSkillType = "scripted"
+	CompiledSkillType = "compiled"
+	OrchestrationSkillType = "orchestration"
+	DatabaseSkillType = "database"
+)
 
 func NewSkill(id, name, skillType string) Skill {
 	return Skill{
@@ -17,10 +22,13 @@ func NewSkill(id, name, skillType string) Skill {
 }
 
 func IsValidSkillType(skillType string) bool {
-	for _, s := range skillTypeList {
-		if skillType == s {
-			return true
-		}
+	switch skillType {
+	case
+	ScriptedSkillType,
+	CompiledSkillType,
+	OrchestrationSkillType,
+	DatabaseSkillType:
+		return true
 	}
 	return false
 }
