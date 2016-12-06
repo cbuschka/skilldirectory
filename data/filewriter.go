@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Implments DataAccessor Type
 type FileWriter struct {
 	path string
 }
