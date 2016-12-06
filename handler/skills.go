@@ -7,9 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"path"
-	"path/filepath"
 
 	"skilldirectory/model"
 	"github.com/satori/go.uuid"
@@ -27,29 +25,27 @@ func loadSkill(id string) (*model.Skill, error) {
 func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 	log.Printf("Handling Skills Request: %s", r.Method)
 	var err error
+	var statusCode int
 	switch r.Method {
 	case http.MethodGet:
 		err = performGet(w, r)
+		statusCode = http.StatusNotFound
 
 	case http.MethodPost:
 		err = addSkill(r)
+		statusCode = http.StatusBadRequest
 	}
 	if err != nil {
 		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, err.Error(), statusCode)
 	}
 }
 
 func addSkill(r *http.Request) error {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
+	body, _ := ioutil.ReadAll(r.Body)
 	skill := model.Skill{}
-	err = json.Unmarshal(body, &skill)
+	err := json.Unmarshal(body, &skill)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	if !model.IsValidSkillType(skill.SkillType) {
@@ -58,7 +54,7 @@ func addSkill(r *http.Request) error {
 	skill.Id = uuid.NewV1().String()
 	err = skillsConnector.Save(skill.Id, skill)
 	if err != nil {
-		log.Printf("Save skill: %s error: %s", skill.Name, err)
+		return err
 	}
 	log.Printf("New skill saved")
 	return nil
@@ -73,25 +69,13 @@ func performGet(w http.ResponseWriter, r *http.Request) error {
 }
 
 func getAllSkills(w http.ResponseWriter) error {
-	skills := []model.Skill{}
-	filepath.Walk("skills/", func(path string, f os.FileInfo, err error) error {
-		if !f.IsDir() {
-			skill, err1 := loadSkill(f.Name())
-			if err1 != nil {
-				log.Println(err1)
-				return err1
-			}
-			skills = append(skills, *skill)
-		}
-		return nil
-	})
-	b, err := json.Marshal(skills)
+	skills, err := skillsConnector.ReadAll("skills/", model.Skill{})
 	if err != nil {
-		log.Printf("Marshal skills error: %s", err.Error())
 		return err
 	}
+	b, err := json.Marshal(skills)
 	w.Write(b)
-	return nil
+	return err
 }
 
 func getSkill(w http.ResponseWriter, id string) error {
@@ -100,14 +84,14 @@ func getSkill(w http.ResponseWriter, id string) error {
 		return err
 	}
 	b, err := json.Marshal(skill)
-	if err != nil {
-		return err
-	}
 	w.Write(b)
-	return nil
+	return err
 }
 
 func checkForId(url *url.URL) string {
-	_, path := path.Split(url.RequestURI())
-	return path
+	base := path.Base(url.RequestURI())
+	if base == "skills"{
+		return ""
+	}
+	return base
 }

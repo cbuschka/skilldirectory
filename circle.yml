@@ -1,10 +1,14 @@
 machine:
-  services:
-    - docker
   environment:
+    GODIST: "go1.7.3.linux-amd64.tar.gz"
     IMPORT_PATH: "$CIRCLE_PROJECT_REPONAME"
     CGO_ENABLED: 0
     GOPATH: /home/ubuntu/.go_workspace
+  post:
+    - mkdir -p download
+    - test -e download/$GODIST || curl -o download/$GODIST https://storage.googleapis.com/golang/$GODIST
+    - sudo rm -rf /usr/local/go
+    - sudo tar -C /usr/local -xzf download/$GODIST
 
 
 dependencies:
@@ -19,4 +23,5 @@ test:
   pre:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && glide install
   override:
+    - go version
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && go test ./... && go build
