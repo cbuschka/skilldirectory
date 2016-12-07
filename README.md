@@ -25,7 +25,6 @@ We can add new skills to the SkillDirectory project by sending POST requests to 
   2. **Open** a new tab/request
   3. **Select** "POST" from the dropdown
   4. **Enter** the following URL: `http://localhost:8080/skills`
-    e.g. `http://localhost:8080/skills` or `http://localhost:8080/skills`
   5. **Click** the "Body" tab
   6. **Select** the "raw" option
   7. **Select** the "JSON (application/json)" option from the orange dropdown (default is "Text")
