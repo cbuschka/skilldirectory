@@ -34,6 +34,10 @@ func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 	case http.MethodPost:
 		err = addSkill(r)
 		statusCode = http.StatusBadRequest
+
+	case http.MethodDelete:
+		err = removeSkill(r)
+		statusCode = http.StatusNotFound
 	}
 	if err != nil {
 		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
@@ -42,7 +46,9 @@ func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 }
 
 func addSkill(r *http.Request) error {
+	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(r.Body)
+
 	skill := model.Skill{}
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
@@ -57,6 +63,28 @@ func addSkill(r *http.Request) error {
 		return err
 	}
 	log.Printf("New skill saved")
+	return nil
+}
+
+// Removes the skill with the ID at the end of the specified request's URL.
+// Returns non-nil error if the request's URL contains no ID, or if no skills
+// exist with that ID.
+func removeSkill(r *http.Request) error {
+	// Get the ID at end of the specified request; return error if request contains no ID
+	skillID := checkForId(r.URL)
+	if skillID == "" {
+		return fmt.Errorf("No Skill ID Specified in Request URL: %s", r.URL)
+	}
+
+	// Remove the skill with the specified ID from the skills
+	// database/repository; return error if no skills have that ID
+	err := skillsConnector.Delete(skillID)
+	if err != nil {
+		return fmt.Errorf("No Skill Exists with Specified ID: %s", skillID)
+	}
+
+	// The skill was successfully deleted!
+	log.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
 }
 
@@ -88,6 +116,9 @@ func getSkill(w http.ResponseWriter, id string) error {
 	return err
 }
 
+// checkForID checks to see if an ID (e.g. 59317629-bcc3-11e6-9f43-6c4008bcfa84)
+// has been appended to the end of the specified URL. If one has, then that ID
+// will be returned. If not, then an empty string is returned ("").
 func checkForId(url *url.URL) string {
 	base := path.Base(url.RequestURI())
 	if base == "skills"{

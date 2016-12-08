@@ -114,6 +114,28 @@ func TestAddSkillError(t *testing.T) {
 	}
 }
 
+func TestRemoveSkill(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockDataAccessor{})
+  b,_ := json.Marshal(model.NewSkill("1234", "", model.ScriptedSkillType))
+  reader := bytes.NewReader(b)
+  r := httptest.NewRequest(http.MethodDelete, "/skills/1234", reader)
+  err := removeSkill(r)
+  if err != nil {
+    t.Errorf("Did not expect error when deleting skill")
+  }
+}
+
+func TestRemoveSkillError(t *testing.T) {
+  skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+  b,_ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+  reader := bytes.NewReader(b)
+  r := httptest.NewRequest(http.MethodDelete, "/skills", reader)
+  err := removeSkill(r)
+  if err == nil {
+    t.Errorf("Expected error due to skill deletion failure")
+  }
+}
+
 func TestPerformGet(t *testing.T) {
 	skillsConnector = data.NewAccessor(MockDataAccessor{})
 	r := httptest.NewRequest(http.MethodGet, "/skills", nil)
