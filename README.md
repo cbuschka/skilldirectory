@@ -1,5 +1,6 @@
 [![Stories in Ready](https://badge.waffle.io/maryvilledev/skilldirectory.png?label=ready&title=Ready)](http://waffle.io/maryvilledev/skilldirectory)
 [![CircleCI](https://circleci.com/gh/maryvilledev/skilldirectory.svg?style=svg)](https://circleci.com/gh/maryvilledev/skilldirectory)
+[![Report](https://goreportcard.com/badge/github.com/maryvilledev/skilldirectory)](https://goreportcard.com/report/github.com/maryvilledev/skilldirectory)
 
 
 ### To run locally:
@@ -24,8 +25,7 @@ We can add new skills to the SkillDirectory project by sending POST requests to 
   1. **Download** [Postman](https://www.getpostman.com/)
   2. **Open** a new tab/request
   3. **Select** "POST" from the dropdown
-  4. **Enter** the following URL: `http://localhost:8080/skills/[skilltype]`
-    e.g. `http://localhost:8080/skills/scripted` or `http://localhost:8080/skills/compiled`
+  4. **Enter** the following URL: `http://localhost:8080/skills`
   5. **Click** the "Body" tab
   6. **Select** the "raw" option
   7. **Select** the "JSON (application/json)" option from the orange dropdown (default is "Text")
