@@ -126,3 +126,39 @@ func checkForId(url *url.URL) string {
 	}
 	return base
 }
+
+/*
+extractSkillFilter() returns the filter value of the "skilltype" filter within
+the URL's query string. If the query string does not contain a "skilltype" filter,
+then an empty string ("") will be returned.
+
+Calling the function with the following URL would return "scripted"
+	http://localhost:8080/skills?skilltype=scripted
+Calling it with either of these URLs would return ""
+	http://localhost:8080/skills or http://localhost:8080/skills?someFilter=someValue
+
+Returns a non-nil error if the URL path's base is not "/skills". E.g. calling the
+function with the following URL would result in an error:
+	http://localhost:8080/skills/whatever?skilltype=scripted
+ */
+func extractSkillFilter(url *url.URL) (string, error) {
+	// Extract the URL path's base and make sure it is "/skills".
+	// Return error if it's not, because it doesn't make sense to filter
+	// by skill type if the base isn't "/skills".
+	base := path.Base(url.RequestURI())
+	if base != "skills" {
+		return fmt.Errorf("URL path base must be \"skills\" to filter by skill type")
+	}
+
+	// Extract the query string from the URL as a key, value map.
+	// Then search the map for a "skilltype" filter. If the query
+	// string contains this filter, return the value. If not, return
+	// an empty string ("").
+	query := url.Query()
+	for key, val := range query {
+		if key == "skilltype" {
+			return val, nil
+		}
+	}
+	return "", nil
+}
