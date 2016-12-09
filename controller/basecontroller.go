@@ -8,9 +8,9 @@ import (
 type BaseController struct {
 	w       http.ResponseWriter
 	r       *http.Request
-	session *data.DataAccess
+	session data.DataAccess
 }
 
-func NewController(w http.ResponseWriter, r http.Request, d *data.DataAccess) BaseController {
+func NewController(w http.ResponseWriter, r http.Request, d data.DataAccess) BaseController {
 	return BaseController{w, &r, d}
 }

@@ -2,17 +2,17 @@ package router
 
 import (
 	"net/http"
+	"skilldirectory/controller"
 	"skilldirectory/handler"
 )
 
 type Route struct {
-	name        string
 	path        string
 	handlerFunc http.HandlerFunc
 }
 
 var routes = []Route{
-	Route{"skills", "/skills/", handler.MakeHandler(handler.SkillsHandler)},
+	Route{"/skills/", handler.MakeHandler(handler.SkillsHandler, controller.SkillsController{})},
 }
 
 func StartRouter() (mux *http.ServeMux) {
