@@ -157,7 +157,40 @@ func TestPerformGetError(t *testing.T) {
 	w := httptest.NewRecorder()
 	err := performGet(w, r)
 	if err == nil {
-		t.Errorf("Expecting error for TestPerform")
+		t.Errorf("Expecting error for TestPerformGetError")
+	}
+}
+
+func TestGetSkillsFiltered(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockDataAccessor{})
+	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
+
+	w := httptest.NewRecorder()
+	err := performGet(w, r)
+	if(err != nil) {
+		fmt.Errorf("Did not expect error when getting skills with filter")
+	}
+}
+
+func TestGetSkillsFilteredBadType(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockDataAccessor{})
+	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=badtype", nil)
+
+	w := httptest.NewRecorder()
+	err := performGet(w, r)
+	if(err == nil) {
+		fmt.Errorf("Expected error due to invalid skill type")
+	}
+}
+
+func TestGetSkillsFilteredError(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
+
+	w := httptest.NewRecorder()
+	err := performGet(w, r)
+	if err == nil {
+		t.Errorf("Expecting error for TestGetSkillsFilteredError")
 	}
 }
 
