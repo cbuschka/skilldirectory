@@ -115,25 +115,25 @@ func TestAddSkillError(t *testing.T) {
 }
 
 func TestRemoveSkill(t *testing.T) {
-  skillsConnector = data.NewAccessor(MockDataAccessor{})
-  b,_ := json.Marshal(model.NewSkill("1234", "", model.ScriptedSkillType))
-  reader := bytes.NewReader(b)
-  r := httptest.NewRequest(http.MethodDelete, "/skills/1234", reader)
-  err := removeSkill(r)
-  if err != nil {
-    t.Errorf("Did not expect error when deleting skill")
-  }
+	skillsConnector = data.NewAccessor(MockDataAccessor{})
+	b, _ := json.Marshal(model.NewSkill("1234", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	r := httptest.NewRequest(http.MethodDelete, "/skills/1234", reader)
+	err := removeSkill(r)
+	if err != nil {
+		t.Errorf("Did not expect error when deleting skill")
+	}
 }
 
 func TestRemoveSkillError(t *testing.T) {
-  skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
-  b,_ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
-  reader := bytes.NewReader(b)
-  r := httptest.NewRequest(http.MethodDelete, "/skills", reader)
-  err := removeSkill(r)
-  if err == nil {
-    t.Errorf("Expected error due to skill deletion failure")
-  }
+	skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	r := httptest.NewRequest(http.MethodDelete, "/skills", reader)
+	err := removeSkill(r)
+	if err == nil {
+		t.Errorf("Expected error due to skill deletion failure")
+	}
 }
 
 func TestPerformGet(t *testing.T) {
@@ -153,4 +153,21 @@ func TestPerformGetError(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expecting error for TestPerform")
 	}
+}
+
+func TestUrlOptions(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockDataAccessor{})
+	urls := []string{"/skills", "/skills/", "/skills?skilltype=scripted", "/skills/sdfasdfas"}
+	for _, uri := range urls {
+		r := httptest.NewRequest(http.MethodGet, uri, nil)
+		w := httptest.NewRecorder()
+		err := performGet(w, r)
+		if err != nil {
+			t.Errorf("Perform Get Error From URL: %s, %s", uri, err.Error())
+		}
+		if w.Code != 200 {
+			t.Errorf("Perform Get Error From URL: %s, %d", uri, w.Code)
+		}
+	}
+
 }
