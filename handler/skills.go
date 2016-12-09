@@ -10,6 +10,7 @@ import (
 	"path"
 
 	"skilldirectory/model"
+
 	"github.com/satori/go.uuid"
 )
 
@@ -121,8 +122,8 @@ func getSkill(w http.ResponseWriter, id string) error {
 // will be returned. If not, then an empty string is returned ("").
 func checkForId(url *url.URL) string {
 	base := path.Base(url.RequestURI())
-	if base == "skills"{
-		return ""
+	if url.EscapedPath() != "/skills" && url.EscapedPath() != "/skills/" {
+		return base
 	}
-	return base
+	return ""
 }
