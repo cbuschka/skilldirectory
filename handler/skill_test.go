@@ -19,6 +19,9 @@ func (m MockDataAccessor) Delete(s string) error              { return nil }
 func (m MockDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
+func (d MockDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func (interface{}) bool) ([]interface{}, error) {
+	return nil, nil
+}
 
 type MockErrorDataAccessor struct{}
 
@@ -26,6 +29,9 @@ func (e MockErrorDataAccessor) Save(s string, i interface{}) error { return fmt.
 func (e MockErrorDataAccessor) Read(s string, i interface{}) error { return fmt.Errorf("") }
 func (e MockErrorDataAccessor) Delete(s string) error              { return fmt.Errorf("") }
 func (e MockErrorDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
+	return nil, fmt.Errorf("")
+}
+func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func (interface{}) bool) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
 
