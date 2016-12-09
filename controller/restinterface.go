@@ -1,8 +1,9 @@
 package controller
 
 type RESTController interface {
-	Get()
-	Post()
-	Delete()
-	Put()
+	Get() error
+	Post() error
+	Delete() error
+	Put() error
+	Base() *BaseController
 }
