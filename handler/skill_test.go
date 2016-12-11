@@ -37,6 +37,17 @@ func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// MockInMemoryDataAccessor /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+MockInMemoryDataAccessor implements the data.dataccessor.DataAccess interface by providing in-memory data storage,
+designed to facilitate easy testing of components that rely on skill storage and retrieval without requiring access to
+an external filesystem or database when running tests. Because MockInMemoryDataAccessor uses a computer's volatile
+memory, it should not be used for permanent data storage, and is unlikely to have a use outside of unit testing.
+
+MockInMemoryDataAccessor's in-memory data storage is implemented as a map[string][]byte. New skills are saved into the
+map with their ID as the key, and the []byte produced by marshaling them into JSON-format (by calling json.Marshal) as
+the value.
+ */
 type MockInMemoryDataAccessor struct {
 	dataMap map[string][]byte // map of object to byte slice
 }
