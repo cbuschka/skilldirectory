@@ -34,6 +34,71 @@ func (e MockErrorDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]int
 func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func (interface{}) bool) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////// MockInMemoryDataAccessor /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+type MockInMemoryDataAccessor struct {
+	dataMap map[string][]byte // map of object to byte slice
+}
+
+func NewMockInMemoryDataAccessor() MockInMemoryDataAccessor {
+	var retVal MockInMemoryDataAccessor
+	retVal.dataMap = make(map[string][]byte)
+	return retVal
+}
+
+func (e MockInMemoryDataAccessor) Save(ID string, object interface{}) error {
+	b, err := json.Marshal(object)
+	if err != nil {
+		return err
+	}
+	e.dataMap[ID] = b
+	return nil
+}
+
+func (e MockInMemoryDataAccessor) Read(ID string, object interface{}) error {
+	data := e.dataMap[ID]
+	if(len(data) == 0) {
+		return fmt.Errorf("No such object with ID: %s", ID)
+	}
+	json.Unmarshal(data, &object)
+	return nil
+}
+
+func (e MockInMemoryDataAccessor) Delete(ID string) error {
+	data := e.dataMap[ID]
+	if(len(data) == 0) {
+		return fmt.Errorf("No such object with ID: %s", ID)
+	}
+	e.dataMap[ID] = make([]byte, 0)
+	return nil
+}
+
+func (e MockInMemoryDataAccessor) ReadAll(path string, readType data.ReadAllInterface) ([]interface{}, error) {
+	returnObjects := []interface{}{}
+	object := readType.GetType()
+	for _, val := range e.dataMap {
+		json.Unmarshal(val, object)
+		returnObjects = append(returnObjects, object)
+	}
+	return returnObjects, nil
+}
+
+func (e MockInMemoryDataAccessor) FilteredReadAll(path string, readType data.ReadAllInterface,
+							filterFunc func (interface{}) bool) ([]interface{}, error) {
+	returnObjects := []interface{}{}
+	object := readType.GetType()
+	for _, val := range e.dataMap {
+		json.Unmarshal(val, &object)
+		if filterFunc(object) {
+			returnObjects = append(returnObjects, object)
+		}
+	}
+	return returnObjects, nil
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func TestLoadSkill(t *testing.T) {
 	skillsConnector = data.NewAccessor(MockDataAccessor{})
@@ -162,17 +227,28 @@ func TestPerformGetError(t *testing.T) {
 }
 
 func TestGetSkillsFiltered(t *testing.T) {
-	skillsConnector = data.NewAccessor(MockDataAccessor{})
+	skillsConnector = data.NewAccessor(NewMockInMemoryDataAccessor())
+	
+	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType)
+	skillsConnector.Save(newScriptedSkill.Id, newScriptedSkill)
+	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType)
+	skillsConnector.Save(newCompiledSkill.Id, newCompiledSkill)
+	
 	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
-
 	w := httptest.NewRecorder()
 	err := performGet(w, r)
 	if(err != nil) {
-		fmt.Errorf("Did not expect error when getting skills with filter")
+		t.Errorf("Did not expect error when getting skills with filter")
+	}
+	correctResponseBody := "[{\"Id\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"}]"
+	if w.Body.String() != correctResponseBody {
+		t.Errorf("Failed to properly filter based on skilltype. " +
+			   "Expected Response body to be \n\t %s\n But got\n\t %s\\n",
+			correctResponseBody, w.Body.String())
 	}
 }
 
-func TestGetSkillsFilteredBadType(t *testing.T) {
+func TestGetSkillsFilteredBadSkillType(t *testing.T) {
 	skillsConnector = data.NewAccessor(MockDataAccessor{})
 	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=badtype", nil)
 
