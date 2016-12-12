@@ -29,6 +29,13 @@ var routes = []Route{
 			&controller.SkillsController{
 				BaseController: &controller.BaseController{},
 			})},
+	Route{
+		"/skills",
+		handler.MakeHandler(
+			handler.Handler,
+			&controller.SkillsController{
+				BaseController: &controller.BaseController{},
+			})},
 }
 
 func StartRouter() (mux *http.ServeMux) {
