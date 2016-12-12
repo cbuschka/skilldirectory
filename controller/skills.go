@@ -69,9 +69,6 @@ func (c *SkillsController) loadSkill(id string) (*model.Skill, error) {
 	return &skill, nil
 }
 
-// Removes the skill with the ID at the end of the specified request's URL.
-// Returns non-nil error if the request's URL contains no ID, or if no skills
-// exist with that ID.
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
 	skillID := checkForId(c.r.URL)
@@ -79,14 +76,11 @@ func (c *SkillsController) removeSkill() error {
 		return fmt.Errorf("No Skill ID Specified in Request URL: %s", c.r.URL)
 	}
 
-	// Remove the skill with the specified ID from the skills
-	// database/repository; return error if no skills have that ID
 	err := c.session.Delete(skillID)
 	if err != nil {
 		return fmt.Errorf("No Skill Exists with Specified ID: %s", skillID)
 	}
 
-	// The skill was successfully deleted!
 	log.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
 }

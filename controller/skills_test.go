@@ -73,3 +73,33 @@ func TestGetSkillError(t *testing.T) {
 		t.Errorf("Expected error: %s", err.Error())
 	}
 }
+
+func TestDelete(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/skills/1234", nil), &MockDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Delete()
+	if err != nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestDeleteError(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/skills/1234", nil), &MockErrorDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestDeleteNoKey(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/skills/", nil), &MockDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error when no key: %s", err.Error())
+	}
+}
