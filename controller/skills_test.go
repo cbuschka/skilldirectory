@@ -1,10 +1,13 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"skilldirectory/data"
+	"skilldirectory/model"
 	"testing"
 )
 
@@ -101,5 +104,54 @@ func TestDeleteNoKey(t *testing.T) {
 	err := sc.Delete()
 	if err == nil {
 		t.Errorf("Expected error when no key: %s", err.Error())
+	}
+}
+
+func TestPostSkill(t *testing.T) {
+	base := BaseController{}
+	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
+
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err != nil {
+		t.Errorf("Post failed: %s", err.Error())
+	}
+}
+
+func TestPostSkillInvalidType(t *testing.T) {
+	base := BaseController{}
+	b, _ := json.Marshal(model.NewSkill("", "", "badtype"))
+	reader := bytes.NewReader(b)
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
+
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPostNoSkill(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills/", nil), &MockDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPostSkillError(t *testing.T) {
+	base := BaseController{}
+	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockErrorDataAccessor{})
+
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
 	}
 }
