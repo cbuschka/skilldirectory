@@ -2,8 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"skilldirectory/data"
 	"testing"
 )
@@ -34,15 +32,15 @@ func TestBase(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
-	fmt.Println("testing")
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "skills", nil), &MockDataAccessor{})
-	fmt.Println("testing")
-
-	sc := SkillsController{BaseController: &base}
-	err := sc.Get()
-	if err != nil {
-		t.Error(err.Error())
-	}
-}
+// func TestGet(t *testing.T) {
+// 	fmt.Println("testing")
+// 	base := BaseController{}
+// 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "skills", nil), &MockDataAccessor{})
+// 	fmt.Println("testing")
+//
+// 	sc := SkillsController{BaseController: &base}
+// 	err := sc.Get()
+// 	if err != nil {
+// 		t.Error(err.Error())
+// 	}
+// }

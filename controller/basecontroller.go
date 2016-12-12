@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"path"
@@ -18,7 +17,6 @@ func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request, session d
 	bc.w = w
 	bc.r = r
 	bc.session = session
-	fmt.Println("initing")
 }
 
 // checkForID checks to see if an ID (e.g. 59317629-bcc3-11e6-9f43-6c4008bcfa84)

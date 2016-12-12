@@ -92,7 +92,6 @@ func (c *SkillsController) removeSkill() error {
 }
 
 func (c *SkillsController) addSkill() error {
-	fmt.Println("Adding skill")
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
@@ -109,6 +108,6 @@ func (c *SkillsController) addSkill() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("New skill saved")
+	log.Printf("Saved skill: %s", skill.Name)
 	return nil
 }
