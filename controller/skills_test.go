@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"skilldirectory/data"
 	"testing"
 )
@@ -32,15 +34,42 @@ func TestBase(t *testing.T) {
 	}
 }
 
-// func TestGet(t *testing.T) {
-// 	fmt.Println("testing")
-// 	base := BaseController{}
-// 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "skills", nil), &MockDataAccessor{})
-// 	fmt.Println("testing")
-//
-// 	sc := SkillsController{BaseController: &base}
-// 	err := sc.Get()
-// 	if err != nil {
-// 		t.Error(err.Error())
-// 	}
-// }
+func TestGetAll(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/skills", nil), &MockDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Get()
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestGetAllError(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/skills", nil), &MockErrorDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Get()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestGetSkill(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/skills/1234", nil), &MockDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Get()
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestGetSkillError(t *testing.T) {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/skills/1234", nil), &MockErrorDataAccessor{})
+	sc := SkillsController{BaseController: &base}
+	err := sc.Get()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
