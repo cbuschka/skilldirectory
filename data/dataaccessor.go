@@ -16,6 +16,6 @@ type DataAccess interface {
 }
 
 type ReadAllInterface interface {
-	GetType()interface{}
+	GetType() interface{}
 	// GetSlice()[]interface{}
 }
