@@ -1,5 +1,4 @@
 *txt
 .DS_Store
-.idea/**
 skilldirectory.iml
-.idea/
+.idea/*
