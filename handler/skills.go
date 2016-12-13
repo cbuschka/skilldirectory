@@ -42,9 +42,9 @@ func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 		err = removeSkill(r)
 
 		switch err.(type) {
-		case *errors.NoSuchID404Error:
+		case *errors.NoSuchIDError:
 			statusCode = http.StatusNotFound
-		case *errors.BadRequest400Error:
+		case *errors.MissingSkillIDError:
 			statusCode = http.StatusBadRequest
 		}
 	}
@@ -82,7 +82,7 @@ func removeSkill(r *http.Request) error {
 	// Get the ID at end of the specified request; return BadRequest400Error if request contains no ID
 	skillID := checkForId(r.URL)
 	if skillID == "" {
-		return &errors.BadRequest400Error{
+		return &errors.MissingSkillIDError{
 			ErrorMsg: "No Skill ID Specified in Request URL: " + r.URL.String(),
 		}
 	}
@@ -91,7 +91,7 @@ func removeSkill(r *http.Request) error {
 	// database/repository; return NoSuchID404Error if no skills have that ID
 	err := skillsConnector.Delete(skillID)
 	if err != nil {
-		return &errors.NoSuchID404Error{
+		return &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
 		}
 	}
