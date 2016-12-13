@@ -1,19 +1,19 @@
 package errors
 
 // Implements error interface
-type BadRequest400Error struct {
+type BadRequestError struct {
 	ErrorMsg string
 }
 
-func (e *BadRequest400Error) Error() string {
+func (e *BadRequestError) Error() string {
 	return e.ErrorMsg
 }
 
 // Implements error interface
-type NoSuchID404Error struct {
+type NoSuchIDError struct {
 	ErrorMsg string
 }
 
-func (e *NoSuchID404Error) Error() string {
+func (e *NoSuchIDError) Error() string {
 	return e.ErrorMsg
 }
