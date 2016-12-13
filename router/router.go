@@ -2,18 +2,40 @@ package router
 
 import (
 	"net/http"
+	"skilldirectory/controller"
 	"skilldirectory/handler"
 )
 
 type Route struct {
-	name        string
 	path        string
 	handlerFunc http.HandlerFunc
 }
 
+// To add a new route, add a new to the []Route Slice:
+// Route{
+// 	"/ENDPOINT/",
+// 	handler.MakeHandler(
+// 		handler.Handler,
+// 		&controller.NEW_CONTROLLER{
+// 			BaseController: &controller.BaseController{},
+// 		})},
+// And add a controller to the controller package
+
 var routes = []Route{
-	Route{"skills", "/skills", handler.MakeHandler(handler.SkillsHandler)},
-	Route{"skills", "/skills/", handler.MakeHandler(handler.SkillsHandler)},
+	Route{
+		"/skills/",
+		handler.MakeHandler(
+			handler.Handler,
+			&controller.SkillsController{
+				BaseController: &controller.BaseController{},
+			})},
+	Route{
+		"/skills",
+		handler.MakeHandler(
+			handler.Handler,
+			&controller.SkillsController{
+				BaseController: &controller.BaseController{},
+			})},
 }
 
 func StartRouter() (mux *http.ServeMux) {
