@@ -11,6 +11,8 @@ import (
 
 	"skilldirectory/model"
 
+	"skilldirectory/errors"
+
 	"github.com/satori/go.uuid"
 )
 
@@ -38,7 +40,13 @@ func SkillsHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 	case http.MethodDelete:
 		err = removeSkill(r)
-		statusCode = http.StatusNotFound
+
+		switch err.(type) {
+		case *errors.NoSuchID404Error:
+			statusCode = http.StatusNotFound
+		case *errors.BadRequest400Error:
+			statusCode = http.StatusBadRequest
+		}
 	}
 	if err != nil {
 		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
@@ -71,17 +79,21 @@ func addSkill(r *http.Request) error {
 // Returns non-nil error if the request's URL contains no ID, or if no skills
 // exist with that ID.
 func removeSkill(r *http.Request) error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get the ID at end of the specified request; return BadRequest400Error if request contains no ID
 	skillID := checkForId(r.URL)
 	if skillID == "" {
-		return fmt.Errorf("No Skill ID Specified in Request URL: %s", r.URL)
+		return &errors.BadRequest400Error{
+			ErrorMsg: "No Skill ID Specified in Request URL: " + r.URL.String(),
+		}
 	}
 
 	// Remove the skill with the specified ID from the skills
-	// database/repository; return error if no skills have that ID
+	// database/repository; return NoSuchID404Error if no skills have that ID
 	err := skillsConnector.Delete(skillID)
 	if err != nil {
-		return fmt.Errorf("No Skill Exists with Specified ID: %s", skillID)
+		return &errors.NoSuchID404Error{
+			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
+		}
 	}
 
 	// The skill was successfully deleted!
