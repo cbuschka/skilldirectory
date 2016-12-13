@@ -94,7 +94,7 @@ func (e MockInMemoryDataAccessor) ReadAll(path string, readType data.ReadAllInte
 }
 
 func (e MockInMemoryDataAccessor) FilteredReadAll(path string, readType data.ReadAllInterface,
-filterFunc func(interface{}) bool) ([]interface{}, error) {
+	filterFunc func(interface{}) bool) ([]interface{}, error) {
 	returnObjects := []interface{}{}
 	object := readType.GetType()
 	for _, val := range e.dataMap {
