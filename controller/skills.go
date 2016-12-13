@@ -35,11 +35,7 @@ func (c SkillsController) Put() error {
 func (c SkillsController) performGet() error {
 	path := checkForId(c.r.URL)
 	if path == "" {
-		filter, err := extractSkillFilter(c.r.URL)
-		if err != nil {
-			return err
-		}
-
+		filter := c.r.URL.Query().Get("skilltype")
 		if filter == "" {
 			return c.getAllSkills()
 		} else {
