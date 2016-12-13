@@ -63,9 +63,9 @@ func (f FileWriter) ReadAll(path string, readType ReadAllInterface) ([]interface
 /*
 Applies the specified filterFunc to each read from database/repository. Returns a slice containing entries that satisfied
 the filtering function.
- */
+*/
 func (f FileWriter) FilteredReadAll(path string, readType ReadAllInterface,
-					filterFunc func(interface{}) bool) ([]interface{}, error) {
+	filterFunc func(interface{}) bool) ([]interface{}, error) {
 	returnObjects := []interface{}{}
 	object := readType.GetType()
 	filepath.Walk(path, func(path string, fi os.FileInfo, err error) error {

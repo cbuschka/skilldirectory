@@ -121,20 +121,17 @@ func getAllSkills(w http.ResponseWriter) error {
 	return err
 }
 
-/*
-
- */
 func getAllSkillsFiltered(w http.ResponseWriter, filter string) error {
 	// Only try to apply the specified filter if it is either a valid Skill Type, or else
 	// is a wildcard filter ("").
-	if !model.IsValidSkillType(filter)  && filter != "" {
+	if !model.IsValidSkillType(filter) && filter != "" {
 		return fmt.Errorf("The skilltype filter, \"%s\", is not valid", filter)
 	}
 
 	// This function is used as the filter for the call to skillsConnectory.FilteredReadAll() below.
 	// It compares the SkillType field of the skills read from the database/repository to the passed-in
 	// filter string. Only those skills whose SkillType matches the filter string pass through.
-	filterer := func (object interface{}) bool {
+	filterer := func(object interface{}) bool {
 		// Each object that is passed in is of type map[string]interface{}, so must cast to that.
 		// Then, objmap is a mapping of Skill type fields to their values.
 		// For example, fmt.Println(object), might display:
@@ -179,20 +176,6 @@ func checkForId(url *url.URL) string {
 	return ""
 }
 
-/*
-extractSkillFilter() returns the filter value of the "skilltype" filter within
-the URL's query string. If the query string does not contain a "skilltype" filter,
-then an empty string ("") will be returned.
-
-Calling the function with the following URL would return "scripted"
-	http://localhost:8080/skills?skilltype=scripted
-Calling it with either of these URLs would return ""
-	http://localhost:8080/skills or http://localhost:8080/skills?someFilter=someValue
-
-Returns a non-nil error if the URL path's base is not "/skills". E.g. calling the
-function with the following URL would result in an error:
-	http://localhost:8080/skills/whatever?skilltype=scripted
- */
 func extractSkillFilter(url *url.URL) (string, error) {
 	// Extract the URL path's base and make sure it is "/skills".
 	// Return error if it's not, because it doesn't make sense to filter
@@ -201,7 +184,6 @@ func extractSkillFilter(url *url.URL) (string, error) {
 	if base != "skills" {
 		return "", fmt.Errorf("URL path base must be \"skills\" to filter by skill type")
 	}
-
 
 	// Extract the query string from the URL as a key, value map.
 	// Then search the map for a "skilltype" filter. If the query

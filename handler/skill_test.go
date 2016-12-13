@@ -19,7 +19,7 @@ func (m MockDataAccessor) Delete(s string) error              { return nil }
 func (m MockDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
-func (d MockDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func (interface{}) bool) ([]interface{}, error) {
+func (d MockDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func(interface{}) bool) ([]interface{}, error) {
 	return nil, nil
 }
 
@@ -31,9 +31,10 @@ func (e MockErrorDataAccessor) Delete(s string) error              { return fmt.
 func (e MockErrorDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
-func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func (interface{}) bool) ([]interface{}, error) {
+func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func(interface{}) bool) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////// MockInMemoryDataAccessor /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,11 +44,7 @@ MockInMemoryDataAccessor implements the data.dataccessor.DataAccess interface by
 designed to facilitate easy testing of components that rely on skill storage and retrieval without requiring access to
 an external filesystem or database when running tests. Because MockInMemoryDataAccessor uses a computer's volatile
 memory, it should not be used for permanent data storage, and is unlikely to have a use outside of unit testing.
-
-MockInMemoryDataAccessor's in-memory data storage is implemented as a map[string][]byte. New skills are saved into the
-map with their ID as the key, and the []byte produced by marshaling them into JSON-format (by calling json.Marshal) as
-the value.
- */
+*/
 type MockInMemoryDataAccessor struct {
 	dataMap map[string][]byte // map of object to byte slice
 }
@@ -69,7 +66,7 @@ func (e MockInMemoryDataAccessor) Save(ID string, object interface{}) error {
 
 func (e MockInMemoryDataAccessor) Read(ID string, object interface{}) error {
 	data := e.dataMap[ID]
-	if(len(data) == 0) {
+	if len(data) == 0 {
 		return fmt.Errorf("No such object with ID: %s", ID)
 	}
 	json.Unmarshal(data, &object)
@@ -78,7 +75,7 @@ func (e MockInMemoryDataAccessor) Read(ID string, object interface{}) error {
 
 func (e MockInMemoryDataAccessor) Delete(ID string) error {
 	data := e.dataMap[ID]
-	if(len(data) == 0) {
+	if len(data) == 0 {
 		return fmt.Errorf("No such object with ID: %s", ID)
 	}
 	e.dataMap[ID] = make([]byte, 0)
@@ -96,7 +93,7 @@ func (e MockInMemoryDataAccessor) ReadAll(path string, readType data.ReadAllInte
 }
 
 func (e MockInMemoryDataAccessor) FilteredReadAll(path string, readType data.ReadAllInterface,
-							filterFunc func (interface{}) bool) ([]interface{}, error) {
+	filterFunc func(interface{}) bool) ([]interface{}, error) {
 	returnObjects := []interface{}{}
 	object := readType.GetType()
 	for _, val := range e.dataMap {
@@ -107,6 +104,7 @@ func (e MockInMemoryDataAccessor) FilteredReadAll(path string, readType data.Rea
 	}
 	return returnObjects, nil
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,22 +237,23 @@ func TestPerformGetError(t *testing.T) {
 
 func TestGetSkillsFiltered(t *testing.T) {
 	skillsConnector = data.NewAccessor(NewMockInMemoryDataAccessor())
-	
+
 	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType)
 	skillsConnector.Save(newScriptedSkill.Id, newScriptedSkill)
 	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType)
 	skillsConnector.Save(newCompiledSkill.Id, newCompiledSkill)
-	
+
 	r := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
 	w := httptest.NewRecorder()
 	err := performGet(w, r)
-	if(err != nil) {
+	if err != nil {
 		t.Errorf("Did not expect error when getting skills with filter")
 	}
+
 	correctResponseBody := "[{\"Id\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"}]"
 	if w.Body.String() != correctResponseBody {
-		t.Errorf("Failed to properly filter based on skilltype. " +
-			   "Expected Response body to be \n\t %s\n But got\n\t %s\\n",
+		t.Errorf("Failed to properly filter based on skilltype. "+
+			"Expected Response body to be \n\t %s\n But got\n\t %s\\n",
 			correctResponseBody, w.Body.String())
 	}
 }
@@ -265,8 +264,8 @@ func TestGetSkillsFilteredBadSkillType(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	err := performGet(w, r)
-	if(err == nil) {
-		fmt.Errorf("Expected error due to invalid skill type")
+	if err == nil {
+		t.Errorf("Expected error due to invalid skill type")
 	}
 }
 
