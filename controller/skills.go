@@ -2,10 +2,13 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"skilldirectory/model"
+
+	"skilldirectory/errors"
+
+	"fmt"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -103,7 +106,9 @@ func (c *SkillsController) loadSkill(id string) (*model.Skill, error) {
 	skill := model.Skill{}
 	err := c.session.Read(id, &skill)
 	if err != nil {
-		return nil, err
+		return nil, &errors.NoSuchIDError{
+			ErrorMsg: "No Skill Exists with Specified ID: " + id,
+		}
 	}
 	return &skill, nil
 }
@@ -112,12 +117,16 @@ func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
 	skillID := checkForId(c.r.URL)
 	if skillID == "" {
-		return fmt.Errorf("No Skill ID Specified in Request URL: %s", c.r.URL)
+		return &errors.MissingSkillIDError{
+			ErrorMsg: "No Skill ID Specified in Request URL: " + c.r.URL.String(),
+		}
 	}
 
 	err := c.session.Delete(skillID)
 	if err != nil {
-		return fmt.Errorf("No Skill Exists with Specified ID: %s", skillID)
+		return &errors.NoSuchIDError{
+			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
+		}
 	}
 
 	log.Printf("Skill Deleted with ID: %s", skillID)
@@ -131,15 +140,21 @@ func (c *SkillsController) addSkill() error {
 	skill := model.Skill{}
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
-		return err
+		return &errors.MarshalingError{
+			ErrorMsg: "Invalid JSON body in request:\n\t" + fmt.Sprint(body),
+		}
 	}
 	if !model.IsValidSkillType(skill.SkillType) {
-		return fmt.Errorf("Invalid Skill Type: %s", skill.SkillType)
+		return &errors.InvalidSkillTypeError{
+			ErrorMsg: "Invalid Skill Type: %s" + skill.SkillType,
+		}
 	}
 	skill.Id = uuid.NewV1().String()
 	err = c.session.Save(skill.Id, skill)
 	if err != nil {
-		return err
+		return &errors.SavingError{
+			ErrorMsg: err.Error(),
+		}
 	}
 	log.Printf("Saved skill: %s", skill.Name)
 	return nil

@@ -205,14 +205,25 @@ func TestRemoveSkill(t *testing.T) {
 	}
 }
 
-func TestRemoveSkillError(t *testing.T) {
-	skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+func TestRemoveSkillNoID(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockDataAccessor{})
 	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
 	reader := bytes.NewReader(b)
 	r := httptest.NewRequest(http.MethodDelete, "/skills", reader)
 	err := removeSkill(r)
 	if err == nil {
-		t.Errorf("Expected error due to skill deletion failure")
+		t.Errorf("Expected error due to no ID in request.")
+	}
+}
+
+func TestRemoveSkillErrorBadID(t *testing.T) {
+	skillsConnector = data.NewAccessor(MockErrorDataAccessor{})
+	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	r := httptest.NewRequest(http.MethodDelete, "/skills/9000", reader)
+	err := removeSkill(r)
+	if err == nil {
+		t.Errorf("Expected error due to non-existent skill ID in request.")
 	}
 }
 
