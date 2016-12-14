@@ -137,10 +137,13 @@ func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	validatePOSTBody(body)
+	err := validatePOSTBody(body)
+	if err != nil {
+		return err // Will be of errors.IncompletePOSTBodyError type
+	}
 
 	skill := model.Skill{}
-	err := json.Unmarshal(body, &skill)
+	err = json.Unmarshal(body, &skill)
 	if err != nil {
 		return &errors.MarshalingError{
 			ErrorMsg: "Invalid JSON body in request:\n\t" + fmt.Sprint(body),
@@ -164,15 +167,15 @@ func (c *SkillsController) addSkill() error {
 
 // validatePOSTBody() accepts a byte array of a JSON request body. Ensures that the
 // passed-in byte[] request contains a key-value pair for "Name" and for "Skilltype"
-// fields. Returns true if it does, false if not.
-func validatePOSTBody(body []byte) bool {
+// fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
+func validatePOSTBody(body []byte) error {
 	object := model.Skill{}
 	json.Unmarshal(body, &object)
 	if object.Name == "" || object.SkillType == "" {
-		return false;
+		return &errors.IncompletePOSTBodyError{
+			ErrorMsg: "POST Request for new Skill must contain values for " +
+				"\"Name\" and \"SkillType\" fields.",
+		}
 	}
-
-	//fmt.Println("[", object.Id, ",", object.Name, ",", object.SkillType, "]")
-
-	return true
+	return nil
 }
