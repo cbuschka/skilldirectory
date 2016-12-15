@@ -58,7 +58,8 @@ func NewSkill(id, name, skillType string) Skill {
 		SkillType: skillType,
 		Webpage:   Link{},
 		Blogs:     []Link{},
-		Tutorials: []Link{}}
+		Tutorials: []Link{},
+	}
 }
 
 func NewSkillWithLinks(id, name, skillType string,
@@ -73,7 +74,7 @@ func NewSkillWithLinks(id, name, skillType string,
 	}
 }
 
-// IsValidSkillType() returns true if the passed-in string is a valid SkillType, false if not.
+// IsValidSkillType returns true if the passed-in string is a valid SkillType, false if not.
 func IsValidSkillType(skillType string) bool {
 	switch skillType {
 	case
@@ -86,7 +87,7 @@ func IsValidSkillType(skillType string) bool {
 	return false
 }
 
-// GetType() returns an interface{} with an underlying concrete type of Skill{}.
+// GetType returns an interface{} with an underlying concrete type of Skill{}.
 func (s Skill) GetType() interface{} {
 	return Skill{}
 }
