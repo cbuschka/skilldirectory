@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type Skill struct {
 	Id        string
 	Name      string
@@ -9,6 +11,22 @@ type Skill struct {
 	Tutorials []Link
 }
 
+func (s *Skill) AddLink(link Link, linkType string) error {
+	if !IsValidLinkType(linkType) {
+		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
+	}
+
+	switch linkType {
+	case WebpageLinkType:
+		s.Webpage = link
+	case BlogLinkType:
+		append(s.Blogs, link)
+	case TutorialLinkType:
+		append(s.Tutorials, link)
+	}
+	return nil
+}
+
 const (
 	ScriptedSkillType      = "scripted"
 	CompiledSkillType      = "compiled"
@@ -16,9 +34,16 @@ const (
 	DatabaseSkillType      = "database"
 )
 
-func NewSkill(id, name, skillType string,
-	webpage Link,
-	blogs, tutorials []Link) Skill {
+func NewSkill(id, name, skillType string) Skill {
+	return Skill{
+		Id:        id,
+		Name:      name,
+		SkillType: skillType,
+	}
+}
+
+func NewSkillWithLinks(id, name, skillType string,
+	webpage Link, blogs, tutorials []Link) Skill {
 	return Skill{
 		Id:        id,
 		Name:      name,
