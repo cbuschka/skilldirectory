@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gocql/gocql"
 )
@@ -53,17 +54,21 @@ func (c CassandraConnector) Delete(key string) error {
 	return nil
 }
 
-func (c CassandraConnector) ReadAll(key string, readType ReadAllInterface) ([]interface{}, error) {
-	// query := "SELECT JSON * FROM " + table + " WHERE id = " + key
-	// byteQ := []byte{}
-	// err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
-	// if err != nil {
-	// 	return err
-	// }
-	// return json.Unmarshal(byteQ, &object)
-	//
-	// return nil, nil
-	return nil, nil
+func (c CassandraConnector) ReadAll(path string, readType ReadAllInterface) ([]interface{}, error) {
+	query := "SELECT JSON * FROM " + table
+	queryBytes := []byte{}
+	queryObject := readType.GetType()
+	queryObjectArray := []interface{}{}
+	var err error
+	iter := c.Query(query).Iter()
+	for iter.Scan(&queryBytes) {
+		err = json.Unmarshal(queryBytes, &queryObject)
+		if err != nil {
+			return nil, fmt.Errorf("Read all unmarshal err: %s", err)
+		}
+		queryObjectArray = append(queryObjectArray, queryObject)
+	}
+	return queryObjectArray, nil
 }
 
 func (c CassandraConnector) FilteredReadAll(path string, readType ReadAllInterface,
