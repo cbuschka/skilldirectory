@@ -44,3 +44,12 @@ type SavingError struct {
 func (e *SavingError) Error() string {
 	return e.ErrorMsg
 }
+
+// Implements error interface
+type IncompletePOSTBodyError struct {
+	ErrorMsg string
+}
+
+func (e *IncompletePOSTBodyError) Error() string {
+	return e.ErrorMsg
+}
