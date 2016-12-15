@@ -5,11 +5,26 @@ import (
 )
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
-	skillTwo := Skill{"ASkillID", "ASkillName", ScriptedSkillType}
-	if skillOne != skillTwo {
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType, Link{}, []Link{}, []Link{})
+	skillTwo := Skill{
+		Id:        "ASkillID",
+		Name:      "ASkillName",
+		SkillType: ScriptedSkillType,
+		Webpage:   Link{},
+		Blogs:     []Link{},
+		Tutorials: []Link{},
+	}
+
+	// Verify that all of skillOne and skillTwo's fields are equal
+	if skillOne.Id != skillTwo.Id ||
+		skillOne.Name != skillTwo.Name ||
+		skillOne.SkillType != skillTwo.SkillType ||
+		skillOne.Webpage != skillTwo.Webpage ||
+		!compareLinkSlices(skillOne.Blogs, skillTwo.Blogs) ||
+		!compareLinkSlices(skillOne.Tutorials, skillTwo.Tutorials) {
 		t.Errorf("model/Skill\".NewSkill()\" produced incorrect Skill.")
 	}
+
 }
 
 func TestInValidSkillType(t *testing.T) {
@@ -22,4 +37,22 @@ func TestValidSkillType(t *testing.T) {
 	if !IsValidSkillType(ScriptedSkillType) {
 		t.Errorf("func IsValidSkillType() flagged valid SkillType as invalid")
 	}
+}
+
+func compareLinkSlices(a, b []Link) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }

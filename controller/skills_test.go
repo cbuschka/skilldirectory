@@ -167,9 +167,11 @@ func TestGetSkillsFiltered(t *testing.T) {
 	accessor := NewMockInMemoryDataAccessor()
 	base.Init(responseRecorder, request, &accessor)
 
-	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType)
+	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType,
+		model.Link{}, []model.Link{}, []model.Link{})
 	skillsConnector.session.Save(newScriptedSkill.Id, newScriptedSkill)
-	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType)
+	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType,
+		model.Link{}, []model.Link{}, []model.Link{})
 	skillsConnector.session.Save(newCompiledSkill.Id, newCompiledSkill)
 
 	err := skillsConnector.Get()
@@ -177,7 +179,8 @@ func TestGetSkillsFiltered(t *testing.T) {
 		t.Errorf("Did not expect error when getting skills with filter")
 	}
 
-	correctResponseBody := "[{\"Id\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"}]"
+	correctResponseBody := "[{\"Blogs\":[],\"Id\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"," +
+		"\"Tutorials\":[],\"Webpage\":{\"LinkType\":\"\",\"Name\":\"\",\"SkillID\":\"\",\"URL\":\"\"}}]"
 	if responseRecorder.Body.String() != correctResponseBody {
 		t.Errorf("Failed to properly filter based on skilltype. "+
 			"Expected Response body to be \n\t %s\n But got\n\t %s\\n",
@@ -247,7 +250,9 @@ func TestDeleteNoKey(t *testing.T) {
 
 func TestPostSkill(t *testing.T) {
 	base := BaseController{}
-	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	newSkill := model.NewSkill("", "", model.ScriptedSkillType,
+		model.Link{}, []model.Link{}, []model.Link{})
+	b, _ := json.Marshal(newSkill)
 	reader := bytes.NewReader(b)
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
 
@@ -260,7 +265,8 @@ func TestPostSkill(t *testing.T) {
 
 func TestPostSkillInvalidType(t *testing.T) {
 	base := BaseController{}
-	b, _ := json.Marshal(model.NewSkill("", "", "badtype"))
+	newSkill := model.NewSkill("", "", "badtype", model.Link{}, []model.Link{}, []model.Link{})
+	b, _ := json.Marshal(newSkill)
 	reader := bytes.NewReader(b)
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
 
@@ -283,7 +289,8 @@ func TestPostNoSkill(t *testing.T) {
 
 func TestPostSkillError(t *testing.T) {
 	base := BaseController{}
-	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	newSkill := model.NewSkill("", "", model.ScriptedSkillType, model.Link{}, []model.Link{}, []model.Link{})
+	b, _ := json.Marshal(newSkill)
 	reader := bytes.NewReader(b)
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockErrorDataAccessor{})
 

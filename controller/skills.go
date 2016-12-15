@@ -141,13 +141,19 @@ func (c *SkillsController) addSkill() error {
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		return &errors.MarshalingError{
-			ErrorMsg: "Invalid JSON body in request:\n\t" + fmt.Sprint(body),
+			ErrorMsg: err.Error() + "\nInvalid request with following JSON body:\n\t" + string(body[:]),
 		}
 	}
 	if !model.IsValidSkillType(skill.SkillType) {
 		return &errors.InvalidSkillTypeError{
 			ErrorMsg: "Invalid Skill Type: %s" + skill.SkillType,
 		}
+	}
+	skill.Blogs = []model.Link{
+		model.Link{
+			Name: "Java",
+			URL:  "http://www.javaworld.com/blog/java-101/",
+		},
 	}
 	skill.Id = uuid.NewV1().String()
 	err = c.session.Save(skill.Id, skill)

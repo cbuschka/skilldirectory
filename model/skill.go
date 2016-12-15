@@ -4,6 +4,9 @@ type Skill struct {
 	Id        string
 	Name      string
 	SkillType string
+	Webpage   Link
+	Blogs     []Link
+	Tutorials []Link
 }
 
 const (
@@ -13,11 +16,16 @@ const (
 	DatabaseSkillType      = "database"
 )
 
-func NewSkill(id, name, skillType string) Skill {
+func NewSkill(id, name, skillType string,
+	webpage Link,
+	blogs, tutorials []Link) Skill {
 	return Skill{
 		Id:        id,
 		Name:      name,
 		SkillType: skillType,
+		Webpage:   webpage,
+		Blogs:     blogs,
+		Tutorials: tutorials,
 	}
 }
 
