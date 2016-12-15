@@ -7,7 +7,7 @@ import (
 func TestNewSkill(t *testing.T) {
 	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
 	skillTwo := Skill{
-		Id:        "ASkillID",
+		ID:        "ASkillID",
 		Name:      "ASkillName",
 		SkillType: ScriptedSkillType,
 		Webpage:   Link{},
@@ -16,7 +16,7 @@ func TestNewSkill(t *testing.T) {
 	}
 
 	// Verify that all of skillOne and skillTwo's fields are equal
-	if skillOne.Id != skillTwo.Id ||
+	if skillOne.ID != skillTwo.ID ||
 		skillOne.Name != skillTwo.Name ||
 		skillOne.SkillType != skillTwo.SkillType ||
 		skillOne.Webpage != skillTwo.Webpage ||
