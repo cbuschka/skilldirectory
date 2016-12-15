@@ -2,7 +2,7 @@ package data
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 
 	"github.com/gocql/gocql"
 )
@@ -13,6 +13,8 @@ type CassandraConnector struct {
 	port     string
 	keyspace string
 }
+
+var table = "skills"
 
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	cluster := gocql.NewCluster(path)
@@ -31,16 +33,22 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 }
 
 func (c CassandraConnector) Save(key string, object interface{}) error {
-	log.Print("Saving")
 	b, err := json.Marshal(object)
 	if err != nil {
 		return err
 	}
-	return c.Query("INSERT INTO skills JSON '" + string(b) + "'").Exec()
+	return c.Query("INSERT INTO " + table + " JSON '" + string(b) + "'").Exec()
 }
 
 func (c CassandraConnector) Read(key string, object interface{}) error {
-	return nil
+	query := "SELECT JSON * FROM " + table + " WHERE id = " + key
+	fmt.Println(query)
+	byteQ := []byte{}
+	err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(byteQ, &object)
 }
 
 func (c CassandraConnector) Delete(key string) error {
