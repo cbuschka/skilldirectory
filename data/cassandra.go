@@ -53,7 +53,16 @@ func (c CassandraConnector) Delete(key string) error {
 	return nil
 }
 
-func (c CassandraConnector) ReadAll(path string, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) ReadAll(key string, readType ReadAllInterface) ([]interface{}, error) {
+	// query := "SELECT JSON * FROM " + table + " WHERE id = " + key
+	// byteQ := []byte{}
+	// err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
+	// if err != nil {
+	// 	return err
+	// }
+	// return json.Unmarshal(byteQ, &object)
+	//
+	// return nil, nil
 	return nil, nil
 }
 
