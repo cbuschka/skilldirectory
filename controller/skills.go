@@ -146,7 +146,7 @@ func (c *SkillsController) addSkill() error {
 	err = json.Unmarshal(body, &skill)
 	if err != nil {
 		return &errors.MarshalingError{
-			ErrorMsg: "Invalid JSON body in request:\n\t" + fmt.Sprint(body),
+			ErrorMsg: err.Error(),
 		}
 	}
 	if !model.IsValidSkillType(skill.SkillType) {

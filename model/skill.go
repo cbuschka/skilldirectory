@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 /*
 Skill represents a particular skill that can be had by a human individual.
 Each Skill has a Name, SkillType, and a unique ID:
@@ -16,6 +18,25 @@ type Skill struct {
 	ID        string
 	Name      string
 	SkillType string
+	Webpage   Link
+	Blogs     []Link
+	Tutorials []Link
+}
+
+func (s *Skill) AddLink(link Link, linkType string) error {
+	if !IsValidLinkType(linkType) {
+		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
+	}
+
+	switch linkType {
+	case WebpageLinkType:
+		s.Webpage = link
+	case BlogLinkType:
+		s.Blogs = append(s.Blogs, link)
+	case TutorialLinkType:
+		s.Tutorials = append(s.Tutorials, link)
+	}
+	return nil
 }
 
 const (
@@ -35,6 +56,20 @@ func NewSkill(id, name, skillType string) Skill {
 		ID:        id,
 		Name:      name,
 		SkillType: skillType,
+		Webpage:   Link{},
+		Blogs:     []Link{},
+		Tutorials: []Link{}}
+}
+
+func NewSkillWithLinks(id, name, skillType string,
+	webpage Link, blogs, tutorials []Link) Skill {
+	return Skill{
+		ID:        id,
+		Name:      name,
+		SkillType: skillType,
+		Webpage:   webpage,
+		Blogs:     blogs,
+		Tutorials: tutorials,
 	}
 }
 
