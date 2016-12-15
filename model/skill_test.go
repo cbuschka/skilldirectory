@@ -24,7 +24,29 @@ func TestNewSkill(t *testing.T) {
 		!compareLinkSlices(skillOne.Tutorials, skillTwo.Tutorials) {
 		t.Errorf("model/Skill\".NewSkill()\" produced incorrect Skill.")
 	}
+}
 
+func TestNewSkillWithLinks(t *testing.T) {
+	skillOne := NewSkillWithLinks("ASkillID", "ASkillName", ScriptedSkillType,
+			Link{}, []Link{}, []Link{})
+	skillTwo := Skill{
+		ID:        "ASkillID",
+		Name:      "ASkillName",
+		SkillType: ScriptedSkillType,
+		Webpage:   Link{},
+		Blogs:     []Link{},
+		Tutorials: []Link{},
+	}
+
+	// Verify that all of skillOne and skillTwo's fields are equal
+	if skillOne.ID != skillTwo.ID ||
+		skillOne.Name != skillTwo.Name ||
+		skillOne.SkillType != skillTwo.SkillType ||
+		skillOne.Webpage != skillTwo.Webpage ||
+		!compareLinkSlices(skillOne.Blogs, skillTwo.Blogs) ||
+		!compareLinkSlices(skillOne.Tutorials, skillTwo.Tutorials) {
+		t.Errorf("model/Skill\".NewSkillWithLinks()\" produced incorrect Skill.")
+	}
 }
 
 func TestInValidSkillType(t *testing.T) {
