@@ -247,7 +247,7 @@ func TestDeleteNoKey(t *testing.T) {
 
 func TestPostSkill(t *testing.T) {
 	base := BaseController{}
-	b, _ := json.Marshal(model.NewSkill("", "", model.ScriptedSkillType))
+	b, _ := json.Marshal(model.NewSkill("1234", "SomeName", model.ScriptedSkillType))
 	reader := bytes.NewReader(b)
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
 
@@ -255,6 +255,32 @@ func TestPostSkill(t *testing.T) {
 	err := sc.Post()
 	if err != nil {
 		t.Errorf("Post failed: %s", err.Error())
+	}
+}
+
+func TestPostSkillNoName(t *testing.T) {
+	base := BaseController{}
+	b, _ := json.Marshal(model.NewSkill("1234", "", model.ScriptedSkillType))
+	reader := bytes.NewReader(b)
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
+
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err == nil {
+		t.Errorf("Expected error due to not specifying value for \"Name\" field in Skill POST request.")
+	}
+}
+
+func TestPostSkillNoSkillType(t *testing.T) {
+	base := BaseController{}
+	b, _ := json.Marshal(model.NewSkill("1234", "SomeName", ""))
+	reader := bytes.NewReader(b)
+	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/skills", reader), &MockDataAccessor{})
+
+	sc := SkillsController{BaseController: &base}
+	err := sc.Post()
+	if err == nil {
+		t.Errorf("Expected error due to not specifying value for \"SkillType\" field in Skill POST request.")
 	}
 }
 

@@ -33,7 +33,8 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	var statusCode int
 	if err != nil {
 		switch err.(type) {
-		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingSkillIDError:
+		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingSkillIDError,
+			*errors.IncompletePOSTBodyError:
 			statusCode = http.StatusBadRequest
 		case *errors.SavingError:
 			statusCode = http.StatusInternalServerError
