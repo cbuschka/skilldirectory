@@ -168,20 +168,20 @@ func TestGetSkillsFiltered(t *testing.T) {
 	base.Init(responseRecorder, request, &accessor)
 
 	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType)
-	skillsConnector.session.Save(newScriptedSkill.Id, newScriptedSkill)
+	skillsConnector.session.Save(newScriptedSkill.ID, newScriptedSkill)
 	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType)
-	skillsConnector.session.Save(newCompiledSkill.Id, newCompiledSkill)
+	skillsConnector.session.Save(newCompiledSkill.ID, newCompiledSkill)
 
 	err := skillsConnector.Get()
 	if err != nil {
 		t.Errorf("Did not expect error when getting skills with filter")
 	}
 
-	correctResponseBody := "[{\"Blogs\":[],\"Id\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"," +
+	correctResponseBody := "[{\"Blogs\":[],\"ID\":\"1234\",\"Name\":\"TestSkillName\",\"SkillType\":\"scripted\"," +
 		"\"Tutorials\":[],\"Webpage\":{\"LinkType\":\"\",\"Name\":\"\",\"SkillID\":\"\",\"URL\":\"\"}}]"
 	if responseRecorder.Body.String() != correctResponseBody {
 		t.Errorf("Failed to properly filter based on skilltype. "+
-			"Expected Response body to be \n\t %s\n But got\n\t %s\\n",
+			"Expected Response body to be \n\t %s\n But got\n\t %s\n",
 			correctResponseBody, responseRecorder.Body.String())
 	}
 }
