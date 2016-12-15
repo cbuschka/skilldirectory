@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 )
 
-// Implments DataAccessor Type
 type FileWriter struct {
 	path string
 }

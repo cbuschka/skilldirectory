@@ -154,8 +154,8 @@ func (c *SkillsController) addSkill() error {
 			ErrorMsg: "Invalid Skill Type: %s" + skill.SkillType,
 		}
 	}
-	skill.Id = uuid.NewV1().String()
-	err = c.session.Save(skill.Id, skill)
+	skill.ID = uuid.NewV1().String()
+	err = c.session.Save(skill.ID, skill)
 	if err != nil {
 		return &errors.SavingError{
 			ErrorMsg: err.Error(),
