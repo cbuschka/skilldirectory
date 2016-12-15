@@ -91,7 +91,7 @@ func TestSkillAddLinkBadLinkType(t *testing.T) {
 	}
 }
 
-func TestInValidSkillType(t *testing.T) {
+func TestInvalidSkillType(t *testing.T) {
 	if IsValidSkillType("InvalidSkillType") {
 		t.Errorf("func IsValidSkillType() failed to detect invalid SkillType.")
 	}
