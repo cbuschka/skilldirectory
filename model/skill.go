@@ -3,12 +3,12 @@ package model
 import "fmt"
 
 type Skill struct {
-	Id        string
-	Name      string
-	SkillType string
-	Webpage   Link
-	Blogs     []Link
-	Tutorials []Link
+	Id        string `json:"id"`
+	Name      string `json:"name"`
+	SkillType string `json:"skilltype"`
+	Webpage   Link   `json:"Webpage"`
+	Blogs     []Link `json:"Blogs"`
+	Tutorials []Link `json:"Tutorials"`
 }
 
 func (s *Skill) AddLink(link Link, linkType string) error {

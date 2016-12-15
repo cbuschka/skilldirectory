@@ -32,6 +32,10 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 }
 
 func (c CassandraConnector) Save(key string, object interface{}) error {
+	b, err := json.Marshal(object)
+	if err != nil {
+		return err
+	}
 	return c.Query("INSERT INTO " + table + " JSON '" + string(b) + "'").Exec()
 }
 
