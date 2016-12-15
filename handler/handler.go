@@ -18,7 +18,7 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTCont
 
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController) {
 	log.Printf("Handling Skills Request: %s", r.Method)
-	cont.Base().Init(w, r, data.NewAccessor(data.NewFileWriter("skills/")))
+	cont.Base().Init(w, r, data.NewAccessor(data.NewCassandraConnector("127.0.0.1", "", "example")))
 
 	var err error
 	switch r.Method {

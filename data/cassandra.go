@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/gocql/gocql"
 )
@@ -10,11 +11,10 @@ type CassandraConnector struct {
 	*gocql.Session
 	path     string
 	port     string
-	table    string
 	keyspace string
 }
 
-func NewCassandraConnector(path, port, table, keyspace string) *CassandraConnector {
+func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
@@ -24,7 +24,6 @@ func NewCassandraConnector(path, port, table, keyspace string) *CassandraConnect
 		path:     path,
 		port:     port,
 		keyspace: keyspace,
-		table:    table,
 	}
 	cassConn.Session = session
 
@@ -32,11 +31,12 @@ func NewCassandraConnector(path, port, table, keyspace string) *CassandraConnect
 }
 
 func (c CassandraConnector) Save(key string, object interface{}) error {
+	log.Print("Saving")
 	b, err := json.Marshal(object)
 	if err != nil {
 		return err
 	}
-	return c.Query("INSERT INTO %s ", c.table, b).Exec()
+	return c.Query("INSERT INTO skills JSON '" + string(b) + "'").Exec()
 }
 
 func (c CassandraConnector) Read(key string, object interface{}) error {
@@ -48,5 +48,10 @@ func (c CassandraConnector) Delete(key string) error {
 }
 
 func (c CassandraConnector) ReadAll(path string, readType ReadAllInterface) ([]interface{}, error) {
+	return nil, nil
+}
+
+func (c CassandraConnector) FilteredReadAll(path string, readType ReadAllInterface,
+	filterFunc func(interface{}) bool) ([]interface{}, error) {
 	return nil, nil
 }
