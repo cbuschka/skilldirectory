@@ -22,14 +22,14 @@ type Route struct {
 // And add a controller to the controller package
 
 var routes = []Route{
-	Route{
+	{
 		"/skills/",
 		handler.MakeHandler(
 			handler.Handler,
 			&controller.SkillsController{
 				BaseController: &controller.BaseController{},
 			})},
-	Route{
+	{
 		"/skills",
 		handler.MakeHandler(
 			handler.Handler,
