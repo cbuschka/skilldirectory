@@ -11,7 +11,7 @@ var badFileName = "testbadread"
 
 func TestWriteFile(t *testing.T) {
 	t.Log("Testing Write File")
-	newSkill := model.NewSkill("01234", "test", "language", model.Link{}, []model.Link{}, []model.Link{})
+	newSkill := model.NewSkill("01234", "test", "language")
 	dataConnector.Save(testFileName, newSkill)
 }
 

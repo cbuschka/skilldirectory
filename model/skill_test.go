@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType, Link{}, []Link{}, []Link{})
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
 	skillTwo := Skill{
 		Id:        "ASkillID",
 		Name:      "ASkillName",

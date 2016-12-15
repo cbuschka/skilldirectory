@@ -20,9 +20,9 @@ func (s *Skill) AddLink(link Link, linkType string) error {
 	case WebpageLinkType:
 		s.Webpage = link
 	case BlogLinkType:
-		append(s.Blogs, link)
+		s.Blogs = append(s.Blogs, link)
 	case TutorialLinkType:
-		append(s.Tutorials, link)
+		s.Tutorials = append(s.Tutorials, link)
 	}
 	return nil
 }
@@ -39,7 +39,9 @@ func NewSkill(id, name, skillType string) Skill {
 		Id:        id,
 		Name:      name,
 		SkillType: skillType,
-	}
+		Webpage:   Link{},
+		Blogs:     []Link{},
+		Tutorials: []Link{}}
 }
 
 func NewSkillWithLinks(id, name, skillType string,
