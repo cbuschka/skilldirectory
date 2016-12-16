@@ -63,8 +63,12 @@ func (s Skill) NewSkillDTO(webpage Link, blogs, tutorials []Link) SkillDTO {
 	}
 }
 
-func (s *SkillDTO) AddLink(link Link, linkType string) error {
+func (s *Skill) AddLink(link Link) error {
+	linkType := link.LinkType
 	if !IsValidLinkType(linkType) {
+		if linkType == "" {
+			return fmt.Errorf("The specified link does not contain a LinkType")
+		}
 		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
 	}
 
