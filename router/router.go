@@ -25,21 +25,21 @@ type Route struct {
 // 		})},
 // And add a controller to the controller package
 
+var skillsController = controller.SkillsController{
+	BaseController: &controller.BaseController{},
+}
+var skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController)
+
+var teamMemberController = controller.TeamMembersController{
+	BaseController: &controller.BaseController{},
+}
+var teamMemberHandlerFunc = handler.MakeHandler(handler.Handler, &teamMemberController)
+
 var routes = []Route{
-	{
-		"/skills/",
-		handler.MakeHandler(
-			handler.Handler,
-			&controller.SkillsController{
-				BaseController: &controller.BaseController{},
-			})},
-	{
-		"/skills",
-		handler.MakeHandler(
-			handler.Handler,
-			&controller.SkillsController{
-				BaseController: &controller.BaseController{},
-			})},
+	{"/skills/", skillsHandlerFunc},
+	{"/skills", skillsHandlerFunc},
+	{"/teammembers/", teamMemberHandlerFunc},
+	{"/teammembers", teamMemberHandlerFunc},
 }
 
 /*

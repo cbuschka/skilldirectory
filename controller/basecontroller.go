@@ -24,7 +24,8 @@ func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request, session d
 // will be returned. If not, then an empty string is returned ("").
 func checkForId(url *url.URL) string {
 	base := path.Base(url.RequestURI())
-	if url.EscapedPath() != "/skills" && url.EscapedPath() != "/skills/" {
+	if url.EscapedPath() != "/skills" && url.EscapedPath() != "/skills/" &&
+		url.EscapedPath() != "/teammembers" && url.EscapedPath() != "/teammembers/" {
 		return base
 	}
 	return ""

@@ -6,6 +6,7 @@ import (
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
+	"strings"
 )
 
 /*
@@ -29,8 +30,9 @@ If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController) {
-	log.Printf("Handling Skills Request: %s", r.Method)
-	cont.Base().Init(w, r, data.NewAccessor(data.NewFileWriter("skills/")))
+	log.Printf("Handling Request: %s", r.Method)
+	rootDir := getRootDir(r.URL.RequestURI())
+	cont.Base().Init(w, r, data.NewAccessor(data.NewFileWriter(rootDir)))
 
 	var err error
 	switch r.Method {
@@ -45,7 +47,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	var statusCode int
 	if err != nil {
 		switch err.(type) {
-		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingSkillIDError,
+		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingIDError,
 			*errors.IncompletePOSTBodyError:
 			statusCode = http.StatusBadRequest
 		case *errors.SavingError:
@@ -55,7 +57,22 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		default:
 			statusCode = http.StatusInternalServerError
 		}
-		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
+		log.Printf("Handler Method: %s, Err: %v", r.Method, err)
 		http.Error(w, err.Error(), statusCode)
 	}
+}
+
+// Returns the directory at the root of the specified path. Ignores starting slashes (regards
+// "/skills/files" as "skills/files". Calling with "skills/files/whatever/1234-5678-9101" would return "skills/".
+func getRootDir(path string) string {
+	if path[0] == '/' {
+		path = path[1:]
+	}
+	var rootDir string
+	if strings.Index(path, "/") != -1 {
+		rootDir = path[:strings.Index(path, "/")+1]
+	} else {
+		rootDir = path + "/"
+	}
+	return rootDir
 }
