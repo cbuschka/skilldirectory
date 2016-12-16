@@ -14,6 +14,10 @@ type CassandraConnector struct {
 	keyspace string
 }
 
+type Options struct {
+	Filters map[string]string
+}
+
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
@@ -52,8 +56,14 @@ func (c CassandraConnector) Delete(table, key string) error {
 	return c.Query("DELETE FROM " + table + " WHERE id = " + key).Exec()
 }
 
-func (c CassandraConnector) ReadAll(table, path string, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
+	return c.FilteredReadAll(table, Options{}, readType)
+}
+
+func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
+	//TODO: Iterate over opts filters to add query params
+	fmt.Println(query)
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
@@ -67,9 +77,4 @@ func (c CassandraConnector) ReadAll(table, path string, readType ReadAllInterfac
 		queryObjectArray = append(queryObjectArray, queryObject)
 	}
 	return queryObjectArray, nil
-}
-
-func (c CassandraConnector) FilteredReadAll(path string, readType ReadAllInterface,
-	filterFunc func(interface{}) bool) ([]interface{}, error) {
-	return nil, nil
 }
