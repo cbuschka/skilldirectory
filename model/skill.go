@@ -14,16 +14,27 @@ Each Skill has a Name, SkillType, and a unique ID:
  * The ID can be any desired string value, but ought to be unique, so that it can
    be used to identify the skill should it be stored in a database with other Skills.
 */
+//
+// type SkillDAO struct {
+// 	ID        string `json:"id"`
+// 	Name      string `json:"name"`
+// 	SkillType string `json:"skilltype"`
+// }
+
 type Skill struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	SkillType string `json:"skilltype"`
-	Webpage   Link   `json:"Webpage"`
-	Blogs     []Link `json:"Blogs"`
-	Tutorials []Link `json:"Tutorials"`
 }
 
-func (s *Skill) AddLink(link Link, linkType string) error {
+type SkillDTO struct {
+	Skill
+	Webpage   Link   `json:"webpage"`
+	Blogs     []Link `json:"blogs"`
+	Tutorials []Link `json:"tutorials"`
+}
+
+func (s *SkillDTO) AddLink(link Link, linkType string) error {
 	if !IsValidLinkType(linkType) {
 		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
 	}
@@ -56,17 +67,12 @@ func NewSkill(id, name, skillType string) Skill {
 		ID:        id,
 		Name:      name,
 		SkillType: skillType,
-		Webpage:   Link{},
-		Blogs:     []Link{},
-		Tutorials: []Link{}}
+	}
 }
 
-func NewSkillWithLinks(id, name, skillType string,
-	webpage Link, blogs, tutorials []Link) Skill {
-	return Skill{
-		ID:        id,
-		Name:      name,
-		SkillType: skillType,
+func (s Skill) NewSkillWithLinks(webpage Link, blogs, tutorials []Link) SkillDTO {
+	return SkillDTO{
+		Skill:     s,
 		Webpage:   webpage,
 		Blogs:     blogs,
 		Tutorials: tutorials,

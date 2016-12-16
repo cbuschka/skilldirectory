@@ -13,10 +13,10 @@ import (
 
 type MockDataAccessor struct{}
 
-func (m MockDataAccessor) Save(s string, i interface{}) error { return nil }
-func (m MockDataAccessor) Read(s string, i interface{}) error { return nil }
-func (m MockDataAccessor) Delete(s string) error              { return nil }
-func (m MockDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
+func (m MockDataAccessor) Save(t, s string, i interface{}) error { return nil }
+func (m MockDataAccessor) Read(t, s string, i interface{}) error { return nil }
+func (m MockDataAccessor) Delete(t, s string) error              { return nil }
+func (m MockDataAccessor) ReadAll(t, s string, r data.ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
 func (d MockDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func(interface{}) bool) ([]interface{}, error) {
@@ -25,10 +25,10 @@ func (d MockDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f f
 
 type MockErrorDataAccessor struct{}
 
-func (e MockErrorDataAccessor) Save(s string, i interface{}) error { return fmt.Errorf("") }
-func (e MockErrorDataAccessor) Read(s string, i interface{}) error { return fmt.Errorf("") }
-func (e MockErrorDataAccessor) Delete(s string) error              { return fmt.Errorf("") }
-func (e MockErrorDataAccessor) ReadAll(s string, r data.ReadAllInterface) ([]interface{}, error) {
+func (e MockErrorDataAccessor) Save(t, s string, i interface{}) error { return fmt.Errorf("") }
+func (e MockErrorDataAccessor) Read(t, s string, i interface{}) error { return fmt.Errorf("") }
+func (e MockErrorDataAccessor) Delete(t, s string) error              { return fmt.Errorf("") }
+func (e MockErrorDataAccessor) ReadAll(t, s string, r data.ReadAllInterface) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
 func (d MockErrorDataAccessor) FilteredReadAll(s string, r data.ReadAllInterface, f func(interface{}) bool) ([]interface{}, error) {
@@ -55,7 +55,7 @@ func NewMockInMemoryDataAccessor() MockInMemoryDataAccessor {
 	return retVal
 }
 
-func (e MockInMemoryDataAccessor) Save(ID string, object interface{}) error {
+func (e MockInMemoryDataAccessor) Save(table, ID string, object interface{}) error {
 	b, err := json.Marshal(object)
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (e MockInMemoryDataAccessor) Save(ID string, object interface{}) error {
 	return nil
 }
 
-func (e MockInMemoryDataAccessor) Read(ID string, object interface{}) error {
+func (e MockInMemoryDataAccessor) Read(table, ID string, object interface{}) error {
 	data := e.dataMap[ID]
 	if len(data) == 0 {
 		return fmt.Errorf("No such object with ID: %s", ID)
@@ -73,7 +73,7 @@ func (e MockInMemoryDataAccessor) Read(ID string, object interface{}) error {
 	return nil
 }
 
-func (e MockInMemoryDataAccessor) Delete(ID string) error {
+func (e MockInMemoryDataAccessor) Delete(table, ID string) error {
 	fmt.Println("Deleting this key from map:", ID)
 	data := e.dataMap[ID]
 	if len(data) == 0 {
@@ -83,7 +83,7 @@ func (e MockInMemoryDataAccessor) Delete(ID string) error {
 	return nil
 }
 
-func (e MockInMemoryDataAccessor) ReadAll(path string, readType data.ReadAllInterface) ([]interface{}, error) {
+func (e MockInMemoryDataAccessor) ReadAll(table, path string, readType data.ReadAllInterface) ([]interface{}, error) {
 	returnObjects := []interface{}{}
 	object := readType.GetType()
 	for _, val := range e.dataMap {

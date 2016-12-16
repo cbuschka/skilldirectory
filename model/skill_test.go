@@ -1,20 +1,18 @@
 package model
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
-	skillTwo := Skill{
-		ID:        "ASkillID",
-		Name:      "ASkillName",
-		SkillType: ScriptedSkillType,
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillWithLinks(Link{}, nil, nil)
+	skillTwo := SkillDTO{
+		Skill: Skill{
+			ID:        "ASkillID",
+			Name:      "ASkillName",
+			SkillType: ScriptedSkillType},
 		Webpage:   Link{},
-		Blogs:     []Link{},
-		Tutorials: []Link{},
+		Blogs:     nil,
+		Tutorials: nil,
 	}
-
 	// Verify that all of skillOne and skillTwo's fields are equal
 	if skillOne.ID != skillTwo.ID ||
 		skillOne.Name != skillTwo.Name ||

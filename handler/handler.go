@@ -55,7 +55,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		default:
 			statusCode = http.StatusInternalServerError
 		}
-		log.Printf("SkillsHandler Method: %s, Err: %v", r.Method, err)
+		log.Printf("SkillsHandler Method: %s, Err: %+v", r.Method, err)
 		http.Error(w, err.Error(), statusCode)
 	}
 }

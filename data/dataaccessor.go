@@ -21,11 +21,11 @@ Implementations of DataAccess should ensure that the objects passed to them are 
 retrieved by providing, the specified key string.
 */
 type DataAccess interface {
-	Save(key string, object interface{}) error
-	Read(key string, object interface{}) error
-	ReadAll(path string, readType ReadAllInterface) ([]interface{}, error)
+	Save(table, key string, object interface{}) error
+	Read(table, key string, object interface{}) error
+	ReadAll(table, path string, readType ReadAllInterface) ([]interface{}, error)
 	FilteredReadAll(path string, readType ReadAllInterface, filterFunc func(interface{}) bool) ([]interface{}, error)
-	Delete(key string) error
+	Delete(table, key string) error
 }
 
 /*

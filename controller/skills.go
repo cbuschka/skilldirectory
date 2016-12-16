@@ -49,7 +49,7 @@ func (c SkillsController) performGet() error {
 }
 
 func (c *SkillsController) getAllSkills() error {
-	skills, err := c.session.ReadAll("skills/", model.Skill{})
+	skills, err := c.session.ReadAll("skills", "skills/", model.Skill{})
 	if err != nil {
 		return err
 	}
@@ -102,15 +102,25 @@ func (c *SkillsController) getSkill(id string) error {
 	return err
 }
 
-func (c *SkillsController) loadSkill(id string) (*model.Skill, error) {
+func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 	skill := model.Skill{}
-	err := c.session.Read(id, &skill)
+	err := c.session.Read("skills", id, &skill)
 	if err != nil {
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + id,
 		}
 	}
-	return &skill, nil
+	skillDTO, _ := c.addLinks(skill)
+	return &skillDTO, nil
+}
+
+func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
+
+	// TODO: Add Webpage
+	// TODO: Add Blogs
+	// TODO: Add
+	skillDTO := skill.NewSkillWithLinks(model.Link{}, nil, nil)
+	return skillDTO, nil
 }
 
 func (c *SkillsController) removeSkill() error {
@@ -122,7 +132,7 @@ func (c *SkillsController) removeSkill() error {
 		}
 	}
 
-	err := c.session.Delete(skillID)
+	err := c.session.Delete("skills", skillID)
 	if err != nil {
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
@@ -136,7 +146,6 @@ func (c *SkillsController) removeSkill() error {
 func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
-
 	err := validatePOSTBody(body)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError type
@@ -149,13 +158,15 @@ func (c *SkillsController) addSkill() error {
 			ErrorMsg: err.Error(),
 		}
 	}
+
 	if !model.IsValidSkillType(skill.SkillType) {
 		return &errors.InvalidSkillTypeError{
 			ErrorMsg: "Invalid Skill Type: %s" + skill.SkillType,
 		}
 	}
+
 	skill.ID = uuid.NewV1().String()
-	err = c.session.Save(skill.ID, skill)
+	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
 		return &errors.SavingError{
 			ErrorMsg: err.Error(),

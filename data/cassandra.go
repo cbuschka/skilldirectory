@@ -14,8 +14,6 @@ type CassandraConnector struct {
 	keyspace string
 }
 
-var table = "skills"
-
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
@@ -32,7 +30,7 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	return &cassConn
 }
 
-func (c CassandraConnector) Save(key string, object interface{}) error {
+func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	b, err := json.Marshal(object)
 	if err != nil {
 		return err
@@ -40,7 +38,7 @@ func (c CassandraConnector) Save(key string, object interface{}) error {
 	return c.Query("INSERT INTO " + table + " JSON '" + string(b) + "'").Exec()
 }
 
-func (c CassandraConnector) Read(key string, object interface{}) error {
+func (c CassandraConnector) Read(table, key string, object interface{}) error {
 	query := "SELECT JSON * FROM " + table + " WHERE id = " + key
 	byteQ := []byte{}
 	err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
@@ -50,11 +48,11 @@ func (c CassandraConnector) Read(key string, object interface{}) error {
 	return json.Unmarshal(byteQ, &object)
 }
 
-func (c CassandraConnector) Delete(key string) error {
+func (c CassandraConnector) Delete(table, key string) error {
 	return nil
 }
 
-func (c CassandraConnector) ReadAll(path string, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) ReadAll(table, path string, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
