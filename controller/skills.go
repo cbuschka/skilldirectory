@@ -153,7 +153,7 @@ func (c *SkillsController) addSkill() error {
 	}
 	if !model.IsValidSkillType(skill.SkillType) {
 		return &errors.InvalidSkillTypeError{
-			ErrorMsg: "Invalid Skill Type: %s" + skill.SkillType,
+			ErrorMsg: fmt.Sprint("Invalid Skill Type: %s", skill.SkillType),
 		}
 	}
 	skill.ID = uuid.NewV1().String()
