@@ -24,41 +24,42 @@ func TestNewSkill(t *testing.T) {
 	}
 }
 
-// func TestNewSkillWithLinks(t *testing.T) {
-// 	skillOne := NewSkillWithLinks("ASkillID", "ASkillName", ScriptedSkillType,
-// 		Link{}, []Link{}, []Link{})
-// 	skillTwo := Skill{
-// 		ID:        "ASkillID",
-// 		Name:      "ASkillName",
-// 		SkillType: ScriptedSkillType,
-// 		Webpage:   Link{},
-// 		Blogs:     []Link{},
-// 		Tutorials: []Link{},
-// 	}
+func TestNewSkillWithLinks(t *testing.T) {
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(Link{}, []Link{}, []Link{})
+	skillTwo := SkillDTO{
+		Skill: Skill{ID: "ASkillID",
+			Name:      "ASkillName",
+			SkillType: ScriptedSkillType,
+		},
+		Webpage:   Link{},
+		Blogs:     []Link{},
+		Tutorials: []Link{},
+	}
 
-// 	// Verify that all of skillOne and skillTwo's fields are equal
-// 	if skillOne.ID != skillTwo.ID ||
-// 		skillOne.Name != skillTwo.Name ||
-// 		skillOne.SkillType != skillTwo.SkillType ||
-// 		skillOne.Webpage != skillTwo.Webpage ||
-// 		!compareLinkSlices(skillOne.Blogs, skillTwo.Blogs) ||
-// 		!compareLinkSlices(skillOne.Tutorials, skillTwo.Tutorials) {
-// 		t.Errorf("model/Skill\".NewSkillWithLinks()\" produced incorrect Skill.")
-// 	}
-// }
+	// Verify that all of skillOne and skillTwo's fields are equal
+	if skillOne.ID != skillTwo.ID ||
+		skillOne.Name != skillTwo.Name ||
+		skillOne.SkillType != skillTwo.SkillType ||
+		skillOne.Webpage != skillTwo.Webpage ||
+		!compareLinkSlices(skillOne.Blogs, skillTwo.Blogs) ||
+		!compareLinkSlices(skillOne.Tutorials, skillTwo.Tutorials) {
+		t.Errorf("model/Skill\".NewSkillWithLinks()\" produced incorrect Skill.")
+	}
+}
 
 func TestSkillAddLink(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(Link{}, nil, nil)
 	skillOne.AddLink(NewLink("Google", "http://www.google.com", skillOne.ID, WebpageLinkType))
 	skillOne.AddLink(NewLink("Google Blog", "https://www.blog.google/", skillOne.ID, BlogLinkType))
 	skillOne.AddLink(NewLink("Google Apps Script", "https://developers.google.com/apps-script/articles",
 		skillOne.ID, TutorialLinkType))
-	skillTwo := Skill{
-		ID:        "ASkillID",
-		Name:      "ASkillName",
-		SkillType: ScriptedSkillType,
-		Webpage:   NewLink("Google", "http://www.google.com", skillOne.ID, WebpageLinkType),
-		Blogs:     []Link{NewLink("Google Blog", "https://www.blog.google/", skillOne.ID, BlogLinkType)},
+	skillTwo := SkillDTO{
+		Skill: Skill{ID: "ASkillID",
+			Name:      "ASkillName",
+			SkillType: ScriptedSkillType,
+		},
+		Webpage: NewLink("Google", "http://www.google.com", skillOne.ID, WebpageLinkType),
+		Blogs:   []Link{NewLink("Google Blog", "https://www.blog.google/", skillOne.ID, BlogLinkType)},
 		Tutorials: []Link{NewLink("Google Apps Script", "https://developers.google.com/apps-script/articles",
 			skillOne.ID, TutorialLinkType)},
 	}
@@ -75,7 +76,7 @@ func TestSkillAddLink(t *testing.T) {
 }
 
 func TestSkillAddLinkBadLinkType(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType)
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(Link{}, nil, nil)
 
 	invalidLinkType := "SillyLinkType"
 	err := skillOne.AddLink(NewLink("Google", "http://www.google.com", skillOne.ID, invalidLinkType))

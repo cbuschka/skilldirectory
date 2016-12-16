@@ -63,7 +63,7 @@ func (s Skill) NewSkillDTO(webpage Link, blogs, tutorials []Link) SkillDTO {
 	}
 }
 
-func (s *Skill) AddLink(link Link) error {
+func (s *SkillDTO) AddLink(link Link) error {
 	linkType := link.LinkType
 	if !IsValidLinkType(linkType) {
 		if linkType == "" {
