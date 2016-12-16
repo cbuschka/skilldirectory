@@ -49,7 +49,7 @@ func (c CassandraConnector) Read(table, key string, object interface{}) error {
 }
 
 func (c CassandraConnector) Delete(table, key string) error {
-	return nil
+	return c.Query("DELETE FROM " + table + " WHERE id = " + key).Exec()
 }
 
 func (c CassandraConnector) ReadAll(table, path string, readType ReadAllInterface) ([]interface{}, error) {

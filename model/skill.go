@@ -34,22 +34,6 @@ type SkillDTO struct {
 	Tutorials []Link `json:"tutorials"`
 }
 
-func (s *SkillDTO) AddLink(link Link, linkType string) error {
-	if !IsValidLinkType(linkType) {
-		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
-	}
-
-	switch linkType {
-	case WebpageLinkType:
-		s.Webpage = link
-	case BlogLinkType:
-		s.Blogs = append(s.Blogs, link)
-	case TutorialLinkType:
-		s.Tutorials = append(s.Tutorials, link)
-	}
-	return nil
-}
-
 const (
 	// e.g. writing Python or Bash scripts
 	ScriptedSkillType = "scripted"
@@ -70,13 +54,29 @@ func NewSkill(id, name, skillType string) Skill {
 	}
 }
 
-func (s Skill) NewSkillWithLinks(webpage Link, blogs, tutorials []Link) SkillDTO {
+func (s Skill) NewSkillDTO(webpage Link, blogs, tutorials []Link) SkillDTO {
 	return SkillDTO{
 		Skill:     s,
 		Webpage:   webpage,
 		Blogs:     blogs,
 		Tutorials: tutorials,
 	}
+}
+
+func (s *SkillDTO) AddLink(link Link, linkType string) error {
+	if !IsValidLinkType(linkType) {
+		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
+	}
+
+	switch linkType {
+	case WebpageLinkType:
+		s.Webpage = link
+	case BlogLinkType:
+		s.Blogs = append(s.Blogs, link)
+	case TutorialLinkType:
+		s.Tutorials = append(s.Tutorials, link)
+	}
+	return nil
 }
 
 // IsValidSkillType() returns true if the passed-in string is a valid SkillType, false if not.

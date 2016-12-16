@@ -3,7 +3,7 @@ package model
 import "testing"
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillWithLinks(Link{}, nil, nil)
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(Link{}, nil, nil)
 	skillTwo := SkillDTO{
 		Skill: Skill{
 			ID:        "ASkillID",

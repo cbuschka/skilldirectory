@@ -119,7 +119,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	// TODO: Add Webpage
 	// TODO: Add Blogs
 	// TODO: Add
-	skillDTO := skill.NewSkillWithLinks(model.Link{}, nil, nil)
+	skillDTO := skill.NewSkillDTO(model.Link{}, nil, nil)
 	return skillDTO, nil
 }
 
@@ -161,7 +161,7 @@ func (c *SkillsController) addSkill() error {
 
 	if !model.IsValidSkillType(skill.SkillType) {
 		return &errors.InvalidSkillTypeError{
-			ErrorMsg: fmt.Sprint("Invalid Skill Type: %s", skill.SkillType),
+			ErrorMsg: fmt.Sprintf("Invalid Skill Type: %s", skill.SkillType),
 		}
 	}
 
