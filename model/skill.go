@@ -23,8 +23,12 @@ type Skill struct {
 	Tutorials []Link
 }
 
-func (s *Skill) AddLink(link Link, linkType string) error {
+func (s *Skill) AddLink(link Link) error {
+	linkType := link.LinkType
 	if !IsValidLinkType(linkType) {
+		if linkType == "" {
+			return fmt.Errorf("The specified link does not contain a LinkType")
+		}
 		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
 	}
 
