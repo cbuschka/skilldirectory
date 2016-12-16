@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"testing"
-	"net/http/httptest"
-	"net/http"
-	"skilldirectory/model"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"skilldirectory/model"
+	"testing"
 )
 
 func TestTMControllerBase(t *testing.T) {

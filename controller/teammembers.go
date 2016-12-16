@@ -98,18 +98,19 @@ func (c *TeamMembersController) addTeamMember() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	err := c.validatePOSTBody(body)
-	if err != nil {
-		return err // Will be of errors.IncompletePOSTBodyError type
-	}
-
 	teamMember := model.TeamMember{}
-	err = json.Unmarshal(body, &teamMember)
+	err := json.Unmarshal(body, &teamMember)
 	if err != nil {
 		return &errors.MarshalingError{
 			ErrorMsg: err.Error(),
 		}
 	}
+
+	err = c.validatePOSTBody(&teamMember)
+	if err != nil {
+		return err // Will be of errors.IncompletePOSTBodyError type
+	}
+
 	teamMember.ID = uuid.NewV1().String()
 	err = c.session.Save(teamMember.ID, teamMember)
 	if err != nil {
@@ -121,12 +122,13 @@ func (c *TeamMembersController) addTeamMember() error {
 	return nil
 }
 
-// validatePOSTBody() accepts a byte array of a JSON request body. Ensures that the
-// passed-in byte[] request contains a key-value pair for "Name" and for "Title"
-// fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
-func (c *TeamMembersController) validatePOSTBody(body []byte) error {
-	teamMember := model.TeamMember{}
-	json.Unmarshal(body, &teamMember)
+/*
+validatePOSTBody() accepts a model.TeamMember pointer. It can be used to verify the
+validity of the state of a TeamMember initialized via unmarshaled JSON. Ensures that the
+passed-in TeamMember contains a key-value pair for "Name" and for "Title"
+fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
+*/
+func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
 		return &errors.IncompletePOSTBodyError{
 			ErrorMsg: "POST Request for new Team Member must contain values for " +
