@@ -30,7 +30,7 @@ log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController) {
 	log.Printf("Handling Skills Request: %s", r.Method)
-	cont.Base().Init(w, r, data.NewAccessor(data.NewCassandraConnector("127.0.0.1", "", "example")))
+	cont.Base().Init(w, r, data.NewAccessor(data.NewCassandraConnector("127.0.0.1", "", "skills2")))
 
 	var err error
 	switch r.Method {

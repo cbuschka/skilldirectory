@@ -1,0 +1,6 @@
+# Cassandra
+cassandra:
+  build: .
+  container_name: cassandra_container
+  expose:
+    - "9042"
