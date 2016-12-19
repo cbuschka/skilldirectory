@@ -36,7 +36,7 @@ func (c TeamMembersController) Put() error {
 }
 
 func (c *TeamMembersController) performGet() error {
-	path := checkForId(c.r.URL)
+	path := checkForID(c.r.URL)
 	if path == "" {
 		return c.getAllTeamMembers()
 	}
@@ -76,7 +76,7 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 
 func (c *TeamMembersController) removeTeamMember() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	teamMemberID := checkForId(c.r.URL)
+	teamMemberID := checkForID(c.r.URL)
 	if teamMemberID == "" {
 		return &errors.MissingIDError{
 			ErrorMsg: "No Team Member ID Specified in Request URL: " + c.r.URL.String(),
