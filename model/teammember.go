@@ -6,9 +6,9 @@ TeamMembers must have a Name and Title, and a unique ID. TeamMembers may optiona
 a set of Skills (SkillSet), as well as a set of Skills they wish to obtain (WishList)
 */
 type TeamMember struct {
-	ID    string
-	Name  string
-	Title string
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Title string `json:"title"`
 }
 
 /*

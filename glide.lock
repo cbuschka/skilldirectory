@@ -1,6 +1,22 @@
-hash: 8536b238fa8cc3deefa41a43575598f101cab8cf15fb8ed5d7f4c1f4ff84ab1d
-updated: 2016-12-05T15:48:06.130797114-06:00
+hash: 1c0c901ae7bb54ec03335ad29a88a4430b321c90f275fb7d3af12e3a928ddfdd
+updated: 2016-12-15T11:26:58.043832787-06:00
 imports:
+- name: github.com/gocql/gocql
+  version: db6f35eb602dd0770a7162e0e23e5cfb1cc05b91
+  subpackages:
+  - internal/lru
+  - internal/murmur
+  - internal/streams
+- name: github.com/golang/snappy
+  version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
+- name: github.com/hailocab/go-hostpool
+  version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
 - name: github.com/satori/go.uuid
-  version: b061729afc07e77a8aa4fad0a2fd840958f1942a
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: golang.org/x/net
+  version: 468bac874d80e6ca892ecbb9bf09c72519b5b751
+  subpackages:
+  - context
+- name: gopkg.in/inf.v0
+  version: 3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4
 testImports: []

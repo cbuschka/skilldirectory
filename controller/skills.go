@@ -43,53 +43,18 @@ func (c SkillsController) performGet() error {
 		filter := c.r.URL.Query().Get("skilltype")
 		if filter == "" {
 			return c.getAllSkills()
-		} else {
-			return c.getAllSkillsFiltered(filter)
 		}
+
 	}
 	return c.getSkill(path)
 }
 
 func (c *SkillsController) getAllSkills() error {
-	skills, err := c.session.ReadAll("skills/", model.Skill{})
+	skills, err := c.session.ReadAll("skills", model.Skill{})
 	if err != nil {
 		return err
 	}
 	b, err := json.Marshal(skills)
-	c.w.Write(b)
-	return err
-}
-
-func (c *SkillsController) getAllSkillsFiltered(filter string) error {
-	// Only try to apply the specified filter if it is either a valid Skill Type, or else
-	// is a wildcard filter ("").
-	if !model.IsValidSkillType(filter) && filter != "" {
-		return fmt.Errorf("The skilltype filter, \"%s\", is not valid", filter)
-	}
-
-	// This function is used as the filter for the call to skillsConnectory.FilteredReadAll() below.
-	// It compares the SkillType field of the skills read from the database/repository to the passed-in
-	// filter string. Only those skills whose SkillType matches the filter string pass through.
-	filterer := func(object interface{}) bool {
-		// Each object that is passed in is of type map[string]interface{}, so must cast to that.
-		// Then, objmap is a mapping of Skill type fields to their values.
-		// For example, fmt.Println(object), might display:
-		// 	map[Id:9dbdbca3-be38-11e6-bdb2-6c4008bcfa84 Name:Java SkillType:database]
-		objmap := object.(map[string]interface{})
-		if objmap["SkillType"] == filter {
-			return true
-		}
-		return false
-	}
-
-	// Get a slice containing all skills from the skills database/repository that pass through the filter function.
-	filteredSkills, err := c.session.FilteredReadAll("skills/", model.Skill{}, filterer)
-	if err != nil {
-		return err
-	}
-
-	// Encode the slice into JSON format and send it in a response via the passed-in ResponseWriter
-	b, err := json.Marshal(filteredSkills)
 	c.w.Write(b)
 	return err
 }
@@ -104,15 +69,25 @@ func (c *SkillsController) getSkill(id string) error {
 	return err
 }
 
-func (c *SkillsController) loadSkill(id string) (*model.Skill, error) {
+func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 	skill := model.Skill{}
-	err := c.session.Read(id, &skill)
+	err := c.session.Read("skills", id, &skill)
 	if err != nil {
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + id,
 		}
 	}
-	return &skill, nil
+	skillDTO, _ := c.addLinks(skill)
+	return &skillDTO, nil
+}
+
+func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
+
+	// TODO: Add Webpage
+	// TODO: Add Blogs
+	// TODO: Add
+	skillDTO := skill.NewSkillDTO(model.Link{}, nil, nil)
+	return skillDTO, nil
 }
 
 func (c *SkillsController) removeSkill() error {
@@ -124,7 +99,7 @@ func (c *SkillsController) removeSkill() error {
 		}
 	}
 
-	err := c.session.Delete(skillID)
+	err := c.session.Delete("skills", skillID)
 	if err != nil {
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
@@ -154,11 +129,12 @@ func (c *SkillsController) addSkill() error {
 
 	if !model.IsValidSkillType(skill.SkillType) {
 		return &errors.InvalidSkillTypeError{
-			ErrorMsg: fmt.Sprint("Invalid Skill Type: %s", skill.SkillType),
+			ErrorMsg: fmt.Sprintf("Invalid Skill Type: %s", skill.SkillType),
 		}
 	}
+
 	skill.ID = uuid.NewV1().String()
-	err = c.session.Save(skill.ID, skill)
+	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
 		return &errors.SavingError{
 			ErrorMsg: err.Error(),

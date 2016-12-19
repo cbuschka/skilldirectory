@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 	"skilldirectory/controller"
+	"skilldirectory/data"
 	"skilldirectory/handler"
 )
 
@@ -25,15 +26,17 @@ type Route struct {
 // 		})},
 // And add a controller to the controller package
 
+var session = data.NewCassandraConnector("0.0.0.0", "", "skills2")
+
 var skillsController = controller.SkillsController{
 	BaseController: &controller.BaseController{},
 }
-var skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController)
+var skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController, session)
 
 var teamMemberController = controller.TeamMembersController{
 	BaseController: &controller.BaseController{},
 }
-var teamMemberHandlerFunc = handler.MakeHandler(handler.Handler, &teamMemberController)
+var teamMemberHandlerFunc = handler.MakeHandler(handler.Handler, &teamMemberController, session)
 
 var routes = []Route{
 	{"/skills/", skillsHandlerFunc},

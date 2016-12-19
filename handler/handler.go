@@ -12,9 +12,9 @@ import (
 /*
 MakeHandler() returns a new function of the adapter type http.HandlerFunc using the passed-in function, fn.
 */
-func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController), cont controller.RESTController) http.HandlerFunc {
+func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess), cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fn(w, r, cont)
+		fn(w, r, cont, session)
 	}
 }
 
@@ -29,10 +29,10 @@ responses to the passed-in HTTP request.
 If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
-func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController) {
+func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
 	log.Printf("Handling Request: %s", r.Method)
-	rootDir := getRootDir(r.URL.RequestURI())
-	cont.Base().Init(w, r, data.NewAccessor(data.NewFileWriter(rootDir)))
+	// TODO: Move this line ```rootDir := getRootDir(r.URL.RequestURI())```
+	cont.Base().Init(w, r, session)
 
 	var err error
 	switch r.Method {

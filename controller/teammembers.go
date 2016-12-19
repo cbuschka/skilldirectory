@@ -44,7 +44,7 @@ func (c *TeamMembersController) performGet() error {
 }
 
 func (c *TeamMembersController) getAllTeamMembers() error {
-	teamMembers, err := c.session.ReadAll("teammembers/", model.TeamMember{})
+	teamMembers, err := c.session.ReadAll("teammembers", model.TeamMember{})
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (c *TeamMembersController) getTeamMember(id string) error {
 
 func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read(id, &teamMember)
+	err := c.session.Read("teammembers", id, &teamMember)
 	if err != nil {
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No Team Member Exists with Specified ID: " + id,
@@ -83,7 +83,7 @@ func (c *TeamMembersController) removeTeamMember() error {
 		}
 	}
 
-	err := c.session.Delete(teamMemberID)
+	err := c.session.Delete("teammembers", teamMemberID)
 	if err != nil {
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Team Member Exists with Specified ID: " + teamMemberID,
@@ -112,7 +112,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	}
 
 	teamMember.ID = uuid.NewV1().String()
-	err = c.session.Save(teamMember.ID, teamMember)
+	err = c.session.Save("teammembers", teamMember.ID, teamMember)
 	if err != nil {
 		return &errors.SavingError{
 			ErrorMsg: err.Error(),
