@@ -4,3 +4,5 @@ cassandra:
   container_name: cassandra_container
   expose:
     - "9042"
+  ports:
+    - "9042:9042"

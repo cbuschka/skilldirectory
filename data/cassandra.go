@@ -22,15 +22,16 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
-	session, _ := cluster.CreateSession()
-
+	session, err := cluster.CreateSession()
+	if err != nil {
+		panic(err)
+	}
 	cassConn := CassandraConnector{
 		path:     path,
 		port:     port,
 		keyspace: keyspace,
 	}
 	cassConn.Session = session
-
 	return &cassConn
 }
 

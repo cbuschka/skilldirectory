@@ -15,9 +15,10 @@ else
   docker-compose build
   docker-compose up -d
   sleep 20
-  docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
-
+  
 fi
+docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
+
 
 echo "Running Skill Directory..."
 ./skilldirectory
