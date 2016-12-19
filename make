@@ -3,7 +3,7 @@ go test $(glide novendor)|| { echo "Tests failed" ; exit 1; }
 
 export CASSANDRA_URL='0.0.0.0'
 export CASSANDRA_PORT=''
-export CASSANDRA_KEYSPACE='skills2'
+export CASSANDRA_KEYSPACE='skill_directory_keyspace'
 
 # echo $CASSANDRA_URL
 # echo $CASSANDRA_KEYSPACE
