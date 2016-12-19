@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/gocql/gocql"
 )
@@ -19,6 +20,7 @@ type Options struct {
 }
 
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
+	log.Printf("New Connector Path: %s, Port: %s, Keyspace: %s", path, port, keyspace)
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
@@ -64,7 +66,7 @@ func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]
 func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	//TODO: Iterate over opts filters to add query params
-	fmt.Println(query)
+	log.Printf("Running Query: %s", query)
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
