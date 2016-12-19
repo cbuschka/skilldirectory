@@ -20,9 +20,11 @@ type SkillsController struct {
 func (c SkillsController) Base() *BaseController {
 	return c.BaseController
 }
+
 func (c SkillsController) Get() error {
 	return c.performGet()
 }
+
 func (c SkillsController) Post() error {
 	return c.addSkill()
 }
@@ -32,11 +34,11 @@ func (c SkillsController) Delete() error {
 }
 
 func (c SkillsController) Put() error {
-	return nil
+	return fmt.Errorf("PUT requests not currently supported.")
 }
 
 func (c SkillsController) performGet() error {
-	path := checkForId(c.r.URL)
+	path := checkForID(c.r.URL)
 	if path == "" {
 		filter := c.r.URL.Query().Get("skilltype")
 		if filter == "" {
@@ -90,9 +92,9 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	skillID := checkForId(c.r.URL)
+	skillID := checkForID(c.r.URL)
 	if skillID == "" {
-		return &errors.MissingSkillIDError{
+		return &errors.MissingIDError{
 			ErrorMsg: "No Skill ID Specified in Request URL: " + c.r.URL.String(),
 		}
 	}
@@ -111,17 +113,18 @@ func (c *SkillsController) removeSkill() error {
 func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
-	err := validatePOSTBody(body)
-	if err != nil {
-		return err // Will be of errors.IncompletePOSTBodyError type
-	}
 
 	skill := model.Skill{}
-	err = json.Unmarshal(body, &skill)
+	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		return &errors.MarshalingError{
 			ErrorMsg: err.Error(),
 		}
+	}
+
+	err = c.validatePOSTBody(&skill)
+	if err != nil {
+		return err // Will be of errors.IncompletePOSTBodyError type
 	}
 
 	if !model.IsValidSkillType(skill.SkillType) {
@@ -141,13 +144,14 @@ func (c *SkillsController) addSkill() error {
 	return nil
 }
 
-// validatePOSTBody() accepts a byte array of a JSON request body. Ensures that the
-// passed-in byte[] request contains a key-value pair for "Name" and for "Skilltype"
-// fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
-func validatePOSTBody(body []byte) error {
-	object := model.Skill{}
-	json.Unmarshal(body, &object)
-	if object.Name == "" || object.SkillType == "" {
+/*
+validatePOSTBody() accepts a model.Skill pointer. It can be used to verify the
+validity of the state of a Skill initialized via unmarshaled JSON. Ensures that the
+passed-in Skill contains a key-value pair for "Name" and for "SkillType"
+fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
+*/
+func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
+	if skill.Name == "" || skill.SkillType == "" {
 		return &errors.IncompletePOSTBodyError{
 			ErrorMsg: "POST Request for new Skill must contain values for " +
 				"\"Name\" and \"SkillType\" fields.",

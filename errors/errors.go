@@ -1,11 +1,11 @@
 package errors
 
 // Implements error interface
-type MissingSkillIDError struct {
+type MissingIDError struct {
 	ErrorMsg string
 }
 
-func (e *MissingSkillIDError) Error() string {
+func (e *MissingIDError) Error() string {
 	return e.ErrorMsg
 }
 

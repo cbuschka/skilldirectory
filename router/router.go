@@ -34,23 +34,21 @@ var (
 	session  = data.NewCassandraConnector(url, port, keyspace)
 )
 
+var skillsController = controller.SkillsController{
+	BaseController: &controller.BaseController{},
+}
+var skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController, session)
+
+var teamMemberController = controller.TeamMembersController{
+	BaseController: &controller.BaseController{},
+}
+var teamMemberHandlerFunc = handler.MakeHandler(handler.Handler, &teamMemberController, session)
+
 var routes = []Route{
-	{
-		"/skills/",
-		handler.MakeHandler(
-			handler.Handler,
-			&controller.SkillsController{
-				BaseController: &controller.BaseController{},
-			},
-			session)},
-	{
-		"/skills",
-		handler.MakeHandler(
-			handler.Handler,
-			&controller.SkillsController{
-				BaseController: &controller.BaseController{},
-			},
-			session)},
+	{"/skills/", skillsHandlerFunc},
+	{"/skills", skillsHandlerFunc},
+	{"/teammembers/", teamMemberHandlerFunc},
+	{"/teammembers", teamMemberHandlerFunc},
 }
 
 /*

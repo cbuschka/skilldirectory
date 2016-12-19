@@ -14,12 +14,6 @@ Each Skill has a Name, SkillType, and a unique ID:
  * The ID can be any desired string value, but ought to be unique, so that it can
    be used to identify the skill should it be stored in a database with other Skills.
 */
-//
-// type SkillDAO struct {
-// 	ID        string `json:"id"`
-// 	Name      string `json:"name"`
-// 	SkillType string `json:"skilltype"`
-// }
 
 type Skill struct {
 	ID        string `json:"id"`
@@ -96,7 +90,7 @@ func IsValidSkillType(skillType string) bool {
 	return false
 }
 
-// GetType() returns an interface{} with an underlying concrete type of Skill{}.
+// GetType returns an interface{} with an underlying concrete type of Skill{}.
 func (s Skill) GetType() interface{} {
 	return Skill{}
 }
