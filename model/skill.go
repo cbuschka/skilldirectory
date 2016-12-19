@@ -14,33 +14,24 @@ Each Skill has a Name, SkillType, and a unique ID:
  * The ID can be any desired string value, but ought to be unique, so that it can
    be used to identify the skill should it be stored in a database with other Skills.
 */
+//
+// type SkillDAO struct {
+// 	ID        string `json:"id"`
+// 	Name      string `json:"name"`
+// 	SkillType string `json:"skilltype"`
+// }
+
 type Skill struct {
-	ID        string
-	Name      string
-	SkillType string
-	Webpage   Link
-	Blogs     []Link
-	Tutorials []Link
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	SkillType string `json:"skilltype"`
 }
 
-func (s *Skill) AddLink(link Link) error {
-	linkType := link.LinkType
-	if !IsValidLinkType(linkType) {
-		if linkType == "" {
-			return fmt.Errorf("The specified link does not contain a LinkType")
-		}
-		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
-	}
-
-	switch linkType {
-	case WebpageLinkType:
-		s.Webpage = link
-	case BlogLinkType:
-		s.Blogs = append(s.Blogs, link)
-	case TutorialLinkType:
-		s.Tutorials = append(s.Tutorials, link)
-	}
-	return nil
+type SkillDTO struct {
+	Skill
+	Webpage   Link   `json:"webpage"`
+	Blogs     []Link `json:"blogs"`
+	Tutorials []Link `json:"tutorials"`
 }
 
 const (
@@ -60,21 +51,36 @@ func NewSkill(id, name, skillType string) Skill {
 		ID:        id,
 		Name:      name,
 		SkillType: skillType,
-		Webpage:   Link{},
-		Blogs:     []Link{},
-		Tutorials: []Link{}}
+	}
 }
 
-func NewSkillWithLinks(id, name, skillType string,
-	webpage Link, blogs, tutorials []Link) Skill {
-	return Skill{
-		ID:        id,
-		Name:      name,
-		SkillType: skillType,
+func (s Skill) NewSkillDTO(webpage Link, blogs, tutorials []Link) SkillDTO {
+	return SkillDTO{
+		Skill:     s,
 		Webpage:   webpage,
 		Blogs:     blogs,
 		Tutorials: tutorials,
 	}
+}
+
+func (s *SkillDTO) AddLink(link Link) error {
+	linkType := link.LinkType
+	if !IsValidLinkType(linkType) {
+		if linkType == "" {
+			return fmt.Errorf("The specified link does not contain a LinkType")
+		}
+		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
+	}
+
+	switch linkType {
+	case WebpageLinkType:
+		s.Webpage = link
+	case BlogLinkType:
+		s.Blogs = append(s.Blogs, link)
+	case TutorialLinkType:
+		s.Tutorials = append(s.Tutorials, link)
+	}
+	return nil
 }
 
 // IsValidSkillType() returns true if the passed-in string is a valid SkillType, false if not.
