@@ -23,4 +23,3 @@ CREATE TABLE IF NOT EXISTS skills2.teammembers (
 
 CREATE INDEX IF NOT EXISTS ON skills2.skills ( skilltype );
 CREATE INDEX IF NOT EXISTS ON skills2.links ( skill_id );
-CREATE INDEX IF NOT EXISTS ON skills2.teammembers ( title );
