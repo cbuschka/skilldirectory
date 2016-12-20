@@ -34,22 +34,31 @@ var (
 	session  = data.NewCassandraConnector(url, port, keyspace)
 )
 
-var skillsController = controller.SkillsController{
-	BaseController: &controller.BaseController{},
-}
-var skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController, session)
+var (
+	skillsController = controller.SkillsController{
+		BaseController: &controller.BaseController{},
+	}
+	skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController, session)
 
-var teamMemberController = controller.TeamMembersController{
-	BaseController: &controller.BaseController{},
-}
-var teamMemberHandlerFunc = handler.MakeHandler(handler.Handler, &teamMemberController, session)
+	teamMembersController = controller.TeamMembersController{
+		BaseController: &controller.BaseController{},
+	}
+	teamMembersHandlerFunc = handler.MakeHandler(handler.Handler, &teamMembersController, session)
 
-var routes = []Route{
-	{"/skills/", skillsHandlerFunc},
-	{"/skills", skillsHandlerFunc},
-	{"/teammembers/", teamMemberHandlerFunc},
-	{"/teammembers", teamMemberHandlerFunc},
-}
+	tmSkillsController = controller.TMSkillsController{
+		BaseController: &controller.BaseController{},
+	}
+	tmSkillsHandlerFunc = handler.MakeHandler(handler.Handler, &tmSkillsController, session)
+
+	routes = []Route{
+		{"/skills/",      skillsHandlerFunc},
+		{"/skills",       skillsHandlerFunc},
+		{"/teammembers/", teamMembersHandlerFunc},
+		{"/teammembers",  teamMembersHandlerFunc},
+		{"/tmskills/",    tmSkillsHandlerFunc},
+		{"/tmskills",     tmSkillsController},
+	}
+)
 
 /*
 StartRouter() instantiates a new http.ServeMux and registers with it each endpoint that is currently being handled
