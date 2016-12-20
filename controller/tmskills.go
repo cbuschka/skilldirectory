@@ -131,11 +131,16 @@ validity of the state of a TMSkill initialized via unmarshaled JSON. Ensures tha
 	* the value specified for the "Proficiency" field is between 0 and 5. Returns nil error
 	if it is, InvalidPOSTBodyError if not.
 */
-func (c *TMSkillsController) validatePOSTBody(teamMember *model.TeamMember) error {
-	if teamMember.Name == "" || teamMember.Title == "" {
+func (c *TMSkillsController) validatePOSTBody(tmSkill *model.TMSkill) error {
+	if tmSkill.SkillID == "" || tmSkill.TeamMemberID == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "POST Request for new Team Member must contain values for " +
-				"\"Name\" and \"Title\" fields.",
+			ErrorMsg: "POST Request for new TMSkill must contain values for " +
+				"\"SkillID\" and \"TeamMemberID\" fields.",
+		}
+	}
+	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
+		return &errors.InvalidPOSTBodyError{
+			ErrorMsg: "POST Request for new TMSkill must contain \"Proficiency\" between 0 and 5.",
 		}
 	}
 	return nil
