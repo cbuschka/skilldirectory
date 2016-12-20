@@ -53,3 +53,12 @@ type IncompletePOSTBodyError struct {
 func (e *IncompletePOSTBodyError) Error() string {
 	return e.ErrorMsg
 }
+
+// Implements error interface
+type InvalidPOSTBodyError struct {
+	ErrorMsg string
+}
+
+func (e *InvalidPOSTBodyError) Error() string {
+	return e.ErrorMsg
+}

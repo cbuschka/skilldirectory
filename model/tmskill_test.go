@@ -12,7 +12,6 @@ func TestNewTMSkillDefaults(t *testing.T) {
 		SkillID:      "SkillID",
 		TeamMemberID: "TeamMemberID",
 		WishList:     false,
-		SkillSet:     false,
 		Proficiency:  0,
 	}
 	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
@@ -28,7 +27,6 @@ func TestNewTMSkillSetDefaults(t *testing.T) {
 		SkillID:      "SkillID",
 		TeamMemberID: "TeamMemberID",
 		WishList:     true,
-		SkillSet:     true,
 		Proficiency:  3,
 	}
 	// Verify that all of tmSkillOne and tmSkillTwo's fields are equal.

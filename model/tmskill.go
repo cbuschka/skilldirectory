@@ -2,10 +2,9 @@ package model
 
 type TMSkill struct {
 	ID           string `json:"ID"`
-	SkillID      string `json:"skill_id`
-	TeamMemberID string `json:"team_member_id`
+	SkillID      string `json:"skill_id"`
+	TeamMemberID string `json:"team_member_id"`
 	WishList     bool   `json:"wish_list"`
-	SkillSet     bool   `json:"skill_set"`
 	Proficiency  int    `json:"proficiency"`
 }
 
