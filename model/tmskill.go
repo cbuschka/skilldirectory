@@ -10,8 +10,7 @@ type TMSkill struct {
 }
 
 /*
-NewTMSkillDefaults returns a new instance of TMSkill, with defaults for WishList (false), 
-SkillSet (false), and Proficiency (0).
+NewTMSkillDefaults returns a new instance of TMSkill, with defaults for WishList (false) and Proficiency (0).
  */
 func NewTMSkillDefaults(id, skillID, teamMemberID string) TMSkill {
 	return TMSkill{
@@ -19,7 +18,6 @@ func NewTMSkillDefaults(id, skillID, teamMemberID string) TMSkill {
 		SkillID:      skillID,
 		TeamMemberID: teamMemberID,
 		WishList:     false,
-		SkillSet:     false,
 		Proficiency:  0,
 	}
 }
@@ -29,7 +27,7 @@ NewTMSkillSetDefaults returns a new instance of TMSkill, with all fields specifi
 The proficiency field must be in the range of 0-5. If a value is passed in outside of this range, it
 is clipped to 0 if it's below 0, or 5 if it's above 5.
  */
-func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList, skillSet bool, proficiency int) TMSkill {
+func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool, proficiency int) TMSkill {
 	if proficiency > 5 {
 		proficiency = 5
 	}
@@ -41,7 +39,6 @@ func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList, skillSet 
 		SkillID:      skillID,
 		TeamMemberID: teamMemberID,
 		WishList:     wishList,
-		SkillSet:     skillSet,
 		Proficiency:  proficiency,
 	}
 }
