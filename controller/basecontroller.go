@@ -33,7 +33,7 @@ func checkForID(url *url.URL) string {
 // isValidEndpoint() returns true if endpoint is an endpoint being
 // served by the SkillDirectory server AND doesn't contain an ID.
 func isValidEndpoint(endpoint string) bool {
-	endpoints := []string {
+	endpoints := []string{
 		"/skills", "/skills/",
 		"/teammembers", "/teammembers/",
 	}

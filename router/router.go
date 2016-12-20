@@ -51,12 +51,12 @@ var (
 	tmSkillsHandlerFunc = handler.MakeHandler(handler.Handler, &tmSkillsController, session)
 
 	routes = []Route{
-		{"/skills/",      skillsHandlerFunc},
-		{"/skills",       skillsHandlerFunc},
+		{"/skills/", skillsHandlerFunc},
+		{"/skills", skillsHandlerFunc},
 		{"/teammembers/", teamMembersHandlerFunc},
-		{"/teammembers",  teamMembersHandlerFunc},
-		{"/tmskills/",    tmSkillsHandlerFunc},
-		{"/tmskills",     tmSkillsController},
+		{"/teammembers", teamMembersHandlerFunc},
+		{"/tmskills/", tmSkillsHandlerFunc},
+		{"/tmskills", tmSkillsHandlerFunc},
 	}
 )
 

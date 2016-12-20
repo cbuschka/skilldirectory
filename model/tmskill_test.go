@@ -1,9 +1,6 @@
 package model
 
-import (
-	"testing"
-	"reflect"
-)
+import "testing"
 
 func TestNewTMSkillDefaults(t *testing.T) {
 	tmSkillOne := NewTMSkillDefaults("TMSkillID", "SkillID", "TeamMemberID")
@@ -15,13 +12,13 @@ func TestNewTMSkillDefaults(t *testing.T) {
 		Proficiency:  0,
 	}
 	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if !reflect.DeepEqual(tmSkillOne, tmSkillTwo) {
+	if tmSkillOne == tmSkillTwo {
 		t.Errorf("constructor newTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
 
 func TestNewTMSkillSetDefaults(t *testing.T) {
-	tmSkillOne := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, true, 3)
+	tmSkillOne := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 3)
 	tmSkillTwo := TMSkill{
 		ID:           "TMSkillId",
 		SkillID:      "SkillID",
@@ -30,18 +27,18 @@ func TestNewTMSkillSetDefaults(t *testing.T) {
 		Proficiency:  3,
 	}
 	// Verify that all of tmSkillOne and tmSkillTwo's fields are equal.
-	if !reflect.DeepEqual(tmSkillOne, tmSkillTwo) {
+	if tmSkillOne == tmSkillTwo {
 		t.Errorf("constructor newTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
 	// Verify that the constructor clips proficiencies > 5 to 5
-	tmSkillOne = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, true, 9000)
+	tmSkillOne = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 9000)
 	if tmSkillOne.Proficiency != 5 {
 		t.Error("constructor newTMSkillSetDefaults() failed to cap proficiency > 5")
 	}
 
 	// Verify that the constructor clips proficiencies < 0 to 0
-	tmSkillOne = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, true, -9000)
+	tmSkillOne = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, -9000)
 	if tmSkillOne.Proficiency != 0 {
 		t.Error("constructor newTMSkillSetDefaults() failed to cap proficiency < 0")
 	}

@@ -18,7 +18,7 @@ Each Skill has a Name, SkillType, and a unique ID:
 type Skill struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	SkillType string `json:"skilltype"`
+	SkillType string `json:"skill_type"`
 }
 
 type SkillDTO struct {

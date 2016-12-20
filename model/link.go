@@ -1,10 +1,10 @@
 package model
 
 type Link struct {
-	Name     string
-	URL      string
-	SkillID  string
-	LinkType string
+	Name     string `json:"name"`
+	URL      string `json:"url"`
+	SkillID  string `json:"skill_id"`
+	LinkType string `json:"link_type"`
 }
 
 const (

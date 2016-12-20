@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"fmt"
-	"skilldirectory/model"
 	"encoding/json"
-	"skilldirectory/errors"
-	"log"
+	"fmt"
 	"io/ioutil"
+	"log"
+	"skilldirectory/errors"
+	"skilldirectory/model"
+
 	"github.com/satori/go.uuid"
 )
 
@@ -140,7 +141,8 @@ func (c *TMSkillsController) validatePOSTBody(tmSkill *model.TMSkill) error {
 	}
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
 		return &errors.InvalidPOSTBodyError{
-			ErrorMsg: "POST Request for new TMSkill must contain \"Proficiency\" between 0 and 5.",
+			ErrorMsg: "The JSON in a POST Request for new TMSkill must contain \"proficiency\" " +
+				"field with a value between 0 and 5.",
 		}
 	}
 	return nil
