@@ -6,13 +6,13 @@ import (
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
-	"strings"
 )
 
 /*
 MakeHandler() returns a new function of the adapter type http.HandlerFunc using the passed-in function, fn.
 */
-func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess), cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
+func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
+	cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn(w, r, cont, session)
 	}
@@ -31,7 +31,6 @@ log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
 	log.Printf("Handling Request: %s", r.Method)
-	// TODO: Move this line ```rootDir := getRootDir(r.URL.RequestURI())```
 	cont.Base().Init(w, r, session)
 
 	var err error
