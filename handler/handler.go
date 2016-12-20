@@ -31,7 +31,6 @@ log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
 	log.Printf("Handling Request: %s", r.Method)
-	// TODO: Move this line ```rootDir := getRootDir(r.URL.RequestURI())```
 	cont.Base().Init(w, r, session)
 
 	var err error
@@ -48,7 +47,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	if err != nil {
 		switch err.(type) {
 		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingIDError,
-			*errors.IncompletePOSTBodyError:
+			*errors.IncompletePOSTBodyError, *errors.InvalidPOSTBodyError:
 			statusCode = http.StatusBadRequest
 		case *errors.SavingError:
 			statusCode = http.StatusInternalServerError
