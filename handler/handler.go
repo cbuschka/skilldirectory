@@ -12,7 +12,8 @@ import (
 /*
 MakeHandler() returns a new function of the adapter type http.HandlerFunc using the passed-in function, fn.
 */
-func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess), cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
+func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
+cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fn(w, r, cont, session)
 	}
@@ -31,7 +32,6 @@ log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
 	log.Printf("Handling Request: %s", r.Method)
-	// TODO: Move this line ```rootDir := getRootDir(r.URL.RequestURI())```
 	cont.Base().Init(w, r, session)
 
 	var err error
@@ -60,19 +60,4 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		log.Printf("Handler Method: %s, Err: %v", r.Method, err)
 		http.Error(w, err.Error(), statusCode)
 	}
-}
-
-// Returns the directory at the root of the specified path. Ignores starting slashes (regards
-// "/skills/files" as "skills/files". Calling with "skills/files/whatever/1234-5678-9101" would return "skills/".
-func getRootDir(path string) string {
-	if path[0] == '/' {
-		path = path[1:]
-	}
-	var rootDir string
-	if strings.Index(path, "/") != -1 {
-		rootDir = path[:strings.Index(path, "/")+1]
-	} else {
-		rootDir = path + "/"
-	}
-	return rootDir
 }
