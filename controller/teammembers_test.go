@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestTMControllerBase(t *testing.T) {
+func TestTeamMembersControllerBase(t *testing.T) {
 	base := BaseController{}
 	tc := TeamMembersController{BaseController: &base}
 	if base != *tc.Base() {
@@ -17,7 +17,7 @@ func TestTMControllerBase(t *testing.T) {
 	}
 }
 
-func TestGetAllTMs(t *testing.T) {
+func TestGetAllTeamMembers(t *testing.T) {
 	base := BaseController{}
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers", nil), &MockDataAccessor{})
 	tc := TeamMembersController{BaseController: &base}
@@ -27,7 +27,7 @@ func TestGetAllTMs(t *testing.T) {
 	}
 }
 
-func TestGetAllTMsError(t *testing.T) {
+func TestGetAllTeamMembersError(t *testing.T) {
 	base := BaseController{}
 	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers", nil), &MockErrorDataAccessor{})
 	tc := TeamMembersController{BaseController: &base}

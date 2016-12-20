@@ -36,6 +36,7 @@ func isValidEndpoint(endpoint string) bool {
 	endpoints := []string{
 		"/skills", "/skills/",
 		"/teammembers", "/teammembers/",
+		"/tmskills", "/tmskills/",
 	}
 	if stringSliceContains(endpoints, endpoint) {
 		return true

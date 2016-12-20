@@ -135,8 +135,8 @@ validity of the state of a TMSkill initialized via unmarshaled JSON. Ensures tha
 func (c *TMSkillsController) validatePOSTBody(tmSkill *model.TMSkill) error {
 	if tmSkill.SkillID == "" || tmSkill.TeamMemberID == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "POST Request for new TMSkill must contain values for " +
-				"\"SkillID\" and \"TeamMemberID\" fields.",
+			ErrorMsg: "The JSON in a POST Request for new TMSkill must contain values for " +
+				"\"skill_id\" and \"team_member_id\" fields.",
 		}
 	}
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
