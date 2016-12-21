@@ -37,6 +37,14 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	return &cassConn
 }
 
+func NewOptions(key, value string) Options {
+	filters := make(map[string]string)
+	filters[key] = value
+	return Options{
+		Filters: filters,
+	}
+}
+
 func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	b, err := json.Marshal(object)
 	if err != nil {
@@ -65,8 +73,13 @@ func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]
 
 func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
-	//TODO: Iterate over opts filters to add query params
-	log.Printf("Running Query: %s", query)
+	if opts.Filters != nil {
+		query += " WHERE "
+	}
+	for k, v := range opts.Filters {
+		query += k + " = " + v
+	}
+	query += ";"
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
