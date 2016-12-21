@@ -8,8 +8,6 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
-
-	"github.com/satori/go.uuid"
 )
 
 type TMSkillsController struct {
