@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.links (
 	url varchar,
 	skill_id uuid,
 	linktype varchar,
-	PRIMARY KEY (id, skill_id)
+	PRIMARY KEY (skill_id)
 );
 
 CREATE TABLE IF NOT EXISTS skill_directory_keyspace.teammembers (
@@ -22,4 +22,3 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.teammembers (
 );
 
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skills ( skilltype );
-CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.links ( skill_id );
