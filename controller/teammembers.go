@@ -8,8 +8,6 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
-
-	"github.com/satori/go.uuid"
 )
 
 type TeamMembersController struct {
@@ -112,7 +110,7 @@ func (c *TeamMembersController) addTeamMember() error {
 		return err // Will be of errors.IncompletePOSTBodyError type
 	}
 
-	teamMember.ID = uuid.NewV1().String()
+	teamMember.ID = util.NewID()
 	err = c.session.Save("teammembers", teamMember.ID, teamMember)
 	if err != nil {
 		return &errors.SavingError{

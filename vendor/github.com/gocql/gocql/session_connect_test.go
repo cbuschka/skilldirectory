@@ -1,13 +1,12 @@
 package gocql
 
 import (
+	"golang.org/x/net/context"
 	"net"
 	"strconv"
 	"sync"
 	"testing"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 type OneConnTestServer struct {
