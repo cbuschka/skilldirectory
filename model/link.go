@@ -5,7 +5,7 @@ type Link struct {
 	Name     string `json:"name"`
 	URL      string `json:"url"`
 	SkillID  string `json:"skill_id"`
-	LinkType string `json:"linktype"`
+	LinkType string `json:"link_type"`
 }
 
 const (

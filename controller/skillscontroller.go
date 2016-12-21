@@ -171,8 +171,8 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
 	if skill.Name == "" || skill.SkillType == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "POST Request for new Skill must contain values for " +
-				"\"Name\" and \"SkillType\" fields.",
+			ErrorMsg: "The JSON in a POST Request for new Skill must contain values for " +
+				"\"name\" and \"skill_type\" fields.",
 		}
 	}
 	return nil

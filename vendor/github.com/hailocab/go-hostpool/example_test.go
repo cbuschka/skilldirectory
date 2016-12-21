@@ -1,8 +1,6 @@
 package hostpool
 
-import (
-	"github.com/bitly/go-hostpool"
-)
+import hostpool "github.com/hailocab/go-hostpool"
 
 func ExampleNewEpsilonGreedy() {
 	hp := hostpool.NewEpsilonGreedy([]string{"a", "b"}, 0, &hostpool.LinearEpsilonValueCalculator{})
