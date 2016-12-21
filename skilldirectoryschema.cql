@@ -1,3 +1,4 @@
+DROP KEYSPACE skill_directory_keyspace;
 CREATE KEYSPACE IF NOT EXISTS skill_directory_keyspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
 CREATE TABLE IF NOT EXISTS skill_directory_keyspace.skills (
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.links (
 	url varchar,
 	skill_id uuid,
 	linktype varchar,
-	PRIMARY KEY (id, skill_id)
+	PRIMARY KEY (skill_id)
 );
 
 CREATE TABLE IF NOT EXISTS skill_directory_keyspace.teammembers (
@@ -22,4 +23,3 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.teammembers (
 );
 
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skills ( skilltype );
-CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.links ( skill_id );

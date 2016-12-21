@@ -86,7 +86,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	// TODO: Add Webpage
 	// TODO: Add Blogs
 	// TODO: Add
-	skillDTO := skill.NewSkillDTO(model.Link{}, nil, nil)
+	skillDTO := skill.NewSkillDTO(nil)
 	return skillDTO, nil
 }
 
