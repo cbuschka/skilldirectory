@@ -31,3 +31,4 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.tmskills (
 );
 
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skills ( skill_type );
+CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.tmskills ( id );
