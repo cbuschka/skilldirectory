@@ -12,7 +12,7 @@ func (m MockDataAccessor) Delete(t, s string) error              { return nil }
 func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
-func (d MockDataAccessor) FilteredReadAll(t string, opts Options, r ReadAllInterface) ([]interface{}, error) {
+func (d MockDataAccessor) FilteredReadAll(t string, opts CassandraQueryOptions, r ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
 
@@ -24,7 +24,7 @@ func (e MockErrorDataAccessor) Delete(t, s string) error              { return f
 func (e MockErrorDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
-func (d MockErrorDataAccessor) FilteredReadAll(t string, opts Options, r ReadAllInterface) ([]interface{}, error) {
+func (d MockErrorDataAccessor) FilteredReadAll(t string, opts CassandraQueryOptions, r ReadAllInterface) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
 

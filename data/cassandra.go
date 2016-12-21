@@ -15,8 +15,27 @@ type CassandraConnector struct {
 	keyspace string
 }
 
-type Options struct {
-	Filters map[string]string
+type CassandraQueryOptions struct {
+	Filters []Filter
+}
+
+type Filter struct {
+	key   string
+	value string
+	id    bool
+}
+
+func (f Filter) query() string {
+	queryString := fmt.Sprintf(" %s", f.key)
+	queryString += " = "
+	if !f.id {
+		queryString += "'"
+	}
+	queryString += f.value
+	if !f.id {
+		queryString += "'"
+	}
+	return queryString
 }
 
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
@@ -37,12 +56,28 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	return &cassConn
 }
 
-func NewOptions(key, value string) Options {
-	filters := make(map[string]string)
-	filters[key] = value
-	return Options{
-		Filters: filters,
+// NewCassandraQueryOptions creates a new options object.
+/*
+key: query field name
+value: query value
+id: True if field is a UUID Cassandra key
+*/
+func NewCassandraQueryOptions(key, value string, id bool) CassandraQueryOptions {
+	filter := Filter{key, value, id}
+	return CassandraQueryOptions{
+		Filters: []Filter{filter},
 	}
+}
+
+// AddFilter adds a filter to an CassandraQueryOptions object
+/*
+key: query field name
+value: query value
+id: True if field is a UUID Cassandra key
+*/
+func (o *CassandraQueryOptions) AddFilter(key, value string, id bool) {
+	filter := Filter{key, value, id}
+	o.Filters = append(o.Filters, filter)
 }
 
 func (c CassandraConnector) Save(table, key string, object interface{}) error {
@@ -68,22 +103,23 @@ func (c CassandraConnector) Delete(table, key string) error {
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
-	return c.FilteredReadAll(table, Options{}, readType)
+	return c.FilteredReadAll(table, CassandraQueryOptions{}, readType)
 }
 
-func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) FilteredReadAll(table string, opts CassandraQueryOptions, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	if opts.Filters != nil {
 		query += " WHERE "
 	}
-	for k, v := range opts.Filters {
-		query += k + " = " + v
+	for _, filter := range opts.Filters {
+		query += filter.query()
 	}
 	query += ";"
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
 	var err error
+	log.Printf("Performing query: %s", query)
 	iter := c.Query(query).Iter()
 	for iter.Scan(&queryBytes) {
 		err = json.Unmarshal(queryBytes, &queryObject)
