@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"skilldirectory/data"
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
@@ -82,11 +83,19 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 }
 
 func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
-
-	// TODO: Add Webpage
-	// TODO: Add Blogs
-	// TODO: Add
-	skillDTO := skill.NewSkillDTO(nil)
+	skillDTO := model.SkillDTO{}
+	linksInterface, err := c.session.FilteredReadAll("links", data.NewOptions("skill_id", skill.ID), model.Link{})
+	if err != nil {
+		log.Print(err)
+		return skillDTO, err
+	}
+	linksRaw, err := json.Marshal(linksInterface)
+	links := &[]model.Link{}
+	err = json.Unmarshal(linksRaw, links)
+	if err != nil {
+		log.Print(err)
+	}
+	skillDTO = skill.NewSkillDTO(*links)
 	return skillDTO, nil
 }
 

@@ -1,4 +1,3 @@
-DROP KEYSPACE skill_directory_keyspace;
 CREATE KEYSPACE IF NOT EXISTS skill_directory_keyspace with replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
 CREATE TABLE IF NOT EXISTS skill_directory_keyspace.skills (
