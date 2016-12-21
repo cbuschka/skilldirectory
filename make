@@ -1,3 +1,13 @@
+# See if the "--dropdata" flag was used
+drop_data_flag=false
+if [[ ! -z $1 ]]; then
+    if [[ $1 = "--dropdata" ]]; then
+        drop_data_flag=true
+    else
+         echo Unrecognized option: \"$1\"
+    fi
+fi
+
 echo "Testing..."
 go test $(glide novendor)|| { echo "Tests failed" ; exit 1; }
 
@@ -21,10 +31,15 @@ else
 
 fi
 
+# If "--dropdata" flag was used, then drop the keyspace
+if [[ $drop_data_flag = true ]]; then
+    echo 'Dropping and rebuilding "skill_directory_keyspace" keyspace'
+    docker exec -it cassandra_container bash usr/bin/cqlsh -e "DROP KEYSPACE skill_directory_keyspace"
+fi
+
 echo "Running skilldirectoryschema"
 docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
 echo "Schema update complete"
-
 
 echo "Running Skill Directory..."
 ./skilldirectory
