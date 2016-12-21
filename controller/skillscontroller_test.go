@@ -13,13 +13,15 @@ import (
 func TestSkillsControllerBase(t *testing.T) {
 	base := BaseController{}
 	sc := SkillsController{BaseController: &base}
+
 	if base != *sc.Base() {
 		t.Error("Expecting Base() to return base pointer")
 	}
 }
 
 func TestGetAllSkills(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodGet, "/skills", nil), &data.MockDataAccessor{})
+	request := httptest.NewRequest(http.MethodGet, "/skills", nil)
+	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
 	if err != nil {
@@ -28,7 +30,8 @@ func TestGetAllSkills(t *testing.T) {
 }
 
 func TestGetAllSkills_Error(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodGet, "/skills", nil), &data.MockErrorDataAccessor{})
+	request := httptest.NewRequest(http.MethodGet, "/skills", nil)
+	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
 	if err == nil {
@@ -37,7 +40,8 @@ func TestGetAllSkills_Error(t *testing.T) {
 }
 
 func TestGetSkill(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodGet, "/skills/1234", nil), &data.MockDataAccessor{})
+	request := httptest.NewRequest(http.MethodGet, "/skills/1234", nil)
+	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
 	if err != nil {
@@ -46,7 +50,8 @@ func TestGetSkill(t *testing.T) {
 }
 
 func TestGetSkill_Error(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodGet, "/skills/1234", nil), &data.MockErrorDataAccessor{})
+	request := httptest.NewRequest(http.MethodGet, "/skills/1234", nil)
+	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
 	if err == nil {
@@ -112,7 +117,8 @@ func TestGetSkill_Error(t *testing.T) {
 //}
 
 func TestDeleteSkill(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodDelete, "/skills/1234", nil), &data.MockDataAccessor{})
+	request := httptest.NewRequest(http.MethodDelete, "/skills/1234", nil)
+	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
 	if err != nil {
@@ -121,7 +127,8 @@ func TestDeleteSkill(t *testing.T) {
 }
 
 func TestDeleteSkill_Error(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodDelete, "/skills/1234", nil), &data.MockErrorDataAccessor{})
+	request := httptest.NewRequest(http.MethodDelete, "/skills/1234", nil)
+	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Delete()
 	if err == nil {
@@ -130,7 +137,8 @@ func TestDeleteSkill_Error(t *testing.T) {
 }
 
 func TestDeleteSkill_NoKey(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodDelete, "/skills/", nil), &data.MockDataAccessor{})
+	request := httptest.NewRequest(http.MethodDelete, "/skills/", nil)
+	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
 	if err == nil {
@@ -154,7 +162,7 @@ func TestPostSkill_NoName(t *testing.T) {
 
 	err := sc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to not specifying value for \"Name\" field in Skill POST request.")
+		t.Errorf("Expected error due to empty %q field in Skill POST request.", "name")
 	}
 }
 
@@ -164,7 +172,7 @@ func TestPostSkill_NoSkillType(t *testing.T) {
 
 	err := sc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to not specifying value for \"SkillType\" field in Skill POST request.")
+		t.Errorf("Expected error due to empty %q field in Skill POST request.", "skill_type")
 	}
 }
 
@@ -179,7 +187,8 @@ func TestPostSkill_InvalidType(t *testing.T) {
 }
 
 func TestPostSkill_NoSkill(t *testing.T) {
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills/", nil), &data.MockDataAccessor{})
+	request := httptest.NewRequest(http.MethodPost, "/skills/", nil)
+	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
 	if err == nil {
@@ -189,7 +198,8 @@ func TestPostSkill_NoSkill(t *testing.T) {
 
 func TestPostSkill_Error(t *testing.T) {
 	reader := getReaderForNewSkill("", "", model.ScriptedSkillType)
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills", reader), &data.MockErrorDataAccessor{})
+	request := httptest.NewRequest(http.MethodPost, "/skills", reader)
+	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Post()
 	if err == nil {
