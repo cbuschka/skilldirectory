@@ -112,7 +112,7 @@ func (c *TMSkillsController) addTMSkill() error {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
 
-	tmSkill.ID = uuid.NewV1().String()
+	tmSkill.ID = util.NewID()
 	err = c.session.Save("tmskills", tmSkill.ID, tmSkill)
 	if err != nil {
 		return &errors.SavingError{
