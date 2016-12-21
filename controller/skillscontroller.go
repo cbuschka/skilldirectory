@@ -10,8 +10,6 @@ import (
 	util "skilldirectory/util"
 
 	"fmt"
-
-	uuid "github.com/satori/go.uuid"
 )
 
 type SkillsController struct {
@@ -134,7 +132,7 @@ func (c *SkillsController) addSkill() error {
 		}
 	}
 
-	skill.ID = uuid.NewV1().String()
+	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
 		return &errors.SavingError{

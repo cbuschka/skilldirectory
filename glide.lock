@@ -11,8 +11,6 @@ imports:
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - name: github.com/hailocab/go-hostpool
   version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
-- name: github.com/satori/go.uuid
-  version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: golang.org/x/net
   version: 468bac874d80e6ca892ecbb9bf09c72519b5b751
   subpackages:
