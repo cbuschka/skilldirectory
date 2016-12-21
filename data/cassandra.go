@@ -16,7 +16,26 @@ type CassandraConnector struct {
 }
 
 type Options struct {
-	Filters map[string]string
+	Filters []Filter
+}
+
+type Filter struct {
+	key   string
+	value string
+	id    bool
+}
+
+func (f Filter) query() string {
+	queryString := fmt.Sprintf(" %s", f.key)
+	queryString += " = "
+	if !f.id {
+		queryString += "'"
+	}
+	queryString += f.value
+	if !f.id {
+		queryString += "'"
+	}
+	return queryString
 }
 
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
@@ -37,12 +56,16 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	return &cassConn
 }
 
-func NewOptions(key, value string) Options {
-	filters := make(map[string]string)
-	filters[key] = value
+func NewOptions(key, value string, id bool) Options {
+	filter := Filter{key, value, id}
 	return Options{
-		Filters: filters,
+		Filters: []Filter{filter},
 	}
+}
+
+func (o *Options) AddFilter(key, value string, id bool) {
+	filter := Filter{key, value, id}
+	o.Filters = append(o.Filters, filter)
 }
 
 func (c CassandraConnector) Save(table, key string, object interface{}) error {
@@ -76,14 +99,15 @@ func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType
 	if opts.Filters != nil {
 		query += " WHERE "
 	}
-	for k, v := range opts.Filters {
-		query += k + " = " + v
+	for _, filter := range opts.Filters {
+		query += filter.query()
 	}
 	query += ";"
 	queryBytes := []byte{}
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
 	var err error
+	log.Printf("Performing query: %s", query)
 	iter := c.Query(query).Iter()
 	for iter.Scan(&queryBytes) {
 		err = json.Unmarshal(queryBytes, &queryObject)

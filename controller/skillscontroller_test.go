@@ -210,7 +210,7 @@ func TestPostSkill_Error(t *testing.T) {
 /*
 getSkillsController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new SkillsController created with that BaseController.
- */
+*/
 func getSkillsController(request *http.Request, dataAccessor data.DataAccess) SkillsController {
 	base := BaseController{}
 	base.Init(httptest.NewRecorder(), request, dataAccessor)
@@ -220,7 +220,7 @@ func getSkillsController(request *http.Request, dataAccessor data.DataAccess) Sk
 /*
 getReaderForNewSkill is a helper function for a new Skill with the given id, name, and skillType.
 This Skill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
- */
+*/
 func getReaderForNewSkill(id, name, skillType string) *bytes.Reader {
 	newSkill := model.NewSkill(id, name, skillType)
 	b, _ := json.Marshal(newSkill)
