@@ -66,6 +66,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	tmSkill := model.TMSkill{}
 	err := c.session.Read("tmskills", id, &tmSkill)
 	if err != nil {
+		log.Printf("loadTMSkill() generated the following error:\n\t%q", err)
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No TMSkill Exists with Specified ID: " + id,
 		}
