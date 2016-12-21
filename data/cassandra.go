@@ -15,7 +15,7 @@ type CassandraConnector struct {
 	keyspace string
 }
 
-type Options struct {
+type CassandraQueryOptions struct {
 	Filters []Filter
 }
 
@@ -56,14 +56,26 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 	return &cassConn
 }
 
-func NewOptions(key, value string, id bool) Options {
+// NewCassandraQueryOptions creates a new options object.
+/*
+key: query field name
+value: query value
+id: True if field is a UUID Cassandra key
+*/
+func NewCassandraQueryOptions(key, value string, id bool) CassandraQueryOptions {
 	filter := Filter{key, value, id}
-	return Options{
+	return CassandraQueryOptions{
 		Filters: []Filter{filter},
 	}
 }
 
-func (o *Options) AddFilter(key, value string, id bool) {
+// AddFilter adds a filter to an CassandraQueryOptions object
+/*
+key: query field name
+value: query value
+id: True if field is a UUID Cassandra key
+*/
+func (o *CassandraQueryOptions) AddFilter(key, value string, id bool) {
 	filter := Filter{key, value, id}
 	o.Filters = append(o.Filters, filter)
 }
@@ -91,10 +103,10 @@ func (c CassandraConnector) Delete(table, key string) error {
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
-	return c.FilteredReadAll(table, Options{}, readType)
+	return c.FilteredReadAll(table, CassandraQueryOptions{}, readType)
 }
 
-func (c CassandraConnector) FilteredReadAll(table string, opts Options, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) FilteredReadAll(table string, opts CassandraQueryOptions, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	if opts.Filters != nil {
 		query += " WHERE "

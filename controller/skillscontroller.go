@@ -51,11 +51,12 @@ func (c *SkillsController) getAllSkills() error {
 	var skills []interface{}
 	var err error
 	filter := c.r.URL.Query().Get("skilltype")
-	var opts data.Options
-	if filter != "" {
-		opts = data.NewOptions("skilltype", filter, false)
-	}
+	var opts data.CassandraQueryOptions
 
+	// Add approved query filters here
+	if filter != "" {
+		opts = data.NewCassandraQueryOptions("skilltype", filter, false)
+	}
 	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
 
 	if err != nil {
@@ -91,7 +92,7 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 
 func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links", data.NewOptions("skill_id", skill.ID, true), model.Link{})
+	linksInterface, err := c.session.FilteredReadAll("links", data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
 	if err != nil {
 		log.Print(err)
 		return skillDTO, err

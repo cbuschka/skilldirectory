@@ -7,7 +7,7 @@ import (
 )
 
 func TestIDQuery(t *testing.T) {
-	options := NewOptions("key", "id_value", true)
+	options := NewCassandraQueryOptions("key", "id_value", true)
 	queryString := " key = id_value"
 
 	if options.Filters[0].query() != queryString {
@@ -17,7 +17,7 @@ func TestIDQuery(t *testing.T) {
 }
 
 func TestTextQuery(t *testing.T) {
-	options := NewOptions("key", "text_value", false)
+	options := NewCassandraQueryOptions("key", "text_value", false)
 	queryString := " key = 'text_value'"
 
 	if options.Filters[0].query() != queryString {
@@ -26,8 +26,8 @@ func TestTextQuery(t *testing.T) {
 }
 
 func TestNewOptions(t *testing.T) {
-	options1 := Options{Filters: []Filter{Filter{"key", "value", true}}}
-	options2 := NewOptions("key", "value", true)
+	options1 := CassandraQueryOptions{Filters: []Filter{Filter{"key", "value", true}}}
+	options2 := NewCassandraQueryOptions("key", "value", true)
 
 	if !reflect.DeepEqual(options1, options2) {
 		t.Error("Expecting NewOptions constructor to match")
