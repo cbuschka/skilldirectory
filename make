@@ -20,7 +20,11 @@ else
   sleep 20
 
 fi
+
+echo "Running skilldirectoryschema"
 docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
+echo "Schema update complete"
+
 
 echo "Running Skill Directory..."
 ./skilldirectory

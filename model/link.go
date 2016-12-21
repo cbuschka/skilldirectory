@@ -1,6 +1,7 @@
 package model
 
 type Link struct {
+	ID       string `json:"id"`
 	Name     string `json:"name"`
 	URL      string `json:"url"`
 	SkillID  string `json:"skill_id"`

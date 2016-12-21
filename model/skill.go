@@ -1,7 +1,5 @@
 package model
 
-import "fmt"
-
 /*
 Skill represents a particular skill that can be had by a human individual.
 Each Skill has a Name, SkillType, and a unique ID:
@@ -23,9 +21,7 @@ type Skill struct {
 
 type SkillDTO struct {
 	Skill
-	Webpage   Link   `json:"webpage"`
-	Blogs     []Link `json:"blogs"`
-	Tutorials []Link `json:"tutorials"`
+	Links []Link
 }
 
 const (
@@ -48,33 +44,15 @@ func NewSkill(id, name, skillType string) Skill {
 	}
 }
 
-func (s Skill) NewSkillDTO(webpage Link, blogs, tutorials []Link) SkillDTO {
+func (s Skill) NewSkillDTO(links []Link) SkillDTO {
 	return SkillDTO{
-		Skill:     s,
-		Webpage:   webpage,
-		Blogs:     blogs,
-		Tutorials: tutorials,
+		Skill: s,
+		Links: links,
 	}
 }
 
-func (s *SkillDTO) AddLink(link Link) error {
-	linkType := link.LinkType
-	if !IsValidLinkType(linkType) {
-		if linkType == "" {
-			return fmt.Errorf("The specified link does not contain a LinkType")
-		}
-		return fmt.Errorf("The specified LinkType: \"%s\" is not LinkType.", linkType)
-	}
-
-	switch linkType {
-	case WebpageLinkType:
-		s.Webpage = link
-	case BlogLinkType:
-		s.Blogs = append(s.Blogs, link)
-	case TutorialLinkType:
-		s.Tutorials = append(s.Tutorials, link)
-	}
-	return nil
+func (s *SkillDTO) AddLink(link Link) {
+	s.Links = append(s.Links, link)
 }
 
 // IsValidSkillType() returns true if the passed-in string is a valid SkillType, false if not.
