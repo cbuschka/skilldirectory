@@ -1,0 +1,195 @@
+{
+	"variables": [],
+	"info": {
+		"name": "SkillDirectory Requests",
+		"_postman_id": "cfd5bd95-a4a9-4aa9-ebf4-e044baa9ff12",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Team Members",
+			"request": {
+				"url": "http://localhost:8080/teammembers",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Team Member",
+			"request": {
+				"url": "http://localhost:8080/teammembers/[ID]",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Skills",
+			"request": {
+				"url": "http://localhost:8080/skills",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Skill",
+			"request": {
+				"url": "http://localhost:8080/skills/[ID]",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get All TMSkills",
+			"request": {
+				"url": "http://localhost:8080/tmskills/",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A TMSkill",
+			"request": {
+				"url": "http://localhost:8080/tmskills/[ID]",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Team Member - Basic",
+			"request": {
+				"url": "http://localhost:8080/teammembers/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"Yogi Bear\",\n\t\"title\":\"Smart Than Average Bear\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Skill - Basic",
+			"request": {
+				"url": "http://localhost:8080/skills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Java\",\n\t\"skill_type\": \"database\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Skill - Advanced",
+			"request": {
+				"url": "http://localhost:8080/skills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Java\",\n\t\"skill_type\": \"database\",\n\t\"webpage\": {\n\t  \"link_type\": \"Webpage\",\n\t  \"name\": \"Java\",\n\t  \"skill_id\": \"\",\n\t  \"url\": \"http://www.javaworld.com/blog/java-101/\"\n\t},\n\t\"tutorials\":  [\n\t  {\n\t    \"link_type\": \"Tutorial\",\n\t    \"name\": \"Java\",\n\t    \"skill_id\": \"\",\n\t    \"url\": \"http://www.javaworld.com/blog/java-101/\"\n\t  }\n\t],\n\t\"blogs\": [\n\t  {\n\t    \"link_type\": \"Blog\",\n\t    \"name\": \"Java\",\n\t    \"skill_id\": \"\",\n\t    \"url\": \"http://www.javaworld.com/blog/java-101/\"\n\t  }\n\t]\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New TMSkill - Basic",
+			"request": {
+				"url": "http://localhost:8080/tmskills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"4321\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New TMSkill - Advanced",
+			"request": {
+				"url": "http://localhost:8080/tmskills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"proficiency\": 5,\n    \"skill_id\": \"1234\",\n    \"team_member_id\": \"4321\",\n    \"wish_list\": true\n  }"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
