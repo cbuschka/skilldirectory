@@ -11,8 +11,6 @@ import (
 	util "skilldirectory/util"
 
 	"fmt"
-
-	uuid "github.com/satori/go.uuid"
 )
 
 type SkillsController struct {
@@ -42,20 +40,27 @@ func (c SkillsController) Put() error {
 func (c SkillsController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {
-		filter := c.r.URL.Query().Get("skilltype")
-		if filter == "" {
-			return c.getAllSkills()
-		}
-
+		return c.getAllSkills()
 	}
 	return c.getSkill(path)
 }
 
 func (c *SkillsController) getAllSkills() error {
-	skills, err := c.session.ReadAll("skills", model.Skill{})
+	var skills []interface{}
+	var err error
+	filter := c.r.URL.Query().Get("skilltype")
+	var opts data.CassandraQueryOptions
+
+	// Add approved query filters here
+	if filter != "" {
+		opts = data.NewCassandraQueryOptions("skilltype", filter, false)
+	}
+	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
+
 	if err != nil {
 		return err
 	}
+
 	b, err := json.Marshal(skills)
 	c.w.Write(b)
 	return err
@@ -85,12 +90,15 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 
 func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links", data.NewOptions("skill_id", skill.ID), model.Link{})
+	linksInterface, err := c.session.FilteredReadAll("links", data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
 	if err != nil {
 		log.Print(err)
 		return skillDTO, err
 	}
 	linksRaw, err := json.Marshal(linksInterface)
+	if err != nil {
+		return skillDTO, nil
+	}
 	links := &[]model.Link{}
 	err = json.Unmarshal(linksRaw, links)
 	if err != nil {
@@ -143,7 +151,7 @@ func (c *SkillsController) addSkill() error {
 		}
 	}
 
-	skill.ID = uuid.NewV1().String()
+	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
 		return &errors.SavingError{
