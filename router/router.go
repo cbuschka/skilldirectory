@@ -5,7 +5,7 @@ import (
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/handler"
-	"skilldirectory/helper"
+	util "skilldirectory/util"
 )
 
 /*
@@ -28,9 +28,9 @@ type Route struct {
 // And add a controller to the controller package
 
 var (
-	url      = helper.GetProperty("CASSANDRA_URL")
-	port     = helper.GetProperty("CASSANDRA_PORT")
-	keyspace = helper.GetProperty("CASSANDRA_KEYSPACE")
+	url      = util.GetProperty("CASSANDRA_URL")
+	port     = util.GetProperty("CASSANDRA_PORT")
+	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
 	session  = data.NewCassandraConnector(url, port, keyspace)
 )
 

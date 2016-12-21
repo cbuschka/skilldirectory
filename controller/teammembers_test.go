@@ -7,30 +7,32 @@ import (
 	"net/http/httptest"
 	"skilldirectory/model"
 	"testing"
+	"skilldirectory/data"
 )
 
 func TestTeamMembersControllerBase(t *testing.T) {
 	base := BaseController{}
 	tc := TeamMembersController{BaseController: &base}
+
 	if base != *tc.Base() {
 		t.Error("Expected Base() to return base pointer")
 	}
 }
 
 func TestGetAllTeamMembers(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers", nil), &MockDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+	request := httptest.NewRequest(http.MethodGet, "/teammembers", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
 	err := tc.Get()
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
-func TestGetAllTeamMembersError(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers", nil), &MockErrorDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+func TestGetAllTeamMembers_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/teammembers", nil)
+	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
+
 	err := tc.Get()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
@@ -38,19 +40,19 @@ func TestGetAllTeamMembersError(t *testing.T) {
 }
 
 func TestGetTeamMember(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil), &MockDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+	request := httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
 	err := tc.Get()
 	if err != nil {
 		t.Error(err.Error())
 	}
 }
 
-func TestGetTeamMemberError(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil), &MockErrorDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+func TestGetTeamMember_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/teammebers/1234", nil)
+	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
+	
 	err := tc.Get()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
@@ -58,29 +60,29 @@ func TestGetTeamMemberError(t *testing.T) {
 }
 
 func TestDeleteTeamMember(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil), &MockDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+	request := httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
 	err := tc.Delete()
 	if err != nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
 }
 
-func TestDeleteTeamMemberError(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil), &MockErrorDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+func TestDeleteTeamMember_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil)
+	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
+
 	err := tc.Delete()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
 }
 
-func TestDeleteTeamMemberNoKey(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodDelete, "/teammembers/", nil), &MockDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+func TestDeleteTeamMember_NoKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/teammembers/", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
 	err := tc.Delete()
 	if err == nil {
 		t.Errorf("Expected error when no key: %s", err.Error())
@@ -88,67 +90,75 @@ func TestDeleteTeamMemberNoKey(t *testing.T) {
 }
 
 func TestPostTeamMember(t *testing.T) {
-	base := BaseController{}
-	newTM := model.NewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
-	b, _ := json.Marshal(newTM)
-	reader := bytes.NewReader(b)
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/teammembers", reader), &MockDataAccessor{})
+	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
-	tc := TeamMembersController{BaseController: &base}
 	err := tc.Post()
 	if err != nil {
 		t.Errorf("Post failed: %s", err.Error())
 	}
 }
 
-func TestPostTeamMemberNoName(t *testing.T) {
-	base := BaseController{}
-	newTM := model.NewTeamMember("1234", "", "Cabbage Plucker")
-	b, _ := json.Marshal(newTM)
-	reader := bytes.NewReader(b)
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/teammembers", reader), &MockDataAccessor{})
+func TestPostTeamMember_NoName(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
-	tc := TeamMembersController{BaseController: &base}
 	err := tc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to not specifying value for \"Name\" field in TeamMember POST request.")
+		t.Errorf("Expected error due to empty %q field in TeamMember POST request.", "name")
 	}
 }
 
-func TestPostTeamMemberNoTitle(t *testing.T) {
-	base := BaseController{}
-	newTM := model.NewTeamMember("1234", "Joe Smith", "")
-	b, _ := json.Marshal(newTM)
-	reader := bytes.NewReader(b)
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/teammembers", reader), &MockDataAccessor{})
+func TestPostTeamMember_NoTitle(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
+	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
-	tc := TeamMembersController{BaseController: &base}
 	err := tc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to not specifying value for \"Title\" field in TeamMember POST request.")
+		t.Errorf("Expected error due to empty %q field in TeamMember POST request.", "title")
 	}
 }
 
-func TestPostNoTeamMember(t *testing.T) {
-	base := BaseController{}
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/teammembers/", nil), &MockDataAccessor{})
-	tc := TeamMembersController{BaseController: &base}
+func TestPostTeamMember_NoTeamMember(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPost, "/teammembers", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+	
 	err := tc.Post()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
 }
 
-func TestPostTeamMemberError(t *testing.T) {
-	base := BaseController{}
-	newTM := model.NewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
-	b, _ := json.Marshal(newTM)
-	reader := bytes.NewReader(b)
-	base.Init(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/teammembers", reader), &MockErrorDataAccessor{})
-
-	tc := TeamMembersController{BaseController: &base}
+func TestPostTeamMember_Error(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
+	
 	err := tc.Post()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
+}
+
+/*
+getTeamMembersController is a helper function for creating and initializing a new BaseController with
+the given HTTP request and DataAccessor. Returns a new TeamMembersController created with that BaseController.
+ */
+func getTeamMembersController(request *http.Request, dataAccessor data.DataAccess) TeamMembersController {
+	base := BaseController{}
+	base.Init(httptest.NewRecorder(), request, dataAccessor)
+	return TeamMembersController{BaseController: &base}
+}
+
+/*
+getReaderForNewTeamMember is a helper function for a new TeamMember with the given id, name, and title.
+This TeamMember is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
+ */
+func getReaderForNewTeamMember(id, name, title string) *bytes.Reader {
+	newTeamMember := model.NewTeamMember(id, name, title)
+	b, _ := json.Marshal(newTeamMember)
+	return bytes.NewReader(b)
 }
