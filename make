@@ -5,6 +5,8 @@ if [[ ! -z $1 ]]; then
         drop_data_flag=true
     else
          echo Unrecognized option: \"$1\"
+         echo Did you mean \"--dropdata?\"
+         exit 127
     fi
 fi
 
