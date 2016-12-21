@@ -7,6 +7,7 @@ import (
 	"log"
 	"skilldirectory/errors"
 	"skilldirectory/model"
+	util "skilldirectory/util"
 
 	"github.com/satori/go.uuid"
 )
@@ -36,7 +37,7 @@ func (c TeamMembersController) Put() error {
 }
 
 func (c *TeamMembersController) performGet() error {
-	path := checkForID(c.r.URL)
+	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		return c.getAllTeamMembers()
 	}
@@ -76,7 +77,7 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 
 func (c *TeamMembersController) removeTeamMember() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	teamMemberID := checkForID(c.r.URL)
+	teamMemberID := util.CheckForID(c.r.URL)
 	if teamMemberID == "" {
 		return &errors.MissingIDError{
 			ErrorMsg: "No Team Member ID Specified in Request URL: " + c.r.URL.String(),

@@ -8,6 +8,7 @@ import (
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
+	util "skilldirectory/util"
 
 	"fmt"
 
@@ -39,7 +40,7 @@ func (c SkillsController) Put() error {
 }
 
 func (c SkillsController) performGet() error {
-	path := checkForID(c.r.URL)
+	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		filter := c.r.URL.Query().Get("skilltype")
 		if filter == "" {
@@ -101,7 +102,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	skillID := checkForID(c.r.URL)
+	skillID := util.CheckForID(c.r.URL)
 	if skillID == "" {
 		return &errors.MissingIDError{
 			ErrorMsg: "No Skill ID Specified in Request URL: " + c.r.URL.String(),
