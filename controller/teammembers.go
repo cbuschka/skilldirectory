@@ -130,8 +130,8 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "POST Request for new Team Member must contain values for " +
-				"\"Name\" and \"Title\" fields.",
+			ErrorMsg: "The JSON in a POST Request for new Team Member must contain values for " +
+				"\"name\" and \"title\" fields.",
 		}
 	}
 	return nil

@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestTeamMemberControllerBase(t *testing.T) {
+func TestTeamMembersControllerBase(t *testing.T) {
 	base := BaseController{}
 	tc := TeamMembersController{BaseController: &base}
 
