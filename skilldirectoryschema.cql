@@ -22,11 +22,12 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.teammembers (
 );
 
 CREATE TABLE IF NOT EXISTS skill_directory_keyspace.tmskills (
-    id             uuid PRIMARY KEY,
+    id             uuid,
     skill_id       varchar,
     team_member_id varchar,
     wish_list      boolean,
-    proficiency    int
+    proficiency    int,
+    PRIMARY KEY (id, team_member_id)
 );
 
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skills ( skill_type );

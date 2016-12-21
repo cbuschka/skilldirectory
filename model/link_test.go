@@ -2,7 +2,7 @@ package model
 
 import "testing"
 
-func TestNewLink(t *testing.T) {
+func TestLink_NewLink(t *testing.T) {
 	linkOne := NewLink("Google", "http://www.google.com", "1234", WebpageLinkType)
 	linkTwo := Link{
 		Name:     "Google",
@@ -16,14 +16,14 @@ func TestNewLink(t *testing.T) {
 	}
 }
 
-func TestInvalidLinkType(t *testing.T) {
+func TestIsValidLinkType1(t *testing.T) {
 	if IsValidLinkType("InvalidLinkType") {
 		t.Errorf("func IsValidLinkType() failed to detect invalid LinkType")
 	}
 }
 
-func TestValidLinkType(t *testing.T) {
+func TestIsValidLinkType2(t *testing.T) {
 	if !IsValidLinkType(WebpageLinkType) {
-		t.Errorf("func IsValidLinkType() flagged calid LinkType as invalid.")
+		t.Errorf("func IsValidLinkType() flagged valid LinkType as invalid.")
 	}
 }
