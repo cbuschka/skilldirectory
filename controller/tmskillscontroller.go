@@ -7,6 +7,7 @@ import (
 	"log"
 	"skilldirectory/errors"
 	"skilldirectory/model"
+	util "skilldirectory/util"
 
 	"github.com/satori/go.uuid"
 )
@@ -36,7 +37,7 @@ func (c TMSkillsController) Put() error {
 }
 
 func (c *TMSkillsController) performGet() error {
-	path := checkForID(c.r.URL)
+	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		return c.getAllTMSkills()
 	}
@@ -76,7 +77,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 
 func (c *TMSkillsController) removeTMSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	tmSkillID := checkForID(c.r.URL)
+	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
 		return &errors.MissingIDError{
 			ErrorMsg: "No TMSkill ID Specified in Request URL: " + c.r.URL.String(),

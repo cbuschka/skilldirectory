@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
-	"skilldirectory/data"
 )
 
 func TestTMSkillsController_Base(t *testing.T) {
@@ -146,7 +146,7 @@ func TestPostTMSkill_Error(t *testing.T) {
 /*
 getTMSkillsController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new TMSkillsController created with that BaseController.
- */
+*/
 func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) TMSkillsController {
 	base := BaseController{}
 	base.Init(httptest.NewRecorder(), request, dataAccessor)
@@ -156,7 +156,7 @@ func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) 
 /*
 getReaderForNewTMSkill is a helper function for a new TMSkill with the given id, skillID, and teamMemberID.
 This TMSkill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
- */
+*/
 func getReaderForNewTMSkill(id, skillID, teamMemberID string) *bytes.Reader {
 	newTMSkill := model.NewTMSkillDefaults(id, skillID, teamMemberID)
 	b, _ := json.Marshal(newTMSkill)
