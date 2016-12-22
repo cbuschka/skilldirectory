@@ -62,3 +62,12 @@ type InvalidPOSTBodyError struct {
 func (e *InvalidPOSTBodyError) Error() string {
 	return e.ErrorMsg
 }
+
+// Implements error interface
+type InvalidLinkTypeError struct {
+	ErrorMsg string
+}
+
+func (e *InvalidLinkTypeError) Error() string {
+	return e.ErrorMsg
+}

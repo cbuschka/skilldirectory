@@ -6,29 +6,29 @@ import (
 )
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO([]Link{NewLink("link", ".com", "ASkillID", BlogLinkType)})
+	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO([]Link{NewLink("1234", "link", ".com", "ASkillID", BlogLinkType)})
 	skillTwo := SkillDTO{
 		Skill: Skill{
 			ID:        "ASkillID",
 			Name:      "ASkillName",
 			SkillType: ScriptedSkillType},
-		Links: []Link{NewLink("link", ".com", "ASkillID", BlogLinkType)},
+		Links: []Link{NewLink("1234", "link", ".com", "ASkillID", BlogLinkType)},
 	}
 	// Verify that all of skillOne and skillTwo's fields are equal
 	if !reflect.DeepEqual(skillOne, skillTwo) {
-		t.Errorf("model/Skill\".NewSkill()\" produced incorrect Skill.")
+		t.Errorf("\"model.NewSkill()\" produced incorrect Skill.")
 	}
 }
 
 func TestSkillAddLink(t *testing.T) {
 	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(nil)
-	skillOne.AddLink(NewLink("Google", "http://www.google.com", skillOne.ID, WebpageLinkType))
+	skillOne.AddLink(NewLink("1234", "Google", "http://www.google.com", skillOne.ID, WebpageLinkType))
 	skillTwo := SkillDTO{
 		Skill: Skill{ID: "ASkillID",
 			Name:      "ASkillName",
 			SkillType: ScriptedSkillType,
 		},
-		Links: []Link{NewLink("Google", "http://www.google.com", skillOne.ID, WebpageLinkType)},
+		Links: []Link{NewLink("1234", "Google", "http://www.google.com", skillOne.ID, WebpageLinkType)},
 	}
 
 	// Verify that all of skillOne and skillTwo's fields are equal

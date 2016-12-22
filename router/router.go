@@ -50,6 +50,11 @@ var (
 	}
 	tmSkillsHandlerFunc = handler.MakeHandler(handler.Handler, &tmSkillsController, session)
 
+	linksController = controller.LinksController{
+		BaseController: &controller.BaseController{},
+	}
+	linksHandlerFunc = handler.MakeHandler(handler.Handler, &linksController, session)
+
 	routes = []Route{
 		{"/skills/", skillsHandlerFunc},
 		{"/skills", skillsHandlerFunc},
@@ -57,6 +62,8 @@ var (
 		{"/teammembers", teamMembersHandlerFunc},
 		{"/tmskills/", tmSkillsHandlerFunc},
 		{"/tmskills", tmSkillsHandlerFunc},
+		{"/links/", linksHandlerFunc},
+		{"/links", linksHandlerFunc},
 	}
 )
 

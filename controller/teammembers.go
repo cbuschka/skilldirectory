@@ -84,6 +84,7 @@ func (c *TeamMembersController) removeTeamMember() error {
 
 	err := c.session.Delete("teammembers", teamMemberID)
 	if err != nil {
+		log.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Team Member Exists with Specified ID: " + teamMemberID,
 		}

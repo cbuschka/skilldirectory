@@ -50,7 +50,7 @@ func TestGetTeamMember(t *testing.T) {
 }
 
 func TestGetTeamMember_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/teammebers/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Get()
