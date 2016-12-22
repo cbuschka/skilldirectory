@@ -14,8 +14,9 @@ const (
 	WebpageLinkType  = "webpage"
 )
 
-func NewLink(name, url, skillID, linkType string) Link {
+func NewLink(id, name, url, skillID, linkType string) Link {
 	return Link{
+		ID:       id,
 		Name:     name,
 		URL:      url,
 		SkillID:  skillID,

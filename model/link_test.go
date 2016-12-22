@@ -3,8 +3,9 @@ package model
 import "testing"
 
 func TestLink_NewLink(t *testing.T) {
-	linkOne := NewLink("Google", "http://www.google.com", "1234", WebpageLinkType)
+	linkOne := NewLink("1234", "Google", "http://www.google.com", "1234", WebpageLinkType)
 	linkTwo := Link{
+		ID:       "1234",
 		Name:     "Google",
 		URL:      "http://www.google.com",
 		SkillID:  "1234",
@@ -12,7 +13,7 @@ func TestLink_NewLink(t *testing.T) {
 	}
 
 	if linkOne != linkTwo {
-		t.Errorf("model/link\".NewLink()\" produced incorrect Link.")
+		t.Errorf("\"model.NewLink()\" produced incorrect Link.")
 	}
 }
 

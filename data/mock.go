@@ -6,8 +6,8 @@ import (
 
 type MockDataAccessor struct{}
 
-func (m MockDataAccessor) Save(t, s string, i interface{}) error { return nil }
-func (m MockDataAccessor) Read(t, s string, i interface{}) error { return nil }
+func (m MockDataAccessor) Save(t, s string, i interface{}) error                     { return nil }
+func (m MockDataAccessor) Read(t, s string, i interface{}) error                     { return nil }
 func (c MockDataAccessor) Delete(table, id string, primary_key_cols ...string) error { return nil }
 func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
 	return nil, nil

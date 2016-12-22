@@ -106,7 +106,7 @@ additional columns used in the PRIMARY KEY besides "id" (it is assumed that "id"
 in the PRIMARY KEY).
 
 Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
- */
+*/
 func (c CassandraConnector) Delete(table, id string, primary_key_cols ...string) error {
 	query := "DELETE FROM " + table + " WHERE id = " + id // Base query
 
