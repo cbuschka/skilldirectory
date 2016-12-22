@@ -25,7 +25,7 @@ type DataAccess interface {
 	Read(table, key string, object interface{}) error
 	ReadAll(table string, readType ReadAllInterface) ([]interface{}, error)
 	FilteredReadAll(table string, opts CassandraQueryOptions, readType ReadAllInterface) ([]interface{}, error)
-	Delete(table, key string) error
+	Delete(table, id string, primary_key_cols ...string) error
 }
 
 /*

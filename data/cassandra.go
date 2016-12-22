@@ -98,8 +98,41 @@ func (c CassandraConnector) Read(table, key string, object interface{}) error {
 	return json.Unmarshal(byteQ, &object)
 }
 
-func (c CassandraConnector) Delete(table, key string) error {
-	return c.Query("DELETE FROM " + table + " WHERE id = " + key).Exec()
+// Must pass in table and value of the row's id column. If any additional columns are
+// used for this table's PRIMARY_KEY, they must also be specified. Note that it is not
+// required that the "id" column be specified as a member of primary_key_cols, as this
+// is assumed to be the case.
+func (c CassandraConnector) Delete(table, id string, primary_key_cols ...string) error {
+	query := "DELETE FROM " + table + " WHERE id = " + id // Base query
+
+	// If the PRIMARY KEY is compound (uses more columns than "id"), then append those onto the base query
+	for _, col := range primary_key_cols {
+		// Get value for this column
+		colQuery := "SELECT " + col + " FROM " + table + " WHERE id = " + id
+		m := make(map[string]interface{})
+		err := c.Query(colQuery).Consistency(gocql.One).MapScan(m)
+		if err != nil {
+			return err
+		}
+
+		// value can be of different types. Based on type, append it onto the
+		// base query string.
+		var colVal string
+		switch v := m[col].(type) {
+		case int:
+			colVal = string(v)
+		case string:
+			colVal = "'" + v + "'"
+		case gocql.UUID:
+			colVal = v.String()
+		default:
+			return fmt.Errorf("Unrecognized value type, %T, for column, %q", m[col], col)
+		}
+		query += (" AND " + col + " = " + colVal)
+	}
+
+	log.Printf("Running the following DELETE query:\n\t%q\n", query)
+	return c.Query(query).Exec()
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {

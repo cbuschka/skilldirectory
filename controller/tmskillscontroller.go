@@ -83,8 +83,9 @@ func (c *TMSkillsController) removeTMSkill() error {
 		}
 	}
 
-	err := c.session.Delete("tmskills", tmSkillID)
+	err := c.session.Delete("tmskills", tmSkillID, "team_member_id")
 	if err != nil {
+		log.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No TMSkill Exists with Specified ID: " + tmSkillID,
 		}

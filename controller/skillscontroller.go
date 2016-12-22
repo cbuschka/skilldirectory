@@ -119,6 +119,7 @@ func (c *SkillsController) removeSkill() error {
 
 	err := c.session.Delete("skills", skillID)
 	if err != nil {
+		log.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
 		}

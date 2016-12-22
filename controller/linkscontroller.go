@@ -94,7 +94,7 @@ func (c *LinksController) removeLink() error {
 		}
 	}
 
-	err := c.session.Delete("links", linkID)
+	err := c.session.Delete("links", linkID, "skill_id")
 	if err != nil {
 		log.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
