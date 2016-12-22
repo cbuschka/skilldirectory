@@ -96,6 +96,7 @@ func (c *LinksController) removeLink() error {
 
 	err := c.session.Delete("links", linkID)
 	if err != nil {
+		log.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Link Exists with Specified ID: " + linkID,
 		}
