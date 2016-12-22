@@ -8,7 +8,7 @@ import (
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
-	util "skilldirectory/util"
+	"skilldirectory/util"
 
 	"fmt"
 )
