@@ -98,15 +98,23 @@ func (c CassandraConnector) Read(table, key string, object interface{}) error {
 	return json.Unmarshal(byteQ, &object)
 }
 
-// Must pass in table and value of the row's id column. If any additional columns are
-// used for this table's PRIMARY_KEY, they must also be specified. Note that it is not
-// required that the "id" column be specified as a member of primary_key_cols, as this
-// is assumed to be the case.
+/*
+Delete will run a DELETE query on the database, thereby removing the specified record.
+Delete requires a table to delete from, and an id to identify the record. If the table
+uses a compound PRIMARY KEY, then it is necessary to specify the column names of all
+additional columns used in the PRIMARY KEY besides "id" (it is assumed that "id" is used
+in the PRIMARY KEY).
+
+Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
+ */
 func (c CassandraConnector) Delete(table, id string, primary_key_cols ...string) error {
 	query := "DELETE FROM " + table + " WHERE id = " + id // Base query
 
 	// If the PRIMARY KEY is compound (uses more columns than "id"), then append those onto the base query
 	for _, col := range primary_key_cols {
+		if col == "id" { // Skip the "id" column; it's already in the base query
+			continue
+		}
 		// Get value for this column
 		colQuery := "SELECT " + col + " FROM " + table + " WHERE id = " + id
 		m := make(map[string]interface{})
