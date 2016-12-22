@@ -22,10 +22,17 @@ export CASSANDRA_KEYSPACE='skill_directory_keyspace'
 # echo "Buildling..."
 go build
 
+# docker-compose up -d
+
 running=$(docker inspect -f {{.State.Running}} cassandra_container)
-# echo $running
+if $running && $drop_data_flag; then
+    echo 'Stopping cassandra_container'
+    docker stop cassandra_container >/dev/null
+    running=false
+fi
+
 if $running; then
-  echo "Already Running"
+  echo "cassandra_container is already running"
 else
   docker-compose build
   docker-compose up -d
@@ -34,7 +41,7 @@ else
 fi
 
 # If "--dropdata" flag was used, then drop the keyspace
-if [[ $drop_data_flag = true ]]; then
+if $drop_data_flag; then
     echo 'Dropping and rebuilding "skill_directory_keyspace" keyspace'
     docker exec -it cassandra_container bash usr/bin/cqlsh -e "DROP KEYSPACE skill_directory_keyspace"
 fi
