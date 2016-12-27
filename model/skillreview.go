@@ -17,7 +17,7 @@ type SkillReview struct {
 /*
 NewSkillReview returns a new instance of SkillReview. All fields must be specified.
  */
-func NewSkillReview(id, skillID, teamMemberID, body, date string, positive bool) {
+func NewSkillReview(id, skillID, teamMemberID, body, date string, positive bool) SkillReview {
 	return SkillReview{
 		ID: id,
 		SkillID: skillID,
