@@ -2,7 +2,6 @@ package model
 
 import (
 	"testing"
-	"fmt"
 )
 
 func TestNewTMSkillDefaults(t *testing.T) {

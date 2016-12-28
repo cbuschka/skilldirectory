@@ -70,7 +70,7 @@ var (
 		{"/links/", linksHandlerFunc},
 		{"/links", linksHandlerFunc},
 		{"/skillreviews", skillReviewsHandlerFunc},
-		{"/skillreviews/", skillReviewsController},
+		{"/skillreviews/", skillReviewsHandlerFunc},
 	}
 )
 

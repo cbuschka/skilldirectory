@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"fmt"
-	"log"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"skilldirectory/util"
-	"skilldirectory/model"
+	"log"
 	"skilldirectory/errors"
+	"skilldirectory/model"
+	"skilldirectory/util"
 )
 
 type SkillReviewsController struct {
@@ -75,19 +75,22 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 }
 
 func (c *SkillReviewsController) removeSkillReview() error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get the ID at end of the specified request
 	skillReviewID := util.CheckForID(c.r.URL)
 	if skillReviewID == "" {
 		return &errors.MissingIDError{
-			ErrorMsg: "No SkillReview ID Specified in Request URL: " + c.r.URL.String(),
+			ErrorMsg: "No SkillReview ID Specified in Request URL: " +
+				c.r.URL.String(),
 		}
 	}
 
-	err := c.session.Delete("skillreviews", skillReviewID, "team_member_id")
+	err := c.session.Delete("skillreviews", skillReviewID, "skill_id")
 	if err != nil {
-		log.Printf("removeSkillReview() failed for the following reason:\n\t%q\n", err)
+		log.Printf("removeSkillReview() failed for the following reason:"+
+			"\n\t%q\n", err)
 		return &errors.NoSuchIDError{
-			ErrorMsg: "No SkillReview Exists with Specified ID: " + skillReviewID,
+			ErrorMsg: "No SkillReview Exists with Specified ID: " +
+				skillReviewID,
 		}
 	}
 
@@ -96,7 +99,7 @@ func (c *SkillReviewsController) removeSkillReview() error {
 }
 
 func (c *SkillReviewsController) addSkillReview() error {
-	// Read the body of the HTTP request into an array of bytes; ignore any errors
+	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	skillReview := model.SkillReview{}
@@ -132,9 +135,9 @@ error if not.
 */
 func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview) error {
 	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
-	   skillReview.Body    == "" || skillReview.Date         == "" {
+		skillReview.Body == "" || skillReview.Date == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new SkillReview must contain values for" +
+			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new SkillReview must contain values for"+
 				" %q, %q, %q, and %q fields.", "skill_id", "team_member_id", "body", "date"),
 		}
 	}
