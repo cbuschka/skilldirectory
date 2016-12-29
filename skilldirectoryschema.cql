@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.skillreviews (
     skill_id       varchar,
     team_member_id varchar,
     body           varchar,
-    date           date,
+    timestamp      timestamp,
     positive       boolean,
     PRIMARY KEY (skill_id, id)
 );

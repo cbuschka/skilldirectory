@@ -91,7 +91,7 @@ func TestDeleteSkillReview_NoKey(t *testing.T) {
 
 func TestPostSkillReview(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
-		"12/28/2016", true)
+		"1234", true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
@@ -102,7 +102,7 @@ func TestPostSkillReview(t *testing.T) {
 }
 
 func TestPostSkillReview_NoSkillID(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "", "3456", "blah", "12/28/2016",
+	body := getReaderForNewSkillReview("1234", "", "3456", "blah", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -115,7 +115,7 @@ func TestPostSkillReview_NoSkillID(t *testing.T) {
 }
 
 func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "", "blah", "12/28/2016",
+	body := getReaderForNewSkillReview("1234", "2345", "", "blah", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -128,7 +128,7 @@ func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
 }
 
 func TestPostSkillReview_NoBody(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "3456", "", "12/28/2016",
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -137,18 +137,6 @@ func TestPostSkillReview_NoBody(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error dur to empty %q field in SkillReview POST"+
 			" request.", "body")
-	}
-}
-
-func TestPostSkillReview_NoDate(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "", true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
-	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
-
-	err := sc.Post()
-	if err == nil {
-		t.Errorf("Expected error dur to empty %q field in SkillReview POST"+
-			" request.", "date")
 	}
 }
 
@@ -164,7 +152,7 @@ func TestPostSkillReview_NoSkillReview(t *testing.T) {
 
 func TestPostSkillReview_Error(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
-		"12/28/201", true)
+		"1234", true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
@@ -191,10 +179,10 @@ getReaderForNewSkillReview is a helper function for a new SkillReview with the g
 id, skillID, teamMemberID, body, date, and positive flag. This SkillReview is then
 marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
-func getReaderForNewSkillReview(id, skillID, teamMemberID, body, date string,
+func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp string,
 	positive bool) *bytes.Reader {
 	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
-		body, date, positive)
+		body, timestamp, positive)
 	b, _ := json.Marshal(newSkillReview)
 	return bytes.NewReader(b)
 }

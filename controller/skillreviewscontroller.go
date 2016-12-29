@@ -8,6 +8,8 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	"skilldirectory/util"
+	"time"
+	"skilldirectory/data"
 )
 
 type SkillReviewsController struct {
@@ -31,7 +33,7 @@ func (c SkillReviewsController) Delete() error {
 }
 
 func (c SkillReviewsController) Put() error {
-	return fmt.Errorf("PUT requests nor currently supported.")
+	return c.updateSkillReview()
 }
 
 func (c *SkillReviewsController) performGet() error {
@@ -98,6 +100,43 @@ func (c *SkillReviewsController) removeSkillReview() error {
 	return nil
 }
 
+func (c *SkillReviewsController) updateSkillReview() error {
+	skillReviewID := util.CheckForID(c.r.URL)
+	if skillReviewID == "" {
+		return &errors.MissingIDError{
+			ErrorMsg: "Must specify a SkillReview ID in PUT request URL.",
+		}
+	}
+
+	skillReview, err := c.loadSkillReview(skillReviewID)
+	if err != nil {
+		return err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(c.r.Body)
+	if err != nil {
+		return err
+	}
+
+	var bodyStr struct{ Body string }
+	json.Unmarshal(bodyBytes, &bodyStr)
+
+	skillReview.Body = bodyStr.Body
+	err = c.validatePUTBody(skillReview)
+	if err != nil {
+		return err
+	}
+
+	skillReview.Timestamp = time.Now().Format(data.TimestampFormat)
+	err = c.session.Save("skillreviews", skillReviewID, skillReview)
+	if err != nil {
+		return &errors.SavingError{
+			ErrorMsg: err.Error(),
+		}
+	}
+	return nil
+}
+
 func (c *SkillReviewsController) addSkillReview() error {
 	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
@@ -115,6 +154,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
 
+	skillReview.Timestamp = time.Now().Format(data.TimestampFormat) // CSQL-compatible timestamp format
 	skillReview.ID = util.NewID()
 	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
 	if err != nil {
@@ -135,10 +175,26 @@ error if not.
 */
 func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview) error {
 	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
-		skillReview.Body == "" || skillReview.Date == "" {
+		skillReview.Body == "" {
 		return &errors.IncompletePOSTBodyError{
 			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new SkillReview must contain values for"+
-				" %q, %q, %q, and %q fields.", "skill_id", "team_member_id", "body", "date"),
+				" %q, %q, and %q fields.", "skill_id", "team_member_id", "body"),
+		}
+	}
+	return nil
+}
+
+/*
+validatePUTBody() accepts a model.SkillReview pointer. It can be used to verify the
+validity of the state of a SkillReview updated via a PUT request. Ensures that the
+passed-in SkillReview's "Body" field is not empty.
+*/
+func (c *SkillReviewsController) validatePUTBody(skillReview *model.SkillReview) error {
+	if skillReview.Body == "" {
+		return &errors.InvalidPUTBodyError{
+			ErrorMsg: fmt.Sprintf("The JSON in a PUT request for new"+
+				" SkillReview must contain a value for the %q field",
+				"body"),
 		}
 	}
 	return nil

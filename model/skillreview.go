@@ -10,20 +10,20 @@ type SkillReview struct {
 	SkillID      string `json:"skill_id"`;
 	TeamMemberID string `json:"team_member_id"`;
 	Body         string `json:"body"`;
-	Date         string `json:"date"`;
+	Timestamp    string `json:"timestamp"`;
 	Positive     bool   `json:"positive"`;
 }
 
 /*
 NewSkillReview returns a new instance of SkillReview. All fields must be specified.
  */
-func NewSkillReview(id, skillID, teamMemberID, body, date string, positive bool) SkillReview {
+func NewSkillReview(id, skillID, teamMemberID, body, timestamp string, positive bool) SkillReview {
 	return SkillReview{
 		ID: id,
 		SkillID: skillID,
 		TeamMemberID: teamMemberID,
 		Body: body,
-		Date: date,
+		Timestamp: timestamp,
 		Positive: positive,
 	}
 }
