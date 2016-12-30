@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
@@ -57,7 +58,14 @@ func (c *TeamMembersController) getTeamMember(id string) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(teamMember)
+
+	tmSkills, err := c.getAllTMSkills(teamMember)
+	if err != nil {
+		return err
+	}
+
+	teamMemberDTO := teamMember.NewTeamMemberDTO(tmSkills)
+	b, err := json.Marshal(teamMemberDTO)
 	c.w.Write(b)
 	return err
 }
@@ -71,6 +79,32 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 		}
 	}
 	return &teamMember, nil
+}
+
+// Get all TMSkills in the database associated with the specified TeamMember
+func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) ([]model.TMSkill, error) {
+	options := data.NewCassandraQueryOptions(
+		"team_member_id", teamMember.ID, false)
+	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills", options, model.TMSkill{})
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	tmSkills := &[]model.TMSkill{}
+	err = json.Unmarshal(tmSkillsRaw, tmSkills)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	return *tmSkills, nil
 }
 
 func (c *TeamMembersController) removeTeamMember() error {
