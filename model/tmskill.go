@@ -51,11 +51,11 @@ func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool, prof
 /*
 NewTMSkillDTO returns a new TMSkillDTO for the TMSkill it is called on, using
 the specified skillName and teamMemberName.
- */
+*/
 func (t TMSkill) NewTMSkillDTO(skillName, teamMemberName string) TMSkillDTO {
 	return TMSkillDTO{
-		TMSkill: t,
-		SkillName: skillName,
+		TMSkill:        t,
+		SkillName:      skillName,
 		TeamMemberName: teamMemberName,
 	}
 }

@@ -24,35 +24,7 @@
 		{
 			"name": "Get A Team Member",
 			"request": {
-				"url": "http://localhost:8080/teammembers/[ID]",
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Skills",
-			"request": {
-				"url": "http://localhost:8080/skills",
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Get A Skill",
-			"request": {
-				"url": "http://localhost:8080/skills/[ID]",
+				"url": "http://localhost:8080/teammembers/7ca4d282-cd6d-11e6-850a-6c4008bcfa84",
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -80,7 +52,63 @@
 		{
 			"name": "Get A TMSkill",
 			"request": {
-				"url": "http://localhost:8080/tmskills/[ID]",
+				"url": "http://localhost:8080/tmskills/7f012db2-cd6d-11e6-850b-6c4008bcfa84",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Skills",
+			"request": {
+				"url": "http://localhost:8080/skills",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Skill",
+			"request": {
+				"url": "http://localhost:8080/skills/82d1b95b-cd6d-11e6-850e-6c4008bcfa84",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Skill Reviews",
+			"request": {
+				"url": "http://localhost:8080/skillreviews",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Skill Review",
+			"request": {
+				"url": "http://localhost:8080/skillreviews/8433ac35-cd6d-11e6-850f-6c4008bcfa84",
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -106,6 +134,46 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n\t\"name\":\"Yogi Bear\",\n\t\"title\":\"Smart Than Average Bear\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New TMSkill - Basic",
+			"request": {
+				"url": "http://localhost:8080/tmskills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"4321\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New TMSkill - Advanced",
+			"request": {
+				"url": "http://localhost:8080/tmskills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"proficiency\": 5,\n    \"skill_id\": \"1234\",\n    \"team_member_id\": \"4321\",\n    \"wish_list\": true\n  }"
 				},
 				"description": ""
 			},
@@ -152,9 +220,9 @@
 			"response": []
 		},
 		{
-			"name": "New TMSkill - Basic",
+			"name": "New Skill Review - Basic",
 			"request": {
-				"url": "http://localhost:8080/tmskills/",
+				"url": "http://localhost:8080/skillreviews",
 				"method": "POST",
 				"header": [
 					{
@@ -165,17 +233,17 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"4321\"\n}\n"
+					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"1234\",\n\t\"body\":\"blahblahblah\",\n\t\"positive\":true\n}\n"
 				},
 				"description": ""
 			},
 			"response": []
 		},
 		{
-			"name": "New TMSkill - Advanced",
+			"name": "Update Skill Review",
 			"request": {
-				"url": "http://localhost:8080/tmskills/",
-				"method": "POST",
+				"url": "http://localhost:8080/skillreviews/[ID]",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -185,7 +253,63 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"proficiency\": 5,\n    \"skill_id\": \"1234\",\n    \"team_member_id\": \"4321\",\n    \"wish_list\": true\n  }"
+					"raw": "{\n\t\"body\":\"This here is an updated skill review body!\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Team Member",
+			"request": {
+				"url": "http://localhost:8080/teammembers/[ID]",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A TMSkill",
+			"request": {
+				"url": "http://localhost:8080/tmskills/[ID]",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Skill",
+			"request": {
+				"url": "http://localhost:8080/skills/[ID]",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A SkillReview",
+			"request": {
+				"url": "http://localhost:8080/skillreviews/[ID]",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
 				},
 				"description": ""
 			},

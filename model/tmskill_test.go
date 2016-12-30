@@ -1,11 +1,13 @@
 package model
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewTMSkillDefaults(t *testing.T) {
-	tmSkillOne := NewTMSkillDefaults("TMSkillID", "SkillID",
+	tmSkillDTOOne := NewTMSkillDefaults("TMSkillID", "SkillID",
 		"TeamMemberID").NewTMSkillDTO("Coding", "Javatar")
-	tmSkillTwo := TMSkillDTO{
+	tmSkillDTOTwo := TMSkillDTO{
 		TMSkill: TMSkill{
 			ID:           "TMSkillId",
 			SkillID:      "SkillID",
@@ -13,19 +15,19 @@ func TestNewTMSkillDefaults(t *testing.T) {
 			WishList:     false,
 			Proficiency:  0,
 		},
-		SkillName: "Coding",
+		SkillName:      "Coding",
 		TeamMemberName: "Javatar",
 	}
 	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if tmSkillOne == tmSkillTwo {
+	if tmSkillDTOOne != tmSkillDTOTwo {
 		t.Errorf("constructor newTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
 
 func TestNewTMSkillSetDefaults(t *testing.T) {
-	tmSkillOneDTO := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID",
+	tmSkillDTOOne := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID",
 		true, 3).NewTMSkillDTO("Coding", "Javatar")
-	tmSkillTwoDTO := TMSkillDTO{
+	tmSkillDTOTwo := TMSkillDTO{
 		TMSkill: TMSkill{
 			ID:           "TMSkillId",
 			SkillID:      "SkillID",
@@ -33,11 +35,11 @@ func TestNewTMSkillSetDefaults(t *testing.T) {
 			WishList:     true,
 			Proficiency:  3,
 		},
-		SkillName: "Coding",
+		SkillName:      "Coding",
 		TeamMemberName: "Javatar",
 	}
 	// Verify that all of tmSkillOneDTO and tmSkillTwoDTO's fields are equal.
-	if tmSkillOneDTO == tmSkillTwoDTO {
+	if tmSkillDTOOne == tmSkillDTOTwo {
 		t.Errorf("constructor newTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
