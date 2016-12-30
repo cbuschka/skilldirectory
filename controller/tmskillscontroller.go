@@ -43,11 +43,36 @@ func (c *TMSkillsController) performGet() error {
 }
 
 func (c *TMSkillsController) getAllTMSkills() error {
-	tmSkill, err := c.session.ReadAll("tmskills", model.TMSkill{})
+	tmSkillsInterface, err := c.session.ReadAll("tmskills", model.TMSkill{})
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(tmSkill)
+
+	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
+	if err != nil {
+		return &errors.MarshalingError{err.Error()}
+	}
+
+	tmSkills := []model.TMSkill{}
+	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
+	if err != nil {
+		return &errors.MarshalingError{err.Error()}
+	}
+
+	tmSkillDTOs := make([]model.TMSkillDTO, len(tmSkills))
+	for idx := range tmSkillDTOs {
+		skillName, err := c.getSkillName(&tmSkills[idx])
+		if err != nil {
+			return err
+		}
+		teamMemberName, err := c.getTeamMemberName(&tmSkills[idx])
+		if err != nil {
+			return err
+		}
+		tmSkillDTOs[idx] = tmSkills[idx].NewTMSkillDTO(skillName, teamMemberName)
+	}
+
+	b, err := json.Marshal(tmSkillDTOs)
 	c.w.Write(b)
 	return err
 }

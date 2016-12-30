@@ -1,6 +1,7 @@
 package model
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -19,8 +20,8 @@ func TestNewTMSkillDefaults(t *testing.T) {
 		TeamMemberName: "Javatar",
 	}
 	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if tmSkillDTOOne != tmSkillDTOTwo {
-		t.Errorf("constructor newTMSkillDefaults() produced incorrect TMSkill.")
+	if reflect.DeepEqual(tmSkillDTOOne, tmSkillDTOTwo) {
+		t.Error("constructor newTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
 
@@ -40,7 +41,7 @@ func TestNewTMSkillSetDefaults(t *testing.T) {
 	}
 	// Verify that all of tmSkillOneDTO and tmSkillTwoDTO's fields are equal.
 	if tmSkillDTOOne == tmSkillDTOTwo {
-		t.Errorf("constructor newTMSkillSetDefaults() produced incorrect TMSkill.")
+		t.Error("constructor newTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
 	tmSkill := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 3)
