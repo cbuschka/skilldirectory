@@ -1,15 +1,22 @@
 package model
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestNewTeamMember(t *testing.T) {
-	tmOne := NewTeamMember("1234", "Yogi Bear", "Smarter Than Average Bear")
-	tmTwo := TeamMember{
-		ID:    "1234",
-		Name:  "Yogi Bear",
-		Title: "Smarter Than Average Bear",
+	tmDTOOne := NewTeamMember("1234", "Yogi Bear", "Smarter Than Avg").NewTeamMemberDTO(
+		[]TMSkill{NewTMSkillDefaults("2345", "3456", "1234")})
+	tmDTOTwo := TeamMemberDTO{
+		TeamMember: TeamMember{
+			ID:    "1234",
+			Name:  "Yogi Bear",
+			Title: "Smarter Than Average Bear",
+		},
+		TMSkills: []TMSkill{NewTMSkillDefaults("2345", "3456", "1234")},
 	}
-	if tmOne != tmTwo {
-		t.Error("model.teammember.\"NewTeamMember()\" produced incorrect TeamMember")
+	if reflect.DeepEqual(tmDTOOne, tmDTOTwo) {
+		t.Error("model.teammember.\"NewTeamMemberDTO()\" produced incorrect TeamMemberDTO")
 	}
 }
