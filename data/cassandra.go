@@ -8,6 +8,9 @@ import (
 	"github.com/gocql/gocql"
 )
 
+// TimestampFormat is a CSQL-compatible timestamp format
+const TimestampFormat = "2006-01-02 15:04:05-0700"
+
 type CassandraConnector struct {
 	*gocql.Session
 	path     string

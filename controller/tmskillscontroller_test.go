@@ -107,18 +107,20 @@ func TestPostTMSkill_NoSkillID(t *testing.T) {
 
 	err := tc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to empty %q field in TMSkill POST request.", "name")
+		t.Errorf("Expected error due to empty %q field in TMSkill POST"+
+			" request.", "skill_id")
 	}
 }
 
-func TestPostTMSKill_NoTeamMemberID(t *testing.T) {
+func TestPostTMSkill_NoTeamMemberID(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "")
 	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
 	if err == nil {
-		t.Errorf("Expected error due to empty %q field in TMSkill POST request.", "title")
+		t.Errorf("Expected error due to empty %q field in TMSkill POST"+
+			" request.", "team_member_id")
 	}
 }
 

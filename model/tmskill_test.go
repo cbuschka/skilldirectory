@@ -1,18 +1,20 @@
 package model
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewTMSkillDefaults(t *testing.T) {
 	tmSkillOne := NewTMSkillDefaults("TMSkillID", "SkillID", "TeamMemberID")
 	tmSkillTwo := TMSkill{
-		ID:           "TMSkillId",
+		ID:           "TMSkillID",
 		SkillID:      "SkillID",
 		TeamMemberID: "TeamMemberID",
 		WishList:     false,
 		Proficiency:  0,
 	}
 	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if tmSkillOne == tmSkillTwo {
+	if tmSkillOne != tmSkillTwo {
 		t.Errorf("constructor newTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
@@ -20,14 +22,14 @@ func TestNewTMSkillDefaults(t *testing.T) {
 func TestNewTMSkillSetDefaults(t *testing.T) {
 	tmSkillOne := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 3)
 	tmSkillTwo := TMSkill{
-		ID:           "TMSkillId",
+		ID:           "TMSkillID",
 		SkillID:      "SkillID",
 		TeamMemberID: "TeamMemberID",
 		WishList:     true,
 		Proficiency:  3,
 	}
 	// Verify that all of tmSkillOne and tmSkillTwo's fields are equal.
-	if tmSkillOne == tmSkillTwo {
+	if tmSkillOne != tmSkillTwo {
 		t.Errorf("constructor newTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
