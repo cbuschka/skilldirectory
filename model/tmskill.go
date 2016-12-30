@@ -8,6 +8,12 @@ type TMSkill struct {
 	Proficiency  int    `json:"proficiency"`
 }
 
+type TMSkillDTO struct {
+	TMSkill
+	SkillName      string `json:"skill_name"`
+	TeamMemberName string `json:"team_member_name"`
+}
+
 /*
 NewTMSkillDefaults returns a new instance of TMSkill, with defaults for WishList (false) and Proficiency (0).
 */
@@ -39,6 +45,18 @@ func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool, prof
 		TeamMemberID: teamMemberID,
 		WishList:     wishList,
 		Proficiency:  proficiency,
+	}
+}
+
+/*
+NewTMSkillDTO returns a new TMSkillDTO for the TMSkill it is called on, using
+the specified skillName and teamMemberName.
+ */
+func (t TMSkill) NewTMSkillDTO(skillName, teamMemberName string) TMSkillDTO {
+	return TMSkillDTO{
+		TMSkill: t,
+		SkillName: skillName,
+		TeamMemberName: teamMemberName,
 	}
 }
 

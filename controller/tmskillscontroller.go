@@ -57,7 +57,19 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(tmSkill)
+
+	teamMemberName, err := c.getTeamMemberName(tmSkill)
+	if err != nil {
+		return err
+	}
+
+	skillName, err := c.getSkillName(tmSkill)
+	if err != nil {
+		return err
+	}
+
+	tmSkillDTO := tmSkill.NewTMSkillDTO(skillName, teamMemberName)
+	b, err := json.Marshal(tmSkillDTO)
 	c.w.Write(b)
 	return err
 }
@@ -72,6 +84,24 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 		}
 	}
 	return &tmSkill, nil
+}
+
+func (c *TMSkillsController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
+	teamMember := model.TeamMember{}
+	err := c.session.Read("teammembers", tmSkill.TeamMemberID, &teamMember)
+	if err != nil {
+		return "", err
+	}
+	return teamMember.Name, nil
+}
+
+func (c *TMSkillsController) getSkillName(tmSkill *model.TMSkill) (string, error) {
+	skill := model.Skill{}
+	err := c.session.Read("skills", tmSkill.SkillID, &skill)
+	if err != nil {
+		return "", err
+	}
+	return skill.Name, nil
 }
 
 func (c *TMSkillsController) removeTMSkill() error {
