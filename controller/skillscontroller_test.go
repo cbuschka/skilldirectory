@@ -59,63 +59,6 @@ func TestGetSkill_Error(t *testing.T) {
 	}
 }
 
-// func TestGetSkillsFiltered(t *testing.T) {
-// 	base := BaseController{}
-// 	skillsConnector := SkillsController{BaseController: &base}
-//
-// 	responseRecorder := httptest.NewRecorder()
-// 	request := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
-// 	accessor := Newdata.MockInMemoryDataAccessor()
-// 	base.Init(responseRecorder, request, &accessor)
-//
-// 	newScriptedSkill := model.NewSkill("1234", "TestSkillName", model.ScriptedSkillType)
-// 	skillsConnector.session.Save(newScriptedSkill.Id, newScriptedSkill)
-// 	newCompiledSkill := model.NewSkill("2136", "TestSkillName", model.CompiledSkillType)
-// 	skillsConnector.session.Save(newCompiledSkill.Id, newCompiledSkill)
-//
-// 	err := skillsConnector.Get()
-// 	if err != nil {
-// 		t.Errorf("Did not expect error when getting skills with filter")
-// 	}
-//
-// 	correctResponseBody := "[{\"Blogs\":[],\"id\":\"1234\",\"name\":\"TestSkillName\",\"skilltype\":\"scripted\"}]"
-// 	if responseRecorder.Body.String() != correctResponseBody {
-// 		t.Errorf("Failed to properly filter based on skilltype. "+
-// 			"Expected Response body to be \n\t %s\n But got\n\t %s\\n",
-// 			correctResponseBody, responseRecorder.Body.String())
-// 	}
-// }
-//
-// func TestGetSkillsFilteredBadSkillType(t *testing.T) {
-// 	base := BaseController{}
-// 	skillsConnector := SkillsController{BaseController: &base}
-//
-// 	responseRecorder := httptest.NewRecorder()
-// 	request := httptest.NewRequest(http.MethodGet, "/skills?skilltype=invalid-skill-type", nil)
-// 	accessor := Newdata.MockInMemoryDataAccessor()
-// 	base.Init(responseRecorder, request, &accessor)
-//
-// 	err := skillsConnector.Get()
-// 	if err == nil {
-// 		t.Errorf("Expected error due to invalid skill type.")
-// 	}
-// }
-//
-//func TestGetSkillsFilteredError(t *testing.T) {
-//	base := BaseController{}
-//	skillsConnector := SkillsController{BaseController: &base}
-//
-//	responseRecorder := httptest.NewRecorder()
-//	request := httptest.NewRequest(http.MethodGet, "/skills?skilltype=scripted", nil)
-//	accessor := data.MockErrorDataAccessor{}
-//	base.Init(responseRecorder, request, &accessor)
-//
-//	err := skillsConnector.Get()
-//	if err == nil {
-//		t.Errorf("Expecting error for TestGetSkillsFilteredError")
-//	}
-//}
-
 func TestDeleteSkill(t *testing.T) {
 	request := httptest.NewRequest(http.MethodDelete, "/skills/1234", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
