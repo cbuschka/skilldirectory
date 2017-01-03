@@ -14,7 +14,7 @@ type TeamMember struct {
 
 type TeamMemberDTO struct {
 	TeamMember
-	TMSkills []TMSkill `json:"tm_skills"`
+	TMSkillDTOs []TMSkillDTO `json:"tm_skills"`
 }
 
 /*
@@ -31,12 +31,12 @@ func NewTeamMember(id, name, title string) TeamMember {
 
 /*
 NewTeamMemberDTO returns a new instance of TeamMemberDTO for the TeamMember
-it is called on, using the specified []TMSkill.
+it is called on, using the specified []TMSkillDTO.
 */
-func (t TeamMember) NewTeamMemberDTO(tmSkills []TMSkill) TeamMemberDTO {
+func (t TeamMember) NewTeamMemberDTO(tmSkillDTOs []TMSkillDTO) TeamMemberDTO {
 	return TeamMemberDTO{
-		TeamMember: t,
-		TMSkills:   tmSkills,
+		TeamMember:  t,
+		TMSkillDTOs: tmSkillDTOs,
 	}
 }
 

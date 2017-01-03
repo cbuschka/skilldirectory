@@ -59,12 +59,12 @@ func (c *TeamMembersController) getTeamMember(id string) error {
 		return err
 	}
 
-	tmSkills, err := c.getAllTMSkills(teamMember)
+	tmSkillDTOs, err := c.getAllTMSkills(teamMember)
 	if err != nil {
 		return err
 	}
 
-	teamMemberDTO := teamMember.NewTeamMemberDTO(tmSkills)
+	teamMemberDTO := teamMember.NewTeamMemberDTO(tmSkillDTOs)
 	b, err := json.Marshal(teamMemberDTO)
 	c.w.Write(b)
 	return err
@@ -81,30 +81,83 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 	return &teamMember, nil
 }
 
-// Get all TMSkills in the database associated with the specified TeamMember
-func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) ([]model.TMSkill, error) {
+// Get a []model.TMSkillDTO for all TMSkills in the database associated with the
+// specified TeamMember
+func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
+	[]model.TMSkillDTO, error) {
+	// Get all TMSkills that reference the passed-in TeamMember
 	options := data.NewCassandraQueryOptions(
 		"team_member_id", teamMember.ID, false)
-	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills", options, model.TMSkill{})
+	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills",
+		options, model.TMSkill{})
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
 
+	// Convert byte representation to map[string]interface{}
 	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
 
-	tmSkills := &[]model.TMSkill{}
-	err = json.Unmarshal(tmSkillsRaw, tmSkills)
+	// Convert map[string]interface{} to []model.TMSkill{}
+	tmSkills := []model.TMSkill{}
+	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
 	if err != nil {
 		log.Print(err)
 		return nil, err
 	}
 
-	return *tmSkills, nil
+	// "Convert" []model.TMSkill{} to []model.TMSkillDTO{} so that the
+	// names of each TMSkill's TeamMember and Skill IDs are returned.
+	tmSkillsDTO := []model.TMSkillDTO{}
+	for _, tmSkill := range tmSkills {
+		// Get name of TeamMember, skip if encounter an error
+		teamMemberName, err := c.getTeamMemberName(&tmSkill)
+		if err != nil {
+			log.Println("Possible invalid id:", err)
+			return nil, &errors.NoSuchIDError{
+				ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
+					"specified ID: %q", tmSkill.TeamMemberID),
+			}
+		}
+
+		// Get name of Skill, skip if encounter an error
+		skillName, err := c.getSkillName(&tmSkill)
+		if err != nil {
+			log.Println("Possible invalid id:", err)
+			return nil, &errors.NoSuchIDError{
+				ErrorMsg: fmt.Sprintf("no Skill exists with "+
+					"specified ID: %q", tmSkill.SkillID),
+			}
+		}
+
+		// Append new TMSkillDTO to return object w/ the names
+		tmSkillsDTO = append(tmSkillsDTO,
+			tmSkill.NewTMSkillDTO(skillName, teamMemberName))
+	}
+
+	return tmSkillsDTO, nil
+}
+
+func (c *TeamMembersController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
+	teamMember := model.TeamMember{}
+	err := c.session.Read("teammembers", tmSkill.TeamMemberID, &teamMember)
+	if err != nil {
+		return "", err
+	}
+	return teamMember.Name, nil
+}
+
+func (c *TeamMembersController) getSkillName(tmSkill *model.TMSkill) (string, error) {
+	skill := model.Skill{}
+	err := c.session.Read("skills", tmSkill.SkillID, &skill)
+	if err != nil {
+		return "", err
+	}
+	return skill.Name, nil
 }
 
 func (c *TeamMembersController) removeTeamMember() error {
