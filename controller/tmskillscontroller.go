@@ -142,7 +142,7 @@ func (c *TMSkillsController) getSkillName(tmSkill *model.TMSkill) (string, error
 }
 
 func (c *TMSkillsController) removeTMSkill() error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get the ID at end of the request; return error if request contains no ID
 	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
 		return &errors.MissingIDError{
@@ -176,7 +176,7 @@ func (c *TMSkillsController) addTMSkill() error {
 
 	err = c.validatePOSTBody(&tmSkill)
 	if err != nil {
-		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
+		return err // Will be IncompletePOSTBodyError or InvalidPOSTBodyError type
 	}
 
 	tmSkill.ID = util.NewID()
@@ -194,24 +194,46 @@ func (c *TMSkillsController) addTMSkill() error {
 validatePOSTBody() accepts a model.TMSkill pointer. It can be used to verify the
 validity of the state of a TMSkill initialized via unmarshaled JSON. Ensures that
 
-	* the passed-in TMSkill contains a key-value pair for "SkillID" and for "TeamMemberID"
+	* the tmSkill contains a key-value pair for "SkillID" and "TeamMemberID"
 	fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 
-	* the value specified for the "Proficiency" field is between 0 and 5. Returns nil error
-	if it is, InvalidPOSTBodyError if not.
+	* the value specified for the "Proficiency" field is between 0 and 5. Returns
+	nil error if it is, InvalidPOSTBodyError if not.
 */
 func (c *TMSkillsController) validatePOSTBody(tmSkill *model.TMSkill) error {
+	// Validate existence of SkillID and TeamMemberID fields
 	if tmSkill.SkillID == "" || tmSkill.TeamMemberID == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "The JSON in a POST Request for new TMSkill must contain values for " +
-				"\"skill_id\" and \"team_member_id\" fields.",
+			ErrorMsg: fmt.Sprintf("The JSON in POST Request for new TMSkill must "+
+				"contain values for %q and %q fields",
+				"skill_id", "team_member_id"),
 		}
 	}
+
+	// Validate existence of Skill with specified ID
+	err := c.session.Read("skills", tmSkill.SkillID, model.Skill{})
+	if err != nil {
+		return &errors.NoSuchIDError{
+			ErrorMsg: "No skill Exists with ID: " + tmSkill.SkillID,
+		}
+	}
+
+	// Validate existence of Team Member with specified ID
+	err = c.session.Read("teammembers", tmSkill.TeamMemberID, model.TeamMember{})
+	if err != nil {
+		return &errors.NoSuchIDError{
+			ErrorMsg: "No Team Member Exists with ID: " + tmSkill.TeamMemberID,
+		}
+	}
+
+	// Validate the Proficiency field value is within required range
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
 		return &errors.InvalidPOSTBodyError{
-			ErrorMsg: "The JSON in a POST Request for new TMSkill must contain \"proficiency\" " +
-				"field with a value between 0 and 5.",
+			ErrorMsg: fmt.Sprintf("The JSON in POST Request for new TMSkill must "+
+				"contain %q field with value between 0 and 5",
+				"proficiency"),
 		}
 	}
+
 	return nil
 }
