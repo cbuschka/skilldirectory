@@ -3,8 +3,9 @@ package data
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"skilldirectory/util"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gocql/gocql"
 )
 
@@ -13,6 +14,7 @@ const TimestampFormat = "2006-01-02 15:04:05-0700"
 
 type CassandraConnector struct {
 	*gocql.Session
+	*logrus.Logger
 	path     string
 	port     string
 	keyspace string
@@ -42,13 +44,14 @@ func (f Filter) query() string {
 }
 
 func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
-	log.Printf("New Connector Path: %s, Port: %s, Keyspace: %s", path, port, keyspace)
+	logger := util.LogInit()
+	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s", path, port, keyspace)
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
 	session, err := cluster.CreateSession()
 	if err != nil {
-		panic(err)
+		logger.Panic(err)
 	}
 	cassConn := CassandraConnector{
 		path:     path,
@@ -56,6 +59,7 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 		keyspace: keyspace,
 	}
 	cassConn.Session = session
+	cassConn.Logger = logger
 	return &cassConn
 }
 
@@ -142,7 +146,7 @@ func (c CassandraConnector) Delete(table, id string, primary_key_cols ...string)
 		query += (" AND " + col + " = " + colVal)
 	}
 
-	log.Printf("Running the following DELETE query:\n\t%q\n", query)
+	c.Printf("Running the following DELETE query:\n\t%q\n", query)
 	return c.Query(query).Exec()
 }
 
@@ -163,7 +167,7 @@ func (c CassandraConnector) FilteredReadAll(table string, opts CassandraQueryOpt
 	queryObject := readType.GetType()
 	queryObjectArray := []interface{}{}
 	var err error
-	log.Printf("Performing query: %s", query)
+	c.Debugf("Performing query: %s", query)
 	iter := c.Query(query).Iter()
 	for iter.Scan(&queryBytes) {
 		err = json.Unmarshal(queryBytes, &queryObject)
