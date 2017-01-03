@@ -29,10 +29,10 @@ func CheckForID(url *url.URL) string {
 // served by the SkillDirectory server AND doesn't contain an ID.
 func IsValidEndpoint(endpoint string) bool {
 	endpoints := []string{
-		"/skills",       "/skills/",
-		"/teammembers",  "/teammembers/",
-		"/tmskills",     "/tmskills/",
-		"/links",        "/links/",
+		"/skills", "/skills/",
+		"/teammembers", "/teammembers/",
+		"/tmskills", "/tmskills/",
+		"/links", "/links/",
 		"/skillreviews", "/skillreviews/",
 	}
 	if StringSliceContains(endpoints, endpoint) {

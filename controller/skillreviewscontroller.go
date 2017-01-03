@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	"skilldirectory/util"
 	"time"
-	"skilldirectory/data"
 )
 
 type SkillReviewsController struct {
