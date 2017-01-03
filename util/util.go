@@ -1,11 +1,12 @@
 package util
 
 import (
-	"log"
 	"net/url"
 	"os"
 	"path"
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 // GetProperty returns the value from the environment or key/value store
