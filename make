@@ -51,4 +51,4 @@ docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectorysc
 echo "Schema update complete"
 
 echo "Running Skill Directory..."
-./skilldirectory -debug=1
+./skilldirectory

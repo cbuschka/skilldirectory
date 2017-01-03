@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 	"skilldirectory/data"
 	"skilldirectory/router"
@@ -18,8 +17,6 @@ func init() {
 
 func main() {
 	flag.Parse()
-	debugFlag := flag.Lookup("debug")
-	fmt.Println(debugFlag)
 	router := router.StartRouter()
 	http.ListenAndServe(":8080", router)
 }
