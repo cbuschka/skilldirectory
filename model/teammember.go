@@ -1,9 +1,10 @@
 package model
 
 /*
-TeamMember represents a human individual that is currently employed by the organization.
-TeamMembers must have a Name and Title, and a unique ID. TeamMembers may optionally possess
-a set of Skills (SkillSet), as well as a set of Skills they wish to obtain (WishList)
+TeamMember represents a human individual that is currently employed by the
+organization. TeamMembers must have a Name and Title, and a unique ID.
+TeamMembers may optionally possess a set of Skills (SkillSet), as well as a
+set of Skills they wish to obtain (WishList).
 */
 type TeamMember struct {
 	ID    string `json:"id"`
@@ -12,8 +13,8 @@ type TeamMember struct {
 }
 
 /*
-NewTeamMember is a constructor for the TeamMember type. Returns a new instance of TeamMember,
-initialized to the specified ID, Name, and Title.
+NewTeamMember is a constructor for the TeamMember type. Returns a new instance
+of TeamMember, initialized to the specified ID, Name, and Title.
 */
 func NewTeamMember(id, name, title string) TeamMember {
 	return TeamMember{
@@ -23,7 +24,9 @@ func NewTeamMember(id, name, title string) TeamMember {
 	}
 }
 
-// GetType returns an interface{} with an underlying concrete type of TeamMember{}.
+/*
+GetType returns an interface{} with an underlying concrete type of TeamMember{}.
+*/
 func (t TeamMember) GetType() interface{} {
 	return TeamMember{}
 }
