@@ -62,13 +62,13 @@ func (c *TMSkillsController) getAllTMSkills() error {
 	for idx := 0; idx < len(tmSkills); idx++ {
 		skillName, err := c.getSkillName(&tmSkills[idx])
 		if err != nil {
-			c.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 
 		teamMemberName, err := c.getTeamMemberName(&tmSkills[idx])
 		if err != nil {
-			c.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 		tmSkillDTOs = append(tmSkillDTOs,
@@ -88,7 +88,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 	teamMemberName, err := c.getTeamMemberName(tmSkill)
 	if err != nil {
-		c.Println("Possible invalid id:", err)
+		c.Warnf("Possible invalid id: %v", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
 				"specified ID: %q", tmSkill.TeamMemberID),
@@ -97,7 +97,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 	skillName, err := c.getSkillName(tmSkill)
 	if err != nil {
-		c.Println("Possible invalid id:", err)
+		c.Warnf("Possible invalid id: %v", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: fmt.Sprintf("no Skill exists with "+
 				"specified ID: %q", tmSkill.SkillID),
@@ -114,7 +114,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	tmSkill := model.TMSkill{}
 	err := c.session.Read("tmskills", id, &tmSkill)
 	if err != nil {
-		c.Printf("loadTMSkill() generated the following error:\n\t%q", err)
+		c.Warnf("loadTMSkill() generated the following error: %v", err)
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No TMSkill Exists with Specified ID: " + id,
 		}
