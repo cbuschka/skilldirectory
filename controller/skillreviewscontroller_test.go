@@ -8,6 +8,8 @@ import (
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func TestSkillReviewsController_Base(t *testing.T) {
@@ -170,7 +172,7 @@ SkillReviewsController created with that BaseController.
 func getSkillReviewsController(request *http.Request,
 	dataAccessor data.DataAccess) SkillReviewsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor)
+	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
 	return SkillReviewsController{BaseController: &base}
 }
 

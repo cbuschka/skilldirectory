@@ -28,37 +28,47 @@ type Route struct {
 // And add a controller to the controller package
 
 var (
-	url      = util.GetProperty("CASSANDRA_URL")
-	port     = util.GetProperty("CASSANDRA_PORT")
-	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
-	session  = data.NewCassandraConnector(url, port, keyspace)
+	url      string
+	port     string
+	keyspace string
+	session  *data.CassandraConnector
+	routes   []Route
 )
 
-var (
-	skillsController = controller.SkillsController{
-		BaseController: &controller.BaseController{},
-	}
-	skillsHandlerFunc = handler.MakeHandler(handler.Handler, &skillsController, session)
+// InitializeSession sets global variables at start up
+func initializeCassandra() {
+	url = util.GetProperty("CASSANDRA_URL")
+	port = util.GetProperty("CASSANDRA_PORT")
+	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
+	session = data.NewCassandraConnector(url, port, keyspace)
+}
 
-	teamMembersController = controller.TeamMembersController{
-		BaseController: &controller.BaseController{},
-	}
-	teamMembersHandlerFunc = handler.MakeHandler(handler.Handler, &teamMembersController, session)
+func loadRoutes() {
 
-	tmSkillsController = controller.TMSkillsController{
+	skillsController := controller.SkillsController{
 		BaseController: &controller.BaseController{},
 	}
-	tmSkillsHandlerFunc = handler.MakeHandler(handler.Handler, &tmSkillsController, session)
+	skillsHandlerFunc := handler.MakeHandler(handler.Handler, &skillsController, session)
 
-	linksController = controller.LinksController{
+	teamMembersController := controller.TeamMembersController{
 		BaseController: &controller.BaseController{},
 	}
-	linksHandlerFunc = handler.MakeHandler(handler.Handler, &linksController, session)
+	teamMembersHandlerFunc := handler.MakeHandler(handler.Handler, &teamMembersController, session)
 
-	skillReviewsController = controller.SkillReviewsController{
+	tmSkillsController := controller.TMSkillsController{
 		BaseController: &controller.BaseController{},
 	}
-	skillReviewsHandlerFunc = handler.MakeHandler(handler.Handler, &skillReviewsController, session)
+	tmSkillsHandlerFunc := handler.MakeHandler(handler.Handler, &tmSkillsController, session)
+
+	linksController := controller.LinksController{
+		BaseController: &controller.BaseController{},
+	}
+	linksHandlerFunc := handler.MakeHandler(handler.Handler, &linksController, session)
+
+	skillReviewsController := controller.SkillReviewsController{
+		BaseController: &controller.BaseController{},
+	}
+	skillReviewsHandlerFunc := handler.MakeHandler(handler.Handler, &skillReviewsController, session)
 
 	routes = []Route{
 		{"/skills/", skillsHandlerFunc},
@@ -72,13 +82,15 @@ var (
 		{"/skillreviews", skillReviewsHandlerFunc},
 		{"/skillreviews/", skillReviewsHandlerFunc},
 	}
-)
+}
 
 /*
 StartRouter() instantiates a new http.ServeMux and registers with it each endpoint that is currently being handled
 by the SkillDirectory REST API with an appropriate handler function for that endpoint. This http.ServeMux is returned.
 */
 func StartRouter() (mux *http.ServeMux) {
+	initializeCassandra()
+	loadRoutes()
 	mux = http.NewServeMux()
 	for _, r := range routes {
 		mux.HandleFunc(r.path, r.handlerFunc)

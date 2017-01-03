@@ -8,6 +8,8 @@ import (
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func TestTeamMembersControllerBase(t *testing.T) {
@@ -149,7 +151,7 @@ the given HTTP request and DataAccessor. Returns a new TeamMembersController cre
 */
 func getTeamMembersController(request *http.Request, dataAccessor data.DataAccess) TeamMembersController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor)
+	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
 	return TeamMembersController{BaseController: &base}
 }
 
