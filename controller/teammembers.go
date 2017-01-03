@@ -116,22 +116,17 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 	for _, tmSkill := range tmSkills {
 		// Get name of TeamMember, skip if encounter an error
 		teamMemberName, err := c.getTeamMemberName(&tmSkill)
+		// If encounter an error, log and continue to next TMSkill
 		if err != nil {
 			log.Println("Possible invalid id:", err)
-			return nil, &errors.NoSuchIDError{
-				ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
-					"specified ID: %q", tmSkill.TeamMemberID),
-			}
+			continue
 		}
 
 		// Get name of Skill, skip if encounter an error
 		skillName, err := c.getSkillName(&tmSkill)
 		if err != nil {
 			log.Println("Possible invalid id:", err)
-			return nil, &errors.NoSuchIDError{
-				ErrorMsg: fmt.Sprintf("no Skill exists with "+
-					"specified ID: %q", tmSkill.SkillID),
-			}
+			continue
 		}
 
 		// Append new TMSkillDTO to return object w/ the names
