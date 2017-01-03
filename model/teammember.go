@@ -12,6 +12,11 @@ type TeamMember struct {
 	Title string `json:"title"`
 }
 
+type TeamMemberDTO struct {
+	TeamMember
+	TMSkillDTOs []TMSkillDTO `json:"tm_skills"`
+}
+
 /*
 NewTeamMember is a constructor for the TeamMember type. Returns a new instance
 of TeamMember, initialized to the specified ID, Name, and Title.
@@ -21,6 +26,17 @@ func NewTeamMember(id, name, title string) TeamMember {
 		ID:    id,
 		Name:  name,
 		Title: title,
+	}
+}
+
+/*
+NewTeamMemberDTO returns a new instance of TeamMemberDTO for the TeamMember
+it is called on, using the specified []TMSkillDTO.
+*/
+func (t TeamMember) NewTeamMemberDTO(tmSkillDTOs []TMSkillDTO) TeamMemberDTO {
+	return TeamMemberDTO{
+		TeamMember:  t,
+		TMSkillDTOs: tmSkillDTOs,
 	}
 }
 
