@@ -59,17 +59,21 @@ func (c *TMSkillsController) getAllTMSkills() error {
 		return &errors.MarshalingError{err.Error()}
 	}
 
-	tmSkillDTOs := make([]model.TMSkillDTO, len(tmSkills))
-	for idx := range tmSkillDTOs {
+	tmSkillDTOs := []model.TMSkillDTO{}
+	for idx := 0; idx < len(tmSkills); idx++ {
 		skillName, err := c.getSkillName(&tmSkills[idx])
 		if err != nil {
-			return err
+			log.Println("Possible invalid id:", err)
+			continue
 		}
+
 		teamMemberName, err := c.getTeamMemberName(&tmSkills[idx])
 		if err != nil {
-			return err
+			log.Println("Possible invalid id:", err)
+			continue
 		}
-		tmSkillDTOs[idx] = tmSkills[idx].NewTMSkillDTO(skillName, teamMemberName)
+		tmSkillDTOs = append(tmSkillDTOs,
+			tmSkills[idx].NewTMSkillDTO(skillName, teamMemberName))
 	}
 
 	b, err := json.Marshal(tmSkillDTOs)
@@ -85,12 +89,20 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 	teamMemberName, err := c.getTeamMemberName(tmSkill)
 	if err != nil {
-		return err
+		log.Println("Possible invalid id:", err)
+		return &errors.NoSuchIDError{
+			ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
+				"specified ID: %q", tmSkill.TeamMemberID),
+		}
 	}
 
 	skillName, err := c.getSkillName(tmSkill)
 	if err != nil {
-		return err
+		log.Println("Possible invalid id:", err)
+		return &errors.NoSuchIDError{
+			ErrorMsg: fmt.Sprintf("no Skill exists with "+
+				"specified ID: %q", tmSkill.SkillID),
+		}
 	}
 
 	tmSkillDTO := tmSkill.NewTMSkillDTO(skillName, teamMemberName)
