@@ -16,7 +16,7 @@ func TestNewSkill(t *testing.T) {
 	}
 	// Verify that all of skillOne and skillTwo's fields are equal
 	if !reflect.DeepEqual(skillOne, skillTwo) {
-		t.Errorf("\"model.NewSkill()\" produced incorrect Skill.")
+		t.Error("\"model.NewSkill()\" produced incorrect Skill.")
 	}
 }
 
@@ -33,18 +33,18 @@ func TestSkillAddLink(t *testing.T) {
 
 	// Verify that all of skillOne and skillTwo's fields are equal
 	if !reflect.DeepEqual(skillOne, skillTwo) {
-		t.Errorf("model/Skill\".AddLink()\" didn't work.")
+		t.Error("model/Skill\".AddLink()\" didn't work.")
 	}
 }
 
 func TestInvalidSkillType(t *testing.T) {
 	if IsValidSkillType("InvalidSkillType") {
-		t.Errorf("func IsValidSkillType() failed to detect invalid SkillType.")
+		t.Error("func IsValidSkillType() failed to detect invalid SkillType.")
 	}
 }
 
 func TestValidSkillType(t *testing.T) {
 	if !IsValidSkillType(ScriptedSkillType) {
-		t.Errorf("func IsValidSkillType() flagged valid SkillType as invalid")
+		t.Error("func IsValidSkillType() flagged valid SkillType as invalid")
 	}
 }
