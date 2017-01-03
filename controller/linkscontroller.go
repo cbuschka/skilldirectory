@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
@@ -96,13 +95,13 @@ func (c *LinksController) removeLink() error {
 
 	err := c.session.Delete("links", linkID, "skill_id")
 	if err != nil {
-		log.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
+		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Link Exists with Specified ID: " + linkID,
 		}
 	}
 
-	log.Printf("Link Deleted with ID: %s", linkID)
+	c.Printf("Link Deleted with ID: %s", linkID)
 	return nil
 }
 
@@ -136,7 +135,7 @@ func (c *LinksController) addLink() error {
 			ErrorMsg: err.Error(),
 		}
 	}
-	log.Printf("Saved link: %s", link.Name)
+	c.Printf("Saved link: %s", link.Name)
 	return nil
 }
 

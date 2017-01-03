@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
@@ -91,14 +90,12 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills",
 		options, model.TMSkill{})
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 
 	// Convert byte representation to map[string]interface{}
 	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 
@@ -106,7 +103,6 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 	tmSkills := []model.TMSkill{}
 	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
 	if err != nil {
-		log.Print(err)
 		return nil, err
 	}
 
@@ -118,14 +114,14 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 		teamMemberName, err := c.getTeamMemberName(&tmSkill)
 		// If encounter an error, log and continue to next TMSkill
 		if err != nil {
-			log.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 
 		// Get name of Skill, skip if encounter an error
 		skillName, err := c.getSkillName(&tmSkill)
 		if err != nil {
-			log.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 
@@ -166,13 +162,13 @@ func (c *TeamMembersController) removeTeamMember() error {
 
 	err := c.session.Delete("teammembers", teamMemberID)
 	if err != nil {
-		log.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
+		c.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Team Member Exists with Specified ID: " + teamMemberID,
 		}
 	}
 
-	log.Printf("Team Member Deleted with ID: %s", teamMemberID)
+	c.Printf("Team Member Deleted with ID: %s", teamMemberID)
 	return nil
 }
 
@@ -200,7 +196,7 @@ func (c *TeamMembersController) addTeamMember() error {
 			ErrorMsg: err.Error(),
 		}
 	}
-	log.Printf("Saved Team Member: %s", teamMember.Name)
+	c.Infof("Saved Team Member: %s", teamMember.Name)
 	return nil
 }
 

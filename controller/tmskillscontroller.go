@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
@@ -64,13 +63,13 @@ func (c *TMSkillsController) getAllTMSkills() error {
 	for idx := 0; idx < len(tmSkills); idx++ {
 		skillName, err := c.getSkillName(&tmSkills[idx])
 		if err != nil {
-			log.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 
 		teamMemberName, err := c.getTeamMemberName(&tmSkills[idx])
 		if err != nil {
-			log.Println("Possible invalid id:", err)
+			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 		tmSkillDTOs = append(tmSkillDTOs,
@@ -90,7 +89,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 	teamMemberName, err := c.getTeamMemberName(tmSkill)
 	if err != nil {
-		log.Println("Possible invalid id:", err)
+		c.Warnf("Possible invalid id: %v", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
 				"specified ID: %q", tmSkill.TeamMemberID),
@@ -99,7 +98,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 	skillName, err := c.getSkillName(tmSkill)
 	if err != nil {
-		log.Println("Possible invalid id:", err)
+		c.Warnf("Possible invalid id: %v", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: fmt.Sprintf("no Skill exists with "+
 				"specified ID: %q", tmSkill.SkillID),
@@ -116,7 +115,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	tmSkill := model.TMSkill{}
 	err := c.session.Read("tmskills", id, &tmSkill)
 	if err != nil {
-		log.Printf("loadTMSkill() generated the following error:\n\t%q", err)
+		c.Warnf("loadTMSkill() generated the following error: %v", err)
 		return nil, &errors.NoSuchIDError{
 			ErrorMsg: "No TMSkill Exists with Specified ID: " + id,
 		}
@@ -153,13 +152,13 @@ func (c *TMSkillsController) removeTMSkill() error {
 
 	err := c.session.Delete("tmskills", tmSkillID, "team_member_id")
 	if err != nil {
-		log.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
+		c.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No TMSkill Exists with Specified ID: " + tmSkillID,
 		}
 	}
 
-	log.Printf("TMSkill Deleted with ID: %s", tmSkillID)
+	c.Printf("TMSkill Deleted with ID: %s", tmSkillID)
 	return nil
 }
 
@@ -239,7 +238,7 @@ func (c *TMSkillsController) addTMSkill() error {
 			ErrorMsg: err.Error(),
 		}
 	}
-	log.Printf("Saved TMSkill: %s", tmSkill.ID)
+	c.Printf("Saved TMSkill: %s", tmSkill.ID)
 	return nil
 }
 

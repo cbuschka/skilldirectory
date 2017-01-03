@@ -8,6 +8,8 @@ import (
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
+
+	"github.com/Sirupsen/logrus"
 )
 
 func TestTMSkillsController_Base(t *testing.T) {
@@ -151,7 +153,7 @@ the given HTTP request and DataAccessor. Returns a new TMSkillsController create
 */
 func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) TMSkillsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor)
+	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
 	return TMSkillsController{BaseController: &base}
 }
 
