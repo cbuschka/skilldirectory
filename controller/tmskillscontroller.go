@@ -8,6 +8,7 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
+	"strings"
 )
 
 type TMSkillsController struct {
@@ -31,7 +32,7 @@ func (c TMSkillsController) Delete() error {
 }
 
 func (c TMSkillsController) Put() error {
-	return fmt.Errorf("PUT requests nor currently supported.")
+	return c.updateTMSkill()
 }
 
 func (c *TMSkillsController) performGet() error {
@@ -142,7 +143,7 @@ func (c *TMSkillsController) getSkillName(tmSkill *model.TMSkill) (string, error
 }
 
 func (c *TMSkillsController) removeTMSkill() error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get the ID at end of the request; return error if request contains no ID
 	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
 		return &errors.MissingIDError{
@@ -159,6 +160,54 @@ func (c *TMSkillsController) removeTMSkill() error {
 	}
 
 	log.Printf("TMSkill Deleted with ID: %s", tmSkillID)
+	return nil
+}
+
+// Updates specific TMSkill for PUT requests to "/tmskills/[ID]"
+func (c *TMSkillsController) updateTMSkill() error {
+	// Get the ID at end of the request; return error if request contains no ID
+	tmSkillID := util.CheckForID(c.r.URL)
+	if tmSkillID == "" {
+		return &errors.MissingIDError{
+			ErrorMsg: "Must specify a TMSkill ID in PUT request URL.",
+		}
+	}
+
+	// Read TMSkill from database w/ ID from request URL
+	tmSkill, err := c.loadTMSkill(tmSkillID)
+	if err != nil {
+		return err
+	}
+
+	// Store request's body in raw byte slice
+	bodyBytes, err := ioutil.ReadAll(c.r.Body)
+	if err != nil {
+		return err
+	}
+
+	// Unmarshal updateable fields from request into "custom" struct
+	var updateFields struct {
+		WishList    bool `json:"wish_list"`
+		Proficiency int  `json:"proficiency"`
+	}
+	json.Unmarshal(bodyBytes, &updateFields)
+
+	// Update tmSkill per request body's JSON'
+	bodyJSONStr := string(bodyBytes[:])
+	if strings.Contains(bodyJSONStr, "wish_list") {
+		tmSkill.WishList = updateFields.WishList
+	}
+	if strings.Contains(bodyJSONStr, "proficiency") {
+		tmSkill.Proficiency = updateFields.Proficiency
+	}
+
+	// Write the updated tmSkill and return
+	err = c.session.Save("tmskills", tmSkillID, tmSkill)
+	if err != nil {
+		return &errors.SavingError{
+			ErrorMsg: err.Error(),
+		}
+	}
 	return nil
 }
 
