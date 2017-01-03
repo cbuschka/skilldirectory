@@ -7,7 +7,6 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
-	"strings"
 )
 
 type TMSkillsController struct {
@@ -173,14 +172,14 @@ func (c *TMSkillsController) updateTMSkill() error {
 	}
 
 	// Store request's body in raw byte slice
-	bodyBytes, err := ioutil.ReadAll(c.r.Body)
+	body, err := ioutil.ReadAll(c.r.Body)
 	if err != nil {
 		return err
 	}
 
 	// Unmarshal the request body into new object of type TMSkill
 	tmSkill := model.TMSkill{}
-	err := json.Unmarshal(body, &tmSkill)
+	err = json.Unmarshal(body, &tmSkill)
 	if err != nil {
 		return &errors.MarshalingError{
 			ErrorMsg: err.Error(),
@@ -188,14 +187,14 @@ func (c *TMSkillsController) updateTMSkill() error {
 	}
 
 	// Validate fields of new TMSkill object
-	err = validateTMSkillFields(tmSkill)
+	err = c.validateTMSkillFields(&tmSkill)
 	if err != nil {
 		return err
 	}
 
 	// Validate that ID points to existing TMSkill in database
 	tmSkill.ID = tmSkillID
-	err = validateTMSkillID(tmSkill)
+	err = c.validateTMSkillID(&tmSkill)
 	if err != nil {
 		return err
 	}
@@ -225,7 +224,7 @@ func (c *TMSkillsController) addTMSkill() error {
 	}
 
 	// Validate fields of the TMSkill
-	err = c.validateTMSkillFields(tmSkill)
+	err = c.validateTMSkillFields(&tmSkill)
 	if err != nil {
 		return err
 	}
@@ -283,6 +282,7 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 				" between 0 and 5.", "proficiency"),
 		}
 	}
+	return nil
 }
 
 /*
@@ -297,4 +297,5 @@ func (c *TMSkillsController) validateTMSkillID(tmSkill *model.TMSkill) error {
 			ErrorMsg: fmt.Sprintf("the following ID is not valid: %s", tmSkill.ID),
 		}
 	}
+	return nil
 }
