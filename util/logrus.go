@@ -2,7 +2,6 @@ package util
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -19,9 +18,11 @@ func LogInit() *log.Logger {
 	logger.Out = os.Stderr
 
 	debugFlag := flag.Lookup("debug")
-	fmt.Println(debugFlag)
-	// Only log the warning severity or above.
-	logger.Level = log.DebugLevel
+	if debugFlag.Value.String() == "true" {
+		logger.Level = log.DebugLevel
+	} else {
+		logger.Level = log.InfoLevel
+	}
 
 	return logger
 }
