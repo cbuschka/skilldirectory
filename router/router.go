@@ -55,6 +55,11 @@ var (
 	}
 	linksHandlerFunc = handler.MakeHandler(handler.Handler, &linksController, session)
 
+	skillReviewsController = controller.SkillReviewsController{
+		BaseController: &controller.BaseController{},
+	}
+	skillReviewsHandlerFunc = handler.MakeHandler(handler.Handler, &skillReviewsController, session)
+
 	routes = []Route{
 		{"/skills/", skillsHandlerFunc},
 		{"/skills", skillsHandlerFunc},
@@ -64,6 +69,8 @@ var (
 		{"/tmskills", tmSkillsHandlerFunc},
 		{"/links/", linksHandlerFunc},
 		{"/links", linksHandlerFunc},
+		{"/skillreviews", skillReviewsHandlerFunc},
+		{"/skillreviews/", skillReviewsHandlerFunc},
 	}
 )
 

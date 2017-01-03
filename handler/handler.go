@@ -41,13 +41,15 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		err = cont.Post()
 	case http.MethodDelete:
 		err = cont.Delete()
+	case http.MethodPut:
+		err = cont.Put()
 	}
 
 	var statusCode int
 	if err != nil {
 		switch err.(type) {
 		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingIDError,
-			*errors.IncompletePOSTBodyError, *errors.InvalidPOSTBodyError:
+			*errors.IncompletePOSTBodyError, *errors.InvalidPOSTBodyError, *errors.InvalidPUTBodyError:
 			statusCode = http.StatusBadRequest
 		case *errors.SavingError:
 			statusCode = http.StatusInternalServerError

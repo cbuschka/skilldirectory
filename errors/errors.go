@@ -71,3 +71,12 @@ type InvalidLinkTypeError struct {
 func (e *InvalidLinkTypeError) Error() string {
 	return e.ErrorMsg
 }
+
+// Implements error interface
+type InvalidPUTBodyError struct {
+	ErrorMsg string
+}
+
+func (e *InvalidPUTBodyError) Error() string {
+	return e.ErrorMsg
+}

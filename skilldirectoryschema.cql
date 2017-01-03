@@ -30,6 +30,17 @@ CREATE TABLE IF NOT EXISTS skill_directory_keyspace.tmskills (
     PRIMARY KEY (team_member_id, id)
 );
 
+CREATE TABLE IF NOT EXISTS skill_directory_keyspace.skillreviews (
+    id             uuid,
+    skill_id       varchar,
+    team_member_id varchar,
+    body           varchar,
+    timestamp      timestamp,
+    positive       boolean,
+    PRIMARY KEY (skill_id, id)
+);
+
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skills ( skill_type );
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.tmskills ( id );
 CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.links ( id );
+CREATE INDEX IF NOT EXISTS ON skill_directory_keyspace.skillreviews ( id );
