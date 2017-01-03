@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"skilldirectory/data"
 	"skilldirectory/model"
 
@@ -92,7 +91,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	skillDTO := model.SkillDTO{}
 	linksInterface, err := c.session.FilteredReadAll("links", data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
 	if err != nil {
-		log.Print(err)
+		c.Print(err)
 		return skillDTO, err
 	}
 	linksRaw, err := json.Marshal(linksInterface)
@@ -102,7 +101,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	links := &[]model.Link{}
 	err = json.Unmarshal(linksRaw, links)
 	if err != nil {
-		log.Print(err)
+		c.Print(err)
 	}
 	skillDTO = skill.NewSkillDTO(*links)
 	return skillDTO, nil
@@ -119,13 +118,13 @@ func (c *SkillsController) removeSkill() error {
 
 	err := c.session.Delete("skills", skillID)
 	if err != nil {
-		log.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
+		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
 		return &errors.NoSuchIDError{
 			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
 		}
 	}
 
-	log.Printf("Skill Deleted with ID: %s", skillID)
+	c.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
 }
 
@@ -159,7 +158,7 @@ func (c *SkillsController) addSkill() error {
 			ErrorMsg: err.Error(),
 		}
 	}
-	log.Printf("Saved skill: %s", skill.Name)
+	c.Printf("Saved skill: %s", skill.Name)
 	return nil
 }
 
