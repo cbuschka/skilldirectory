@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
+	"skilldirectory/util"
 )
 
 /*
@@ -30,8 +30,9 @@ If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
+	log := util.LogInit()
 	log.Printf("Handling Request: %s", r.Method)
-	cont.Base().Init(w, r, session)
+	cont.Base().Init(w, r, session, log)
 
 	var err error
 	switch r.Method {
@@ -58,7 +59,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		default:
 			statusCode = http.StatusInternalServerError
 		}
-		log.Printf("Handler Method: %s, Err: %v", r.Method, err)
+		log.Warnf("Handler Method: %s, Err: %v", r.Method, err)
 		http.Error(w, err.Error(), statusCode)
 	}
 }

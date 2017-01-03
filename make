@@ -3,6 +3,8 @@ drop_data_flag=false
 if [[ ! -z $1 ]]; then
     if [[ $1 = "--dropdata" ]]; then
         drop_data_flag=true
+    elif [[ $1 = "--debug" ]]; then
+        drop_data_flag=true
     else
          echo Unrecognized option: \"$1\"
          echo Did you mean \"--dropdata?\"
