@@ -48,9 +48,9 @@ func (f Filter) query() string {
 func NewCassandraConnector(path, port, keyspace, username,
 	password string) *CassandraConnector {
 	logger := util.LogInit()
-	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, "+
-		"Username: %s, Password: %s",
-		path, port, keyspace, username, password)
+	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
+		path, port, keyspace, username)
+	logger.Debug("Using Password: " + password)
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
