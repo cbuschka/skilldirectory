@@ -7,5 +7,5 @@ cassandra:
   ports:
     - "9042:9042"
   args:
-    USERNAME: "user"
-    PASSWORD: "pass"
+    CASSANDRA_USERNAME: "user"
+    CASSANDRA_PASSWORD: "pass"
