@@ -6,3 +6,6 @@ cassandra:
     - "9042"
   ports:
     - "9042:9042"
+  args:
+    USERNAME: "user"
+    PASSWORD: "pass"
