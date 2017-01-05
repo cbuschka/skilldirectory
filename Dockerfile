@@ -1,3 +1,3 @@
-FROM cassandra:3.0
-RUN mkdir /data
-COPY skilldirectoryschema.cql /data/
+FROM ubuntu:14.04
+ADD skilldirectory /bin/skilldirectory
+ENTRYPOINT ["/bin/bash", "-c", "/bin/skilldirectory"]
