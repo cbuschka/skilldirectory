@@ -80,3 +80,12 @@ type InvalidPUTBodyError struct {
 func (e *InvalidPUTBodyError) Error() string {
 	return e.ErrorMsg
 }
+
+// Implements error interface
+type InvalidDataModelState struct {
+	ErrorMsg string
+}
+
+func (e *InvalidDataModelState) Error() string {
+	return e.ErrorMsg
+}
