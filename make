@@ -67,8 +67,4 @@ echo "Schema update complete"
 ### container. The container only holds the Cassandra database that the executable
 ### connects to.
 echo "Running Skill Directory..."
-if $debug_flag; then # Run with debug-level logging, unless "--nodebug" flag was used
-  ./skilldirectory -debug=true
-else
-  ./skilldirectory
-fi
+./skilldirectory -debug=$debug_flag # Run with debug-level logging, unless "--nodebug" flag was used
