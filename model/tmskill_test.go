@@ -71,3 +71,26 @@ func TestTMSkill_SetProficiency(t *testing.T) {
 		t.Error("method TMSkill.setProficiency() failed to cap proficiency < 0")
 	}
 }
+
+// Make sure the method works properly at the extremes
+func TestTMSkill_GetProficiencyString(t *testing.T) {
+	tmSkill := NewTMSkillDefaults("TMSkillID", "SkillID", "TeamMemberID")
+
+	tmSkill.SetProficiency(0)
+	if tmSkill.GetProficiencyString() != "Not Applicable" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 0.")
+	}
+
+	tmSkill.SetProficiency(5)
+	if tmSkill.GetProficiencyString() != "Expert" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 5.")
+	}
+
+	tmSkill.Proficiency = 9000
+	if tmSkill.GetProficiencyString() != "No String Representation Available" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level outside range 0-5.")
+	}
+}

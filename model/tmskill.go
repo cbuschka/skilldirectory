@@ -34,7 +34,8 @@ specified by the caller. The proficiency field must be in the range of 0-5. If a
 value is passed in outside of this range, it is clipped to 0 if it's below 0, or
 5 if it's above 5.
 */
-func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool, proficiency int) TMSkill {
+func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool,
+	proficiency int) TMSkill {
 	if proficiency > 5 {
 		proficiency = 5
 	}
