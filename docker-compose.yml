@@ -18,7 +18,7 @@ services:
         DEBUG_FLAG: ${DEBUG_FLAG}
     container_name: skilldirectory_container
     environment:
-      - CASSANDRA_URL=172.19.0.2
+      - CASSANDRA_URL=cassandra
       - CASSANDRA_PORT=9042
       - CASSANDRA_KEYSPACE=skill_directory_keyspace
     expose:
