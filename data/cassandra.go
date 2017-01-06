@@ -18,6 +18,8 @@ type CassandraConnector struct {
 	path     string
 	port     string
 	keyspace string
+	username string
+	password string
 }
 
 type CassandraQueryOptions struct {
@@ -43,12 +45,19 @@ func (f Filter) query() string {
 	return queryString
 }
 
-func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
+func NewCassandraConnector(path, port, keyspace, username,
+	password string) *CassandraConnector {
 	logger := util.LogInit()
-	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s", path, port, keyspace)
+	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
+		path, port, keyspace, username)
+	logger.Debug("Using Password: " + password)
 	cluster := gocql.NewCluster(path)
 	cluster.Keyspace = keyspace
 	cluster.Consistency = gocql.Quorum
+	cluster.Authenticator = gocql.PasswordAuthenticator{
+		Username: username,
+		Password: password,
+	}
 	session, err := cluster.CreateSession()
 	if err != nil {
 		logger.Panic(err)
@@ -57,14 +66,16 @@ func NewCassandraConnector(path, port, keyspace string) *CassandraConnector {
 		path:     path,
 		port:     port,
 		keyspace: keyspace,
+		username: username,
+		password: password,
 	}
 	cassConn.Session = session
 	cassConn.Logger = logger
 	return &cassConn
 }
 
-// NewCassandraQueryOptions creates a new options object.
 /*
+NewCassandraQueryOptions creates a new options object.
 key: query field name
 value: query value
 id: True if field is a UUID Cassandra key
@@ -76,8 +87,8 @@ func NewCassandraQueryOptions(key, value string, id bool) CassandraQueryOptions 
 	}
 }
 
-// AddFilter adds a filter to an CassandraQueryOptions object
 /*
+AddFilter adds a filter to an CassandraQueryOptions object
 key: query field name
 value: query value
 id: True if field is a UUID Cassandra key
