@@ -14,6 +14,7 @@ MakeHandler() returns a new function of the adapter type http.HandlerFunc using 
 func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
 	cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		fn(w, r, cont, session)
 	}
 }
