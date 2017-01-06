@@ -142,6 +142,7 @@ func (c *SkillsController) addSkill() error {
 
 	err = c.validatePOSTBody(&skill)
 	if err != nil {
+		c.Debugf("Invalid Post: Name: %s, ID: %s", skill.Name, skill.SkillType)
 		return err // Will be of errors.IncompletePOSTBodyError type
 	}
 
