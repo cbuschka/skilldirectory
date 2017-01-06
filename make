@@ -1,18 +1,19 @@
 ################################################################################
 # This file is used to run SkillDirectory's unit tests, build the project's    #
-# executable, setup a Docker container holding the Cassandra database used by  #
-# SkillDirectory, and lastly, run the executable                               #
+# executable, setup Docker containers to hold the Cassandra database and to    #
+# run SkillDirectory itself, and lastly, run the executable in the Ubuntu      #
+# container.                                                                   #
 ################################################################################
 
 ### Parse all command line flags
 drop_data_flag=false
-debug_flag=true
+export DEBUG_FLAG=true
 for arg in "$@"
 do
   if [[ $arg = "--dropdata" ]]; then
     drop_data_flag=true
   elif [[ $arg = "--nodebug" ]]; then
-    debug_flag=false 
+    export DEBUG_FLAG=false 
   else
     echo Unrecognized option: \"$arg\"
     echo Valid options are: \"--dropdata\" and \"--nodebug\"
@@ -24,31 +25,39 @@ done
 echo "Running Tests..."
 go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
-### Create environment vars used by project
-export CASSANDRA_URL='0.0.0.0'
-export CASSANDRA_PORT=''
-export CASSANDRA_KEYSPACE='skill_directory_keyspace'
+### Build executable for Ubuntu docker container
+env GOOS=linux GOARCH=amd64 go build
 
-### Build the project's executable
-go build
+### Build the Cassandra and SkillDirectory Docker images
+docker-compose build
 
-### See if the docker container is running
-running=$(docker inspect -f {{.State.Running}} cassandra_container)
+### See if containers for Cassandra and/or Skilldirectory are cassandra_running
+cassandra_running=$(docker inspect -f {{.State.Running}} cassandra_container)
+skilldirectory_running=$(docker inspect -f {{.State.Running}} skilldirectory_container)
 
-### If container is running and "--dropdata" flag was used, stop the container
-if $running && $drop_data_flag; then
+### Restart/start the skilldirectory_container
+if $skilldirectory_running; then
+  echo 'Stopping skilldirectory_container...'
+  docker stop skilldirectory_container >/dev/null 
+  echo 'skilldirectory_container stopped.'
+  skilldirectory_running=false
+else
+  echo 'skilldirectory_container already stopped.'
+fi
+
+### If cassandra container is running and "--dropdata" flag was used, stop the container
+if $cassandra_running && $drop_data_flag; then
     echo 'Stopping cassandra_container...'
     docker stop cassandra_container >/dev/null
     echo 'cassandra_container stopped.'
-    running=false
+    cassandra_running=false
 fi
 
-### Get the container built and running if it isn't already
-if $running; then
-  echo "cassandra_container is already running"
+### Get the cassandra_container built and running if it isn't already
+if $cassandra_running; then
+  echo "cassandra_container is already cassandra_running"
 else
-  docker-compose build
-  docker-compose up -d
+  docker-compose up -d cassandra
   sleep 20
 fi
 
@@ -63,8 +72,7 @@ echo "Running skilldirectoryschema..."
 docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
 echo "Schema update complete"
 
-### Run SkillDirectory executable - note that the executable isn't run in the docker
-### container. The container only holds the Cassandra database that the executable
-### connects to.
+### Start Ubuntu container - will run skilldirectory executable on startup and
+### connect to cassandra_container for database connectivity
 echo "Running Skill Directory..."
-./skilldirectory -debug=$debug_flag # Run with debug-level logging, unless "--nodebug" flag was used
+docker-compose up skilldirectory # Run with debug-level logging, unless "--nodebug" flag was used
