@@ -13,10 +13,7 @@
 				"url": "http://localhost:8080/teammembers",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -24,13 +21,10 @@
 		{
 			"name": "Get A Team Member",
 			"request": {
-				"url": "http://localhost:8080/teammembers/7ca4d282-cd6d-11e6-850a-6c4008bcfa84",
+				"url": "http://localhost:8080/teammembers/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -41,10 +35,7 @@
 				"url": "http://localhost:8080/tmskills/",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -52,13 +43,10 @@
 		{
 			"name": "Get A TMSkill",
 			"request": {
-				"url": "http://localhost:8080/tmskills/7f012db2-cd6d-11e6-850b-6c4008bcfa84",
+				"url": "http://localhost:8080/tmskills/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -69,10 +57,7 @@
 				"url": "http://localhost:8080/skills",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -80,13 +65,32 @@
 		{
 			"name": "Get A Skill",
 			"request": {
-				"url": "http://localhost:8080/skills/82d1b95b-cd6d-11e6-850e-6c4008bcfa84",
+				"url": "http://localhost:8080/skills/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Links",
+			"request": {
+				"url": "http://localhost:8080/links/",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Link",
+			"request": {
+				"url": "http://localhost:8080/links/[ID]",
+				"method": "GET",
+				"header": [],
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -97,10 +101,7 @@
 				"url": "http://localhost:8080/skillreviews",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -111,10 +112,7 @@
 				"url": "http://localhost:8080/skillreviews/8433ac35-cd6d-11e6-850f-6c4008bcfa84",
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -220,6 +218,26 @@
 			"response": []
 		},
 		{
+			"name": "New Link",
+			"request": {
+				"url": "http://localhost:8080/links/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":\"Google\",\n\t\"link_type\":\"webpage\",\n\t\"skill_id\":\"fc7d82d7-d447-11e6-ad51-6c4008bcfa84\",\n\t\"url\":\"http://www.google.com\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "New Skill Review - Basic",
 			"request": {
 				"url": "http://localhost:8080/skillreviews",
@@ -265,10 +283,7 @@
 				"url": "http://localhost:8080/teammembers/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -279,10 +294,7 @@
 				"url": "http://localhost:8080/tmskills/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -293,10 +305,18 @@
 				"url": "http://localhost:8080/skills/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Link",
+			"request": {
+				"url": "http://localhost:8080/links/bf30d9d6-d448-11e6-ad52-6c4008bcfa84",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
 				"description": ""
 			},
 			"response": []
@@ -307,10 +327,7 @@
 				"url": "http://localhost:8080/skillreviews/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
+				"body": {},
 				"description": ""
 			},
 			"response": []
