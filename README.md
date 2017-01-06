@@ -11,7 +11,7 @@ this is where we are at:
 
 SkillDirectory is a REST API written in Go. If you're unfamiliar with REST, it
 is essentially a method by which a client and server can communicate through
-HTTP requests and responses. We are also working on a frontend using ReactJS.
+HTTP requests and responses. We are also working on [a frontend using ReactJS](https://github.com/maryvilledev/skilldirectoryui).
 
 Our current line of thought regarding this project is that it will be used to
 store information about our dev team: teammembers, skills they have, web links
