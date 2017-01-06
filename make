@@ -28,6 +28,8 @@ go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 export CASSANDRA_URL='0.0.0.0'
 export CASSANDRA_PORT=''
 export CASSANDRA_KEYSPACE='skill_directory_keyspace'
+export CASSANDRA_USERNAME='cassandra'
+export CASSANDRA_PASSWORD='cassandra'
 
 ### Build the project's executable
 go build
