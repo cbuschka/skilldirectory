@@ -69,7 +69,8 @@ fi
 
 ### Execute CQL commands in the container from schema file to set up database
 echo "Running skilldirectoryschema..."
-docker exec -it cassandra_container bash usr/bin/cqlsh -f /data/skilldirectoryschema.cql
+docker exec -it cassandra_container bash usr/bin/cqlsh -u cassandra -p cassandra -f /data/setup-users.cql
+docker exec -it cassandra_container bash usr/bin/cqlsh -u star -p wars -f /data/skilldirectoryschema.cql
 echo "Schema update complete"
 
 ### Start Ubuntu container - will run skilldirectory executable on startup and
