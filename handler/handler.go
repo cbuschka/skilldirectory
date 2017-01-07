@@ -14,6 +14,8 @@ MakeHandler() returns a new function of the adapter type http.HandlerFunc using 
 func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
 	cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
 		fn(w, r, cont, session)
 	}
 }
@@ -32,6 +34,7 @@ log them, and respond to the request with the appropriate error.
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
 	log := util.LogInit()
 	log.Printf("Handling Request: %s", r.Method)
+	log.Debugf("Request: %s", r.Body)
 	cont.Base().Init(w, r, session, log)
 
 	var err error
@@ -59,7 +62,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		default:
 			statusCode = http.StatusInternalServerError
 		}
-		log.Warnf("Handler Method: %s, Err: %v", r.Method, err)
+		log.Warnf("Handler Method: %s, %T: %v", r.Method, err, err)
 		http.Error(w, err.Error(), statusCode)
 	}
 }

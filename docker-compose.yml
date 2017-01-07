@@ -1,11 +1,27 @@
-# Cassandra
-cassandra:
-  build: .
-  container_name: cassandra_container
-  expose:
-    - "9042"
-  ports:
-    - "9042:9042"
-  args:
-    CASSANDRA_USERNAME: "user"
-    CASSANDRA_PASSWORD: "pass"
+version: '2'
+
+services:
+  # Cassandra
+  cassandra:
+    build: ./cassandra
+    container_name: cassandra_container
+    expose:
+      - "9042"
+    ports:
+      - "9042:9042"
+
+  # SkillDirectory
+  skilldirectory:
+    build:
+      context: .
+      args:
+        DEBUG_FLAG: ${DEBUG_FLAG}
+    container_name: skilldirectory_container
+    environment:
+      - CASSANDRA_URL=cassandra
+      - CASSANDRA_PORT=9042
+      - CASSANDRA_KEYSPACE=skill_directory_keyspace
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
