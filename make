@@ -5,9 +5,13 @@
 # container.                                                                   #
 ################################################################################
 
-### Parse all command line flags
+### Default flags and env vars
+export CASSANDRA_USERNAME=star
+export CASSANDRA_PASSWORD=wars
 drop_data_flag=false
 export DEBUG_FLAG=true
+
+### Parse all command line flags
 for arg in "$@"
 do
   if [[ $arg = "--dropdata" ]]; then
@@ -64,14 +68,16 @@ fi
 ### If "--dropdata" flag was used, drop the project's Cassandra keyspace within container
 if $drop_data_flag; then
     echo 'Dropping and rebuilding "skill_directory_keyspace" keyspace'
-    docker exec -it cassandra_container bash usr/bin/cqlsh -e "DROP KEYSPACE skill_directory_keyspace"
+    docker exec -it cassandra_container bash usr/bin/cqlsh -u $CASSANDRA_USERNAME -p $CASSANDRA_PASSWORD -e "DROP KEYSPACE skill_directory_keyspace"
 fi
 
 ### Execute CQL commands in the container from schema file to set up database
+echo "Running setup-users.cql..."
+docker exec -it cassandra_container bash usr/bin/cqlsh -u $CASSANDRA_USERNAME -p $CASSANDRA_PASSWORD -f /data/setup-users.cql
+echo "User setup complete."
 echo "Running skilldirectoryschema..."
-docker exec -it cassandra_container bash usr/bin/cqlsh -u cassandra -p cassandra -f /data/setup-users.cql
-docker exec -it cassandra_container bash usr/bin/cqlsh -u star -p wars -f /data/skilldirectoryschema.cql
-echo "Schema update complete"
+docker exec -it cassandra_container bash usr/bin/cqlsh -u $CASSANDRA_USERNAME -p $CASSANDRA_PASSWORD -f /data/skilldirectoryschema.cql
+echo "Schema update complete."
 
 ### Start Ubuntu container - will run skilldirectory executable on startup and
 ### connect to cassandra_container for database connectivity

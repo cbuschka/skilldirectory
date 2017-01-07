@@ -21,6 +21,8 @@ services:
       - CASSANDRA_URL=cassandra
       - CASSANDRA_PORT=9042
       - CASSANDRA_KEYSPACE=skill_directory_keyspace
+      - CASSANDRA_USERNAME=${CASSANDRA_USERNAME}
+      - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
     expose:
       - "8080"
     ports:
