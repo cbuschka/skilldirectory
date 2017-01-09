@@ -167,6 +167,71 @@ func TestPostLink_Error(t *testing.T) {
 	}
 }
 
+func Test_validateLinkFields(t *testing.T) {
+	lc := getLinksController(nil, &data.MockErrorDataAccessor{})
+	link := model.Link{
+		LinkType: model.WebpageLinkType,
+		Name:     "Google",
+		URL:      "http://www.google.com",
+	}
+	err := lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect empty Link.SkillID field.")
+	}
+
+	link = model.Link{
+		SkillID: "1234",
+		Name:    "Google",
+		URL:     "http://www.google.com",
+	}
+	err = lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect empty Link.LinkType field.")
+	}
+
+	link = model.Link{
+		SkillID:  "1234",
+		LinkType: model.WebpageLinkType,
+		URL:      "http://www.google.com",
+	}
+	err = lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect empty Link.Name field.")
+	}
+
+	link = model.Link{
+		SkillID:  "1234",
+		LinkType: model.WebpageLinkType,
+		Name:     "Google",
+	}
+	err = lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect empty Link.URL field.")
+	}
+
+	link = model.Link{
+		SkillID:  "1234",
+		LinkType: model.WebpageLinkType,
+		Name:     "Google",
+		URL:      "http://www.google.com",
+	}
+	err = lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect invalid Link.SkillID.")
+	}
+
+	link = model.Link{
+		SkillID:  "1234",
+		LinkType: "MumboJumbo",
+		Name:     "Google",
+		URL:      "http://www.google.com",
+	}
+	err = lc.validateLinkFields(&link)
+	if err == nil {
+		t.Errorf("validateLinkFields() failed to detect invalid Link.LinkType.")
+	}
+}
+
 /*
 getLinksController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new LinksController created with that BaseController.
