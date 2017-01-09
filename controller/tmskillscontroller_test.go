@@ -147,9 +147,63 @@ func TestPostTMSkill_Error(t *testing.T) {
 	}
 }
 
+func Test_validateTMSkillFields(t *testing.T) {
+	tc := getTMSkillsController(nil, &data.MockErrorDataAccessor{})
+	tmSkill := model.TMSkill{
+		SkillID: "1234",
+	}
+	err := tc.validateTMSkillFields(&tmSkill)
+	if err == nil {
+		t.Errorf("validateTMSkillFields() failed to detect empty " +
+			"TMSkill.TeamMemberID field.")
+	}
+
+	tmSkill = model.TMSkill{
+		TeamMemberID: "1234",
+	}
+	err = tc.validateTMSkillFields(&tmSkill)
+	if err == nil {
+		t.Errorf("validateTMSkillFields() failed to detect empty " +
+			"TMSkill.SkillID field.")
+	}
+
+	tmSkill = model.TMSkill{
+		SkillID:      "1234",
+		TeamMemberID: "1234",
+	}
+	err = tc.validateTMSkillFields(&tmSkill)
+	if err == nil {
+		t.Errorf("validateTMSkillFields() failed to detect invalid " +
+			"ID field.")
+	}
+
+	tmSkill = model.TMSkill{
+		SkillID:      "1234",
+		TeamMemberID: "1234",
+		Proficiency:  9000,
+	}
+	err = tc.validateTMSkillFields(&tmSkill)
+	if err == nil {
+		t.Errorf("validateTMSkillFields() failed to detect invalid " +
+			"TMSkill.Proficiency field.")
+	}
+}
+
+func Test_validateTMSkillID(t *testing.T) {
+	tc := getTMSkillsController(nil, &data.MockErrorDataAccessor{})
+	tmSkill := model.TMSkill{
+		ID: "1234",
+	}
+	err := tc.validateTMSkillID(&tmSkill)
+	if err == nil {
+		t.Errorf("validateTMSkillID() failed to detect invalid TMSkill.ID field.")
+	}
+}
+
 /*
-getTMSkillsController is a helper function for creating and initializing a new BaseController with
-the given HTTP request and DataAccessor. Returns a new TMSkillsController created with that BaseController.
+getTMSkillsController is a helper function for creating and initializing a new
+BaseController with the given HTTP request and DataAccessor. Returns a new
+TMSkillsController created with that BaseController.
 */
 func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) TMSkillsController {
 	base := BaseController{}
@@ -158,8 +212,9 @@ func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) 
 }
 
 /*
-getReaderForNewTMSkill is a helper function for a new TMSkill with the given id, skillID, and teamMemberID.
-This TMSkill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
+getReaderForNewTMSkill is a helper function for a new TMSkill with the given id,
+skillID, and teamMemberID. This TMSkill is then marshaled into JSON. A new Reader
+is created and returned for the resulting []byte.
 */
 func getReaderForNewTMSkill(id, skillID, teamMemberID string) *bytes.Reader {
 	newTMSkill := model.NewTMSkillDefaults(id, skillID, teamMemberID)
