@@ -73,9 +73,8 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 	teamMember := model.TeamMember{}
 	err := c.session.Read("teammembers", id, &teamMember)
 	if err != nil {
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No Team Member Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(fmt.Errorf(
+			"no TeamMeber exists with specified ID: %q", id))
 	}
 	return &teamMember, nil
 }
@@ -155,17 +154,14 @@ func (c *TeamMembersController) removeTeamMember() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
 	teamMemberID := util.CheckForID(c.r.URL)
 	if teamMemberID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No Team Member ID Specified in Request URL: " + c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no TeamMember ID in request URL"))
 	}
 
 	err := c.session.Delete("teammembers", teamMemberID)
 	if err != nil {
 		c.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No Team Member Exists with Specified ID: " + teamMemberID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"No Team Member Exists with Specified ID: %q", teamMemberID))
 	}
 
 	c.Printf("Team Member Deleted with ID: %s", teamMemberID)
@@ -179,9 +175,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	teamMember := model.TeamMember{}
 	err := json.Unmarshal(body, &teamMember)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	err = c.validatePOSTBody(&teamMember)
@@ -192,9 +186,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	teamMember.ID = util.NewID()
 	err = c.session.Save("teammembers", teamMember.ID, teamMember)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	c.Infof("Saved Team Member: %s", teamMember.Name)
 	return nil
@@ -208,10 +200,9 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
 func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
-		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "The JSON in a POST Request for new Team Member must contain values for " +
-				"\"name\" and \"title\" fields.",
-		}
+		return errors.IncompletePOSTBodyError(fmt.Errorf(
+			"The JSON in a POST Request for new Team Member must contain values for"+
+				" %q and %q fields.", "name", "title"))
 	}
 	return nil
 }

@@ -49,13 +49,13 @@ func (c *TMSkillsController) getAllTMSkills() error {
 
 	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
 	if err != nil {
-		return &errors.MarshalingError{err.Error()}
+		return errors.MarshalingError(err)
 	}
 
 	tmSkills := []model.TMSkill{}
 	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
 	if err != nil {
-		return &errors.MarshalingError{err.Error()}
+		return errors.MarshalingError(err)
 	}
 
 	tmSkillDTOs := []model.TMSkillDTO{}
@@ -89,19 +89,15 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 	teamMemberName, err := c.getTeamMemberName(tmSkill)
 	if err != nil {
 		c.Warnf("Possible invalid id: %v", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: fmt.Sprintf("no TeamMember exists with "+
-				"specified ID: %q", tmSkill.TeamMemberID),
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no TeamMember exists with specified ID: %q", tmSkill.TeamMemberID))
 	}
 
 	skillName, err := c.getSkillName(tmSkill)
 	if err != nil {
 		c.Warnf("Possible invalid id: %v", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: fmt.Sprintf("no Skill exists with "+
-				"specified ID: %q", tmSkill.SkillID),
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no Skill exists with specified ID: %q", tmSkill.SkillID))
 	}
 
 	tmSkillDTO := tmSkill.NewTMSkillDTO(skillName, teamMemberName)
@@ -115,9 +111,8 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	err := c.session.Read("tmskills", id, &tmSkill)
 	if err != nil {
 		c.Warnf("loadTMSkill() generated the following error: %v", err)
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No TMSkill Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(fmt.Errorf(
+			"No TMSkill Exists with Specified ID: ", id))
 	}
 	return &tmSkill, nil
 }
@@ -144,17 +139,14 @@ func (c *TMSkillsController) removeTMSkill() error {
 	// Get the ID at end of the request; return error if request contains no ID
 	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No TMSkill ID Specified in Request URL: " + c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no TMSkill ID in request URL"))
 	}
 
 	err := c.session.Delete("tmskills", tmSkillID, "team_member_id")
 	if err != nil {
 		c.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No TMSkill Exists with Specified ID: " + tmSkillID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no TMSkill exists with specified ID: %q", tmSkillID))
 	}
 
 	c.Printf("TMSkill Deleted with ID: %s", tmSkillID)
@@ -166,9 +158,8 @@ func (c *TMSkillsController) updateTMSkill() error {
 	// Get the ID at end of the request; return error if request contains no ID
 	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "Must specify a TMSkill ID in PUT request URL.",
-		}
+		return errors.MissingIDError(fmt.Errorf(
+			"must specify a TMSkill ID in PUT request URL."))
 	}
 
 	// Store request's body in raw byte slice
@@ -181,9 +172,7 @@ func (c *TMSkillsController) updateTMSkill() error {
 	tmSkill := model.TMSkill{}
 	err = json.Unmarshal(body, &tmSkill)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	// Validate fields of new TMSkill object
@@ -202,9 +191,7 @@ func (c *TMSkillsController) updateTMSkill() error {
 	// Write the updated TMSkill and return
 	err = c.session.Save("tmskills", tmSkill.ID, tmSkill)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	return nil
 }
@@ -218,9 +205,7 @@ func (c *TMSkillsController) addTMSkill() error {
 	tmSkill := model.TMSkill{}
 	err := json.Unmarshal(body, &tmSkill)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	// Validate fields of the TMSkill
@@ -233,9 +218,7 @@ func (c *TMSkillsController) addTMSkill() error {
 	tmSkill.ID = util.NewID()
 	err = c.session.Save("tmskills", tmSkill.ID, tmSkill)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	c.Printf("Saved TMSkill: %s", tmSkill.ID)
 	return nil
@@ -252,35 +235,30 @@ the TMSkill that is passed-in:
 func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error {
 	// Validate that SkillID and TeamMemberID fields exist.
 	if tmSkill.SkillID == "" || tmSkill.TeamMemberID == "" {
-		return &errors.InvalidDataModelState{
-			ErrorMsg: fmt.Sprintf("the %q and %q fields must be specified for all "+
-				"New/Updated TMSkills", "skill_id", "team_member_id"),
-		}
+		return errors.InvalidDataModelState(fmt.Errorf(
+			"the %q and %q fields must be specified for all TMSkills",
+			"skill_id", "team_member_id"))
 	}
 
 	// Validate that the IDs point to valid data.
 	err := c.session.Read("skills", tmSkill.SkillID, &model.Skill{})
 	if err != nil {
-		return &errors.InvalidDataModelState{
-			ErrorMsg: fmt.Sprintf("the %q field of all TMSkills must contain ID "+
-				"of an existing skill in the database", "skill_id"),
-		}
+		return errors.InvalidDataModelState(fmt.Errorf(
+			"the %q field of all TMSkills must contain ID of an existing Skill "+
+				"in the database", "skill_id"))
 	}
 	err = c.session.Read("teammembers", tmSkill.TeamMemberID, &model.TeamMember{})
 	if err != nil {
-		return &errors.InvalidDataModelState{
-			ErrorMsg: fmt.Sprintf("the %q field of all TMSkills must contain ID of "+
-				"an existing team Member in the database",
-				"team_member_id"),
-		}
+		return errors.InvalidDataModelState(fmt.Errorf(
+			"the %q field of all TMSkills must contain ID of an existing TeamMember"+
+				" in the database", "team_member_id"))
 	}
 
 	// Validate that the proficiency is within the required range.
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
-		return &errors.InvalidDataModelState{
-			ErrorMsg: fmt.Sprintf("the %q field for a TMSkill must contain a value "+
-				" between 0 and 5.", "proficiency"),
-		}
+		return errors.InvalidDataModelState(fmt.Errorf(
+			"the %q field for a TMSkill must contain a value between 0 and 5.",
+			"proficiency"))
 	}
 	return nil
 }
@@ -293,9 +271,8 @@ func (c *TMSkillsController) validateTMSkillID(tmSkill *model.TMSkill) error {
 	// Validate that the TMSkill's ID exists in the database
 	err := c.session.Read("tmskills", tmSkill.ID, &model.TMSkill{})
 	if err != nil {
-		return &errors.NoSuchIDError{
-			ErrorMsg: fmt.Sprintf("the following ID is not valid: %s", tmSkill.ID),
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"the following ID is not valid: %s", tmSkill.ID))
 	}
 	return nil
 }

@@ -77,28 +77,24 @@ func (c *LinksController) loadLink(id string) (*model.Link, error) {
 	link := model.Link{}
 	err := c.session.Read("links", id, &link)
 	if err != nil {
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No Link Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(
+			fmt.Errorf("no Link exists with specified ID: %s", id))
 	}
 	return &link, nil
 }
 
 func (c *LinksController) removeLink() error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get ID at end of request; return error if request contains no ID
 	linkID := util.CheckForID(c.r.URL)
 	if linkID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No Link ID Specified in Request URL: " + c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no Link ID specified in request URL"))
 	}
 
 	err := c.session.Delete("links", linkID, "skill_id")
 	if err != nil {
 		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No Link Exists with Specified ID: " + linkID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no Link exists with specified ID: %s", linkID))
 	}
 
 	c.Printf("Link Deleted with ID: %s", linkID)
@@ -112,9 +108,7 @@ func (c *LinksController) addLink() error {
 	link := model.Link{}
 	err := json.Unmarshal(body, &link)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	err = c.validatePOSTBody(&link)
@@ -123,17 +117,14 @@ func (c *LinksController) addLink() error {
 	}
 
 	if !model.IsValidLinkType(link.LinkType) {
-		return &errors.InvalidLinkTypeError{
-			ErrorMsg: fmt.Sprintf("Invalid Link Type: %s", link.LinkType),
-		}
+		return errors.InvalidLinkTypeError(
+			fmt.Errorf("invalid LinkType: %s", link.LinkType))
 	}
 
 	link.ID = util.NewID()
 	err = c.session.Save("links", link.ID, link)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	c.Printf("Saved link: %s", link.Name)
 	return nil
@@ -148,10 +139,9 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 func (c *LinksController) validatePOSTBody(link *model.Link) error {
 	if link.Name == "" || link.LinkType == "" ||
 		link.SkillID == "" || link.URL == "" {
-		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new Link must contain values for "+
-				"%q, %q, %q, and %q fields", "name", "link_type", "skill_id", "url"),
-		}
+		return errors.IncompletePOSTBodyError(fmt.Errorf(
+			"The JSON in a POST Request for new Link must contain values for "+
+				"%q, %q, %q, and %q fields", "name", "link_type", "skill_id", "url"))
 	}
 	return nil
 }

@@ -69,9 +69,8 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 	err := c.session.Read("skillreviews", id, &skillReview)
 	if err != nil {
 		log.Printf("loadSkillReview() generated the following error:\n\t%q", err)
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No SkillReview Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(fmt.Errorf(
+			"no SkillReview exists with specified ID: %s", id))
 	}
 	return &skillReview, nil
 }
@@ -80,20 +79,15 @@ func (c *SkillReviewsController) removeSkillReview() error {
 	// Get the ID at end of the specified request
 	skillReviewID := util.CheckForID(c.r.URL)
 	if skillReviewID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No SkillReview ID Specified in Request URL: " +
-				c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no SkillReview ID in request URL"))
 	}
 
 	err := c.session.Delete("skillreviews", skillReviewID, "skill_id")
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
 			"\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No SkillReview Exists with Specified ID: " +
-				skillReviewID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no SkillReview exists with specified ID: %s", skillReviewID))
 	}
 
 	log.Printf("SkillReview Deleted with ID: %s", skillReviewID)
@@ -103,9 +97,8 @@ func (c *SkillReviewsController) removeSkillReview() error {
 func (c *SkillReviewsController) updateSkillReview() error {
 	skillReviewID := util.CheckForID(c.r.URL)
 	if skillReviewID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "Must specify a SkillReview ID in PUT request URL.",
-		}
+		return errors.MissingIDError(fmt.Errorf(
+			"must specify a SkillReview ID in PUT request URL"))
 	}
 
 	skillReview, err := c.loadSkillReview(skillReviewID)
@@ -130,9 +123,7 @@ func (c *SkillReviewsController) updateSkillReview() error {
 	skillReview.Timestamp = time.Now().Format(data.TimestampFormat)
 	err = c.session.Save("skillreviews", skillReviewID, skillReview)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	return nil
 }
@@ -144,9 +135,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	skillReview := model.SkillReview{}
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	err = c.validatePOSTBody(&skillReview)
@@ -158,9 +147,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	skillReview.ID = util.NewID()
 	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	log.Printf("Saved SkillReview: %s", skillReview.ID)
 	return nil
@@ -176,10 +163,9 @@ error if not.
 func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview) error {
 	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
 		skillReview.Body == "" {
-		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new SkillReview must contain values for"+
-				" %q, %q, and %q fields.", "skill_id", "team_member_id", "body"),
-		}
+		return errors.IncompletePOSTBodyError(fmt.Errorf(
+			"The JSON in a POST Request for new SkillReview must contain values for"+
+				" %q, %q, and %q fields.", "skill_id", "team_member_id", "body"))
 	}
 	return nil
 }
@@ -191,11 +177,9 @@ passed-in SkillReview's "Body" field is not empty.
 */
 func (c *SkillReviewsController) validatePUTBody(skillReview *model.SkillReview) error {
 	if skillReview.Body == "" {
-		return &errors.InvalidPUTBodyError{
-			ErrorMsg: fmt.Sprintf("The JSON in a PUT request for new"+
-				" SkillReview must contain a value for the %q field",
-				"body"),
-		}
+		return errors.InvalidPUTBodyError(fmt.Errorf(
+			"The JSON in a PUT request for new SkillReview must contain a value "+
+				"for the %q field", "body"))
 	}
 	return nil
 }
