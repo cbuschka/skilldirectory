@@ -105,10 +105,12 @@ func (c *LinksController) removeLink() error {
 	return nil
 }
 
+// Creates new Link in database for POST requests to "/links"
 func (c *LinksController) addLink() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
+	// Unmarshal the request body into new object of type Link
 	link := model.Link{}
 	err := json.Unmarshal(body, &link)
 	if err != nil {
@@ -117,17 +119,13 @@ func (c *LinksController) addLink() error {
 		}
 	}
 
-	err = c.validatePOSTBody(&link)
+	// Validate fields of the Link
+	err = c.validateLinkFields(&link)
 	if err != nil {
-		return err // Will be of errors.IncompletePOSTBodyError type
+		return err
 	}
 
-	if !model.IsValidLinkType(link.LinkType) {
-		return &errors.InvalidLinkTypeError{
-			ErrorMsg: fmt.Sprintf("Invalid Link Type: %s", link.LinkType),
-		}
-	}
-
+	// Save the Link to database under a new UUID
 	link.ID = util.NewID()
 	err = c.session.Save("links", link.ID, link)
 	if err != nil {
@@ -140,17 +138,36 @@ func (c *LinksController) addLink() error {
 }
 
 /*
-validatePOSTBody() accepts a model.Link pointer. It can be used to verify the
-validity of the state of a Link initialized via unmarshaled JSON. Ensures that the
-passed-in Link contains a key-value pair for "Name", "LinkType", "SkillID", and "URL"
-fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
+validateLinkFields ensures that each of the following criteria are true for the
+Link that is passed-in:
+  * the SkillID, LinkType, Name, and URL fields are populated (not empty).
+	* the SkillID field contains the UUID of an existing Skill in the database.
+	* the LinkType field contains valid link type (see model.IsValidLinkType)
 */
-func (c *LinksController) validatePOSTBody(link *model.Link) error {
-	if link.Name == "" || link.LinkType == "" ||
-		link.SkillID == "" || link.URL == "" {
+func (c *LinksController) validateLinkFields(link *model.Link) error {
+	// Validate that SkillID field exists
+	if link.SkillID == "" || link.LinkType == "" ||
+		link.Name == "" || link.URL == "" {
 		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: fmt.Sprintf("The JSON in a POST Request for new Link must contain values for "+
-				"%q, %q, %q, and %q fields", "name", "link_type", "skill_id", "url"),
+			ErrorMsg: fmt.Sprintf("the JSON in a POST Request for new Link must "+
+				"contain values for %q, %q, %q, and %q fields",
+				"name", "link_type", "skill_id", "url"),
+		}
+	}
+
+	// Validate that SkillID points to valid data
+	err := c.session.Read("skills", link.SkillID, &model.Skill{})
+	if err != nil {
+		return &errors.InvalidDataModelState{
+			ErrorMsg: fmt.Sprintf("the %q field of all Links must contain ID of "+
+				"an existing skill in the database", "skill_id"),
+		}
+	}
+
+	// Validate the the LinkType field is valid
+	if !model.IsValidLinkType(link.LinkType) {
+		return &errors.InvalidLinkTypeError{
+			ErrorMsg: fmt.Sprintf("Invalid Link Type: %q", link.LinkType),
 		}
 	}
 	return nil
