@@ -39,8 +39,8 @@ deployment:
   master:
     branch: [dev,circledocker]
     commands:
-      - echo $CIRCLEBRANCH
+      - echo $CIRCLE_BRANCH
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
-      - cd ${GOPATH}/src/${IMPORT_PATH} && docker build -t $DOCKER_IMAGE:$CIRCLEBRANCH .
+      - cd ${GOPATH}/src/${IMPORT_PATH} && docker build -t $DOCKER_IMAGE:$CIRCLE_BRANCH .
       - docker images
-      - docker push $DOCKER_IMAGE:$CIRCLEBRANCH
+      - docker push $DOCKER_IMAGE:$CIRCLE_BRANCH
