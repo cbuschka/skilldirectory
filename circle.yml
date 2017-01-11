@@ -43,4 +43,4 @@ deployment:
       - cd ${GOPATH}/src/${IMPORT_PATH} && docker build -t $DOCKER_IMAGE:dev .
       - docker images
       - docker push maryville/skilldirectory:$CIRCLEBRANCH
-      - docker push maryville/skilldirectory:$CIRCLEBRANCH
+      - docker push maryville/skilldirectory
