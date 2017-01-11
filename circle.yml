@@ -30,6 +30,6 @@ deployment:
   master:
     branch: [dev,circledocker]
     commands:
-      - docker login -u "$dockerUser" -p "$dockerPass"
+      - docker login -u "$dockerUser" -p "$dockerPass" --email=brian.hoehne@maryville.com
       - docker build -t ${GOPATH}/src/${IMPORT_PATH}/maryville/skilldirectory .
       - docker images
