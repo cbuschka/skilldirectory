@@ -28,7 +28,7 @@ test:
 
 deployment:
   master:
-    # branch: dev
+    branch: [dev,circledocker]
     commands:
       - docker login -u "$dockerUser" -p "$dockerPass"
       - docker build -t ${GOPATH}/src/${IMPORT_PATH}/maryville/skilldirectory .
