@@ -10,6 +10,7 @@ machine:
     GOPATH: /home/ubuntu/.go_workspace
     DOCKER_USER: thebho
     DOCKER_EMAIL: brian.hoehne@maryville.com
+    DOCKER_IMAGE: skilldirectory
 
 
   post:
@@ -39,5 +40,5 @@ deployment:
     branch: [dev,circledocker]
     commands:
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
-      - docker build -t ${GOPATH}/src/${IMPORT_PATH}/maryville/skilldirectory .
+      - cd ${GOPATH}/src/${IMPORT_PATH} %% docker build -t $DOCKER_IMAGE:dev .
       - docker images
