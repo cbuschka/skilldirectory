@@ -77,28 +77,24 @@ func (c *LinksController) loadLink(id string) (*model.Link, error) {
 	link := model.Link{}
 	err := c.session.Read("links", id, &link)
 	if err != nil {
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No Link Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(
+			fmt.Errorf("no Link exists with specified ID: %s", id))
 	}
 	return &link, nil
 }
 
 func (c *LinksController) removeLink() error {
-	// Get the ID at end of the specified request; return error if request contains no ID
+	// Get ID at end of request; return error if request contains no ID
 	linkID := util.CheckForID(c.r.URL)
 	if linkID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No Link ID Specified in Request URL: " + c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no Link ID specified in request URL"))
 	}
 
 	err := c.session.Delete("links", linkID, "skill_id")
 	if err != nil {
 		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No Link Exists with Specified ID: " + linkID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no Link exists with specified ID: %s", linkID))
 	}
 
 	c.Printf("Link Deleted with ID: %s", linkID)
@@ -114,9 +110,7 @@ func (c *LinksController) addLink() error {
 	link := model.Link{}
 	err := json.Unmarshal(body, &link)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	// Validate fields of the Link
@@ -129,9 +123,7 @@ func (c *LinksController) addLink() error {
 	link.ID = util.NewID()
 	err = c.session.Save("links", link.ID, link)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	c.Printf("Saved link: %s", link.Name)
 	return nil
@@ -148,27 +140,23 @@ func (c *LinksController) validateLinkFields(link *model.Link) error {
 	// Validate that SkillID field exists
 	if link.SkillID == "" || link.LinkType == "" ||
 		link.Name == "" || link.URL == "" {
-		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: fmt.Sprintf("the JSON in a POST Request for new Link must "+
-				"contain values for %q, %q, %q, and %q fields",
-				"name", "link_type", "skill_id", "url"),
-		}
+		return errors.IncompletePOSTBodyError(fmt.Errorf(
+			"the JSON in a POST Request for new Link must contain values for "+
+				"%q, %q, %q, and %q fields", "name", "link_type", "skill_id", "url"))
 	}
 
 	// Validate that SkillID points to valid data
 	err := c.session.Read("skills", link.SkillID, &model.Skill{})
 	if err != nil {
-		return &errors.InvalidDataModelState{
-			ErrorMsg: fmt.Sprintf("the %q field of all Links must contain ID of "+
-				"an existing skill in the database", "skill_id"),
-		}
+		return errors.InvalidDataModelState(fmt.Errorf(
+			"the %q field of all Links must contain ID of an existing skill in "+
+				"the database", "skill_id"))
 	}
 
 	// Validate the the LinkType field is valid
 	if !model.IsValidLinkType(link.LinkType) {
-		return &errors.InvalidLinkTypeError{
-			ErrorMsg: fmt.Sprintf("Invalid Link Type: %q", link.LinkType),
-		}
+		return errors.InvalidLinkTypeError(fmt.Errorf(
+			"Invalid Link Type: %q", link.LinkType))
 	}
 	return nil
 }
