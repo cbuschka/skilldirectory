@@ -27,7 +27,9 @@ test:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && go test ./controller && go test ./handler && go test ./model && go test ./data && go build
 
 deployment:
-  override:
-    - docker login -u "$dockerUser" -p "$dockerPass"
-    - docker build -t maryville/skilldirectory .
-    - docker images
+  master:
+    # branch: dev
+    commands:
+      - docker login -u "$dockerUser" -p "$dockerPass"
+      - docker build -t ${GOPATH}/src/${IMPORT_PATH}/maryville/skilldirectory .
+      - docker images
