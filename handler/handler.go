@@ -9,7 +9,8 @@ import (
 )
 
 /*
-MakeHandler() returns a new function of the adapter type http.HandlerFunc using the passed-in function, fn.
+MakeHandler() returns a new function of the adapter type http.HandlerFunc using
+the passed-in function, fn.
 */
 func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
 	cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
@@ -21,17 +22,20 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTCont
 }
 
 /*
-Handler() should be invoked to handle responding to the passed-in HTTP request. Responses are sent via
-the passed-in http.ResponseWriter.
+Handler() should be invoked to handle responding to the passed-in HTTP request.
+Responses are sent via the passed-in http.ResponseWriter.
 
-The passed-in RESTController is first initialized using the specified http.ResponseWriter and http.Request,
-and is connected to the Skills filesystem/database. Once initialized, the RESTController is used to handle
-responses to the passed-in HTTP request.
+The passed-in RESTController is first initialized using the specified
+http.ResponseWriter and http.Request, and is connected to the Skills database.
+Once initialized, the RESTController is used to handle responses to the
+passed-in HTTP request.
 
 If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
-func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController, session data.DataAccess) {
+func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController,
+	session data.DataAccess) {
+
 	log := util.LogInit()
 	log.Printf("Handling Request: %s", r.Method)
 	log.Debugf("Request: %s", r.Body)
@@ -52,12 +56,13 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	var statusCode int
 	if err != nil {
 		switch err.(type) {
-		case *errors.MarshalingError, *errors.InvalidSkillTypeError, *errors.MissingIDError,
-			*errors.IncompletePOSTBodyError, *errors.InvalidPOSTBodyError, *errors.InvalidPUTBodyError:
+		case errors.MarshalingError, errors.InvalidSkillTypeError,
+			errors.MissingIDError, errors.IncompletePOSTBodyError,
+			errors.InvalidPOSTBodyError, errors.InvalidPUTBodyError:
 			statusCode = http.StatusBadRequest
-		case *errors.SavingError:
+		case errors.SavingError:
 			statusCode = http.StatusInternalServerError
-		case *errors.NoSuchIDError:
+		case errors.NoSuchIDError:
 			statusCode = http.StatusNotFound
 		default:
 			statusCode = http.StatusInternalServerError
