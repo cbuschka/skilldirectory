@@ -37,7 +37,7 @@ test:
 
 deployment:
   master:
-    branch: [dev,circledocker]
+    branch: dev
     commands:
       - echo $CIRCLE_BRANCH
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
