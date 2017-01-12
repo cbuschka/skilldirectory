@@ -21,7 +21,7 @@ type Skill struct {
 
 type SkillDTO struct {
 	Skill
-	Links []Link
+	Links []Link `json:"links"`
 }
 
 const (
