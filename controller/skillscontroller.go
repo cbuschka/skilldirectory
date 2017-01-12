@@ -79,9 +79,8 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 	skill := model.Skill{}
 	err := c.session.Read("skills", id, &skill)
 	if err != nil {
-		return nil, &errors.NoSuchIDError{
-			ErrorMsg: "No Skill Exists with Specified ID: " + id,
-		}
+		return nil, errors.NoSuchIDError(fmt.Errorf(
+			"no Skill exists with specified ID: %s", id))
 	}
 	skillDTO, _ := c.addLinks(skill)
 	return &skillDTO, nil
@@ -111,17 +110,14 @@ func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
 	skillID := util.CheckForID(c.r.URL)
 	if skillID == "" {
-		return &errors.MissingIDError{
-			ErrorMsg: "No Skill ID Specified in Request URL: " + c.r.URL.String(),
-		}
+		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
 	}
 
 	err := c.session.Delete("skills", skillID)
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
-		return &errors.NoSuchIDError{
-			ErrorMsg: "No Skill Exists with Specified ID: " + skillID,
-		}
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no Skill exists with specified ID: %s", skillID))
 	}
 
 	c.Printf("Skill Deleted with ID: %s", skillID)
@@ -135,9 +131,7 @@ func (c *SkillsController) addSkill() error {
 	skill := model.Skill{}
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
-		return &errors.MarshalingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.MarshalingError(err)
 	}
 
 	err = c.validatePOSTBody(&skill)
@@ -147,17 +141,14 @@ func (c *SkillsController) addSkill() error {
 	}
 
 	if !model.IsValidSkillType(skill.SkillType) {
-		return &errors.InvalidSkillTypeError{
-			ErrorMsg: fmt.Sprintf("Invalid Skill Type: %s", skill.SkillType),
-		}
+		return errors.InvalidSkillTypeError(fmt.Errorf(
+			"invalid Skill type: %s", skill.SkillType))
 	}
 
 	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
-		return &errors.SavingError{
-			ErrorMsg: err.Error(),
-		}
+		return errors.SavingError(err)
 	}
 	c.Printf("Saved skill: %s", skill.Name)
 	return nil
@@ -171,10 +162,9 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
 func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
 	if skill.Name == "" || skill.SkillType == "" {
-		return &errors.IncompletePOSTBodyError{
-			ErrorMsg: "The JSON in a POST Request for new Skill must contain values for " +
-				"\"name\" and \"skill_type\" fields.",
-		}
+		return errors.IncompletePOSTBodyError(fmt.Errorf(
+			"The JSON in a POST Request for new Skill must contain values for "+
+				"%q and %q fields.", "name", "skill_type"))
 	}
 	return nil
 }
