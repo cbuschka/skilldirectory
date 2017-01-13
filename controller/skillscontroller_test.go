@@ -67,7 +67,7 @@ func TestDeleteSkill(t *testing.T) {
 
 	err := sc.Delete()
 	if err != nil {
-		t.Errorf("Expected error: %s", err.Error())
+		t.Errorf("Expected no error, but got one: %s", err.Error())
 	}
 }
 
