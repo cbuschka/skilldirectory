@@ -10,7 +10,7 @@ func TestNewTMSkillDefaults(t *testing.T) {
 		"TeamMemberID").NewTMSkillDTO("Coding", "Javatar")
 	tmSkillDTOTwo := TMSkillDTO{
 		TMSkill: TMSkill{
-			ID:           "TMSkillId",
+			ID:           "TMSkillID",
 			SkillID:      "SkillID",
 			TeamMemberID: "TeamMemberID",
 			WishList:     false,
@@ -19,8 +19,8 @@ func TestNewTMSkillDefaults(t *testing.T) {
 		SkillName:      "Coding",
 		TeamMemberName: "Javatar",
 	}
-	//Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if reflect.DeepEqual(tmSkillDTOOne, tmSkillDTOTwo) {
+	// Verify that all of tmSkillOne and tmSkillTwo's fields are equal
+	if !reflect.DeepEqual(tmSkillDTOOne, tmSkillDTOTwo) {
 		t.Error("constructor NewTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
