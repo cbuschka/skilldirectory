@@ -45,11 +45,40 @@ func (c *SkillReviewsController) performGet() error {
 }
 
 func (c *SkillReviewsController) getAllSkillReviews() error {
-	skillReview, err := c.session.ReadAll("skillreviews", model.SkillReview{})
+	skillReviewsInterface, err := c.session.ReadAll("skillreviews", model.SkillReview{})
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(skillReview)
+
+	skillReviewsRaw, err := json.Marshal(skillReviewsInterface)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+
+	skillReviews := []model.SkillReview{}
+	err = json.Unmarshal(skillReviewsRaw, &skillReviews)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+
+	skillReviewDTOs := []model.SkillReviewDTO{}
+	for idx := 0; idx < len(skillReviews); idx++ {
+		skillName, err := c.getSkillName(&skillReviews[idx])
+		if err != nil {
+			c.Warnf("Possible invalid id: %v", err)
+			continue
+		}
+
+		teamMemberName, err := c.getTeamMemberName(&skillReviews[idx])
+		if err != nil {
+			c.Warnf("Possible invalid id: %v", err)
+			continue
+		}
+		skillReviewDTOs = append(skillReviewDTOs,
+			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
+	}
+
+	b, err := json.Marshal(skillReviewDTOs)
 	c.w.Write(b)
 	return err
 }
@@ -59,12 +88,29 @@ func (c *SkillReviewsController) getSkillReview(id string) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(skillReview)
+
+	teamMemberName, err := c.getTeamMemberName(skillReview)
+	if err != nil {
+		c.Warnf("Possible invalid id: %v", err)
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no TeamMember exists with specified ID: %q", skillReview.TeamMemberID))
+	}
+
+	skillName, err := c.getSkillName(skillReview)
+	if err != nil {
+		c.Warnf("Possible invalid id: %v", err)
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no Skill exists with specified ID: %q", skillReview.SkillID))
+	}
+
+	skillReviewDTO := skillReview.NewSkillReviewDTO(skillName, teamMemberName)
+	b, err := json.Marshal(skillReviewDTO)
 	c.w.Write(b)
 	return err
 }
 
-func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview, error) {
+func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
+	error) {
 	skillReview := model.SkillReview{}
 	err := c.session.Read("skillreviews", id, &skillReview)
 	if err != nil {
@@ -73,6 +119,26 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 			"no SkillReview exists with specified ID: %s", id))
 	}
 	return &skillReview, nil
+}
+
+func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
+	error) {
+	teamMember := model.TeamMember{}
+	err := c.session.Read("teammembers", sr.TeamMemberID, &teamMember)
+	if err != nil {
+		return "", err
+	}
+	return teamMember.Name, nil
+}
+
+func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
+	error) {
+	skill := model.Skill{}
+	err := c.session.Read("skills", sr.SkillID, &skill)
+	if err != nil {
+		return "", err
+	}
+	return skill.Name, nil
 }
 
 func (c *SkillReviewsController) removeSkillReview() error {
