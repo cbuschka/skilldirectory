@@ -145,6 +145,60 @@ func TestPostTeamMember_Error(t *testing.T) {
 	}
 }
 
+func TestPutTeamMember(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "John Smith", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPutTeamMember_NoName(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expected error due to empty %q field in TeamMember PUT request.", "name")
+	}
+}
+
+func TestPutTeamMember_NoTitle(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
+	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expected error due to empty %q field in TeamMember PUT request.", "title")
+	}
+}
+
+func TestPutTeamMember_NoTeamMember(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPut, "/teammembers", nil)
+	tc := getTeamMembersController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPutTeamMember_Error(t *testing.T) {
+	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
 /*
 getTeamMembersController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new TeamMembersController created with that BaseController.
