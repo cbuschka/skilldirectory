@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"skilldirectory/data"
 	"skilldirectory/router"
+	"fmt"
 )
 
 var session data.DataAccess

@@ -31,4 +31,4 @@ go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
 echo "Running skilldirectory project..."
 ### Build executable for Ubuntu docker container
-go run main.go
+go run main.go -debug=$DEBUG_FLAG
