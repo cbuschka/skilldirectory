@@ -90,7 +90,8 @@ func (c *LinksController) removeLink() error {
 		return errors.MissingIDError(fmt.Errorf("no Link ID specified in request URL"))
 	}
 
-	err := c.session.Delete("links", linkID, "skill_id")
+	err := c.session.Delete("links", linkID, data.CassandraQueryOptions{})
+	//TODO: Add skillid field to opts
 	if err != nil {
 		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(

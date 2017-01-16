@@ -82,7 +82,8 @@ func (c *SkillReviewsController) removeSkillReview() error {
 		return errors.MissingIDError(fmt.Errorf("no SkillReview ID in request URL"))
 	}
 
-	err := c.session.Delete("skillreviews", skillReviewID, "skill_id")
+	err := c.session.Delete("skillreviews", skillReviewID, data.CassandraQueryOptions{})
+	// TODO Add skillid field to opts
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
 			"\n\t%q\n", err)

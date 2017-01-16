@@ -157,7 +157,7 @@ func (c *TeamMembersController) removeTeamMember() error {
 		return errors.MissingIDError(fmt.Errorf("no TeamMember ID in request URL"))
 	}
 
-	err := c.session.Delete("teammembers", teamMemberID)
+	err := c.session.Delete("teammembers", teamMemberID, data.CassandraQueryOptions{})
 	if err != nil {
 		c.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(

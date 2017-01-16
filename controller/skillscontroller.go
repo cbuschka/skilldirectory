@@ -112,8 +112,10 @@ func (c *SkillsController) removeSkill() error {
 	if skillID == "" {
 		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
 	}
-
-	err := c.session.Delete("skills", skillID)
+	err1 := c.removeSkillChildren(skillID)
+	c.Printf("removingSkillChildren: %v", err1)
+	err := c.session.Delete("skills", skillID, data.CassandraQueryOptions{})
+	//TODO Add skillid field to opts
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
@@ -122,6 +124,11 @@ func (c *SkillsController) removeSkill() error {
 
 	c.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
+}
+
+func (c *SkillsController) removeSkillChildren(skillID string) error {
+	return c.session.Delete("links", "", data.NewCassandraQueryOptions("skill_ID", skillID, true))
+
 }
 
 func (c *SkillsController) addSkill() error {
