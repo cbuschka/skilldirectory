@@ -129,22 +129,60 @@ Note that Delete will still be able to execute the DELETE query if "id" is speci
 func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
 	query := "DELETE FROM " + table + " WHERE " // Base query
 	c.Infof("Deleting:%s,%s,%v", table, id, opts)
+	firstField := true
 	if id == "" && len(opts.Filters) == 0 {
 		return errors.New("Attempting to delete with no id")
 	}
 	if id != "" {
+		firstField = false
 		query += "id = " + id
 	}
 	for _, filter := range opts.Filters {
 		if filter.key == "id" {
 			continue
 		}
-
+		if filter.value == "" {
+			value, err := c.readCol(table, id, filter.key)
+			if err != nil {
+				c.Warnf("Read column failed:%s,%s,%s", table, id, filter.key)
+				continue
+			}
+			filter.value = value
+		}
+		if !firstField {
+			query += " AND "
+		}
 		query += filter.query()
+		firstField = false
 	}
 	query += ";"
 	c.Infof("Running the following DELETE query:\n\t%q\n", query)
 	return c.Query(query).Exec()
+}
+
+func (c CassandraConnector) readCol(table, id, col string) (string, error) {
+	// Get value for this column
+	colQuery := "SELECT " + col + " FROM " + table + " WHERE id = " + id
+	m := make(map[string]interface{})
+	err := c.Query(colQuery).Consistency(gocql.One).MapScan(m)
+	if err != nil {
+		return "", err
+	}
+
+	// value can be of different types. Based on type, append it onto the
+	// base query string.
+	var colVal string
+	switch v := m[col].(type) {
+	case int:
+		colVal = string(v)
+	case string:
+		colVal = "'" + v + "'"
+	case gocql.UUID:
+		colVal = v.String()
+	default:
+		return "", fmt.Errorf("Unrecognized value type, %T, for column, %q", m[col], col)
+	}
+	return colVal, nil
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
