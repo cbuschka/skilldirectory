@@ -34,7 +34,7 @@ type Filter struct {
 }
 
 func (f Filter) query() string {
-	queryString := fmt.Sprintf(" %s", f.key)
+	queryString := fmt.Sprintf("%s", f.key)
 	queryString += " = "
 	if !f.id {
 		queryString += "'"
@@ -127,7 +127,7 @@ in the PRIMARY KEY).
 Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
 */
 func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
-	query := queryStringHelper(table, id, opts, c)
+	query := makeDeleteQueryStr(table, id, opts, c)
 	if query == "" {
 		return errors.New("Attempting to delete with no id")
 	}
@@ -135,7 +135,7 @@ func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions)
 	return c.Query(query).Exec()
 }
 
-func queryStringHelper(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+func makeDeleteQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
 	query := "DELETE FROM " + table + " WHERE " // Base query
 	c.Infof("Deleting:%s,%s,%v", table, id, opts)
 	firstField := true
