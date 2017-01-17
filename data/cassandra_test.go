@@ -40,3 +40,15 @@ func TestNewOptions(t *testing.T) {
 		t.Error("Expecting AddFilter to match")
 	}
 }
+
+func TestDeleteSkillChildrean(t *testing.T) {
+	table := "links"
+	id := ""
+	skillID := "1234"
+	opts := NewCassandraQueryOptions("skill_ID", skillID, true)
+	valid := "DELETE FROM links WHERE skill_ID = 1234;"
+	queryString := queryStringHelper(table, id, opts, CassandraConnector{})
+	if valid != queryString {
+		t.Errorf("Excpecting quesryString to match: %s, %s ", valid, queryString)
+	}
+}

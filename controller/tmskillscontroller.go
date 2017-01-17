@@ -144,7 +144,7 @@ func (c *TMSkillsController) removeTMSkill() error {
 	}
 
 	err := c.session.Delete("tmskills", tmSkillID, data.NewCassandraQueryOptions("team_member_id", "", true))
-	//TODO Add skillid field to opts
+
 	if err != nil {
 		c.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(

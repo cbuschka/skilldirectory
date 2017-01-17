@@ -127,12 +127,19 @@ in the PRIMARY KEY).
 Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
 */
 func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
+	query := queryStringHelper(table, id, opts, c)
+	if query == "" {
+		return errors.New("Attempting to delete with no id")
+	}
+	c.Infof("Running the following DELETE query:\n\t%q\n", query)
+	return c.Query(query).Exec()
+}
+
+func queryStringHelper(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
 	query := "DELETE FROM " + table + " WHERE " // Base query
 	c.Infof("Deleting:%s,%s,%v", table, id, opts)
 	firstField := true
-	if id == "" && len(opts.Filters) == 0 {
-		return errors.New("Attempting to delete with no id")
-	}
+
 	if id != "" {
 		firstField = false
 		query += "id = " + id
@@ -156,8 +163,8 @@ func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions)
 		firstField = false
 	}
 	query += ";"
-	c.Infof("Running the following DELETE query:\n\t%q\n", query)
-	return c.Query(query).Exec()
+
+	return query
 }
 
 func (c CassandraConnector) readCol(table, id, col string) (string, error) {
