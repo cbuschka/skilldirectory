@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	util "skilldirectory/util"
@@ -112,7 +113,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	if err != nil {
 		c.Warnf("loadTMSkill() generated the following error: %v", err)
 		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"No TMSkill Exists with Specified ID: ", id))
+			"No TMSkill Exists with Specified ID: %s ", id))
 	}
 	return &tmSkill, nil
 }
@@ -142,7 +143,8 @@ func (c *TMSkillsController) removeTMSkill() error {
 		return errors.MissingIDError(fmt.Errorf("no TMSkill ID in request URL"))
 	}
 
-	err := c.session.Delete("tmskills", tmSkillID, "team_member_id")
+	err := c.session.Delete("tmskills", tmSkillID, data.NewCassandraQueryOptions("team_member_id", "", true))
+
 	if err != nil {
 		c.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(

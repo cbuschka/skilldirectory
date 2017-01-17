@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"skilldirectory/util"
 
@@ -33,7 +34,7 @@ type Filter struct {
 }
 
 func (f Filter) query() string {
-	queryString := fmt.Sprintf(" %s", f.key)
+	queryString := fmt.Sprintf("%s", f.key)
 	queryString += " = "
 	if !f.id {
 		queryString += "'"
@@ -125,40 +126,70 @@ in the PRIMARY KEY).
 
 Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
 */
-func (c CassandraConnector) Delete(table, id string, primary_key_cols ...string) error {
-	query := "DELETE FROM " + table + " WHERE id = " + id // Base query
+func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
+	query := makeDeleteQueryStr(table, id, opts, c)
+	if query == "" {
+		return errors.New("Attempting to delete with no id")
+	}
+	c.Infof("Running the following DELETE query:\n\t%q\n", query)
+	return c.Query(query).Exec()
+}
 
-	// If the PRIMARY KEY is compound (uses more columns than "id"), then append those onto the base query
-	for _, col := range primary_key_cols {
-		if col == "id" { // Skip the "id" column; it's already in the base query
+func makeDeleteQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+	query := "DELETE FROM " + table + " WHERE " // Base query
+	c.Infof("Deleting:%s,%s,%v", table, id, opts)
+	firstField := true
+
+	if id != "" {
+		firstField = false
+		query += "id = " + id
+	}
+	for _, filter := range opts.Filters {
+		if filter.key == "id" {
 			continue
 		}
-		// Get value for this column
-		colQuery := "SELECT " + col + " FROM " + table + " WHERE id = " + id
-		m := make(map[string]interface{})
-		err := c.Query(colQuery).Consistency(gocql.One).MapScan(m)
-		if err != nil {
-			return err
+		if filter.value == "" {
+			value, err := c.readCol(table, id, filter.key)
+			if err != nil {
+				c.Warnf("Read column failed:%s,%s,%s", table, id, filter.key)
+				continue
+			}
+			filter.value = value
 		}
+		if !firstField {
+			query += " AND "
+		}
+		query += filter.query()
+		firstField = false
+	}
+	query += ";"
 
-		// value can be of different types. Based on type, append it onto the
-		// base query string.
-		var colVal string
-		switch v := m[col].(type) {
-		case int:
-			colVal = string(v)
-		case string:
-			colVal = "'" + v + "'"
-		case gocql.UUID:
-			colVal = v.String()
-		default:
-			return fmt.Errorf("Unrecognized value type, %T, for column, %q", m[col], col)
-		}
-		query += (" AND " + col + " = " + colVal)
+	return query
+}
+
+func (c CassandraConnector) readCol(table, id, col string) (string, error) {
+	// Get value for this column
+	colQuery := "SELECT " + col + " FROM " + table + " WHERE id = " + id
+	m := make(map[string]interface{})
+	err := c.Query(colQuery).Consistency(gocql.One).MapScan(m)
+	if err != nil {
+		return "", err
 	}
 
-	c.Printf("Running the following DELETE query:\n\t%q\n", query)
-	return c.Query(query).Exec()
+	// value can be of different types. Based on type, append it onto the
+	// base query string.
+	var colVal string
+	switch v := m[col].(type) {
+	case int:
+		colVal = string(v)
+	case string:
+		colVal = "'" + v + "'"
+	case gocql.UUID:
+		colVal = v.String()
+	default:
+		return "", fmt.Errorf("Unrecognized value type, %T, for column, %q", m[col], col)
+	}
+	return colVal, nil
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {

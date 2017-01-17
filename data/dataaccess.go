@@ -12,7 +12,7 @@ type DataAccess interface {
 	ReadAll(table string, readType ReadAllInterface) ([]interface{}, error)
 	FilteredReadAll(table string, opts CassandraQueryOptions,
 		readType ReadAllInterface) ([]interface{}, error)
-	Delete(table, id string, primary_key_cols ...string) error
+	Delete(table, id string, opts CassandraQueryOptions) error
 }
 
 /*
