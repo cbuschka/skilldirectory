@@ -28,13 +28,15 @@ function above_threshold {
   for res in "${TEST_RESPONSES[@]}"; do
     is_whitelist=false;
     my_module=$(echo $res | awk '{print $2}')
-    for module in $WHITELIST; do
+    for module in ${WHITELIST[@]}; do
       if [ ${my_module#*\/} == ${module#*\/} ]; then
         is_whitelist=true
+        break
       fi
     done
     if ! $is_whitelist; then
-      if [ $(echo $res | grep -o '[0-9\.]*%' | sed "s/%/ < $THRESHOLD/" | bc) != 0 ]; then
+      val=$(echo $res | grep -o '[0-9\.]*%' | sed "s/%/ < $THRESHOLD/" | bc)
+      if [ ${val+0} != 0 ]; then
         return 1
       fi
     fi
