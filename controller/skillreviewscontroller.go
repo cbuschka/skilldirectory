@@ -88,8 +88,8 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 }
 
 func (c *SkillReviewsController) getSkillReviewForSkill(skill_id string) error {
-	opts := NewCassandraQueryOptions("skill_id", skill_id, true)
-	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReviews{})
+	opts := data.NewCassandraQueryOptions("skill_id", skill_id, true)
+	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
 	if err != nil {
 		return err
 	}
