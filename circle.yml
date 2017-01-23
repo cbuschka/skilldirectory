@@ -33,7 +33,8 @@ test:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && glide install
   override:
     - go version
-    - cd "${GOPATH}/src/${IMPORT_PATH}/" && go test ./controller && go test ./handler && go test ./model && go test ./data && go build
+    ##TODO Get all these modules up to snuff so we can stop whitelisting them 
+    - cd "${GOPATH}/src/${IMPORT_PATH}/" && ./test -a --whitelist -m ./controller -m ./data -m ./model -m ./util && go build
 
 deployment:
   master:
