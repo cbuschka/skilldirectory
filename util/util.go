@@ -66,3 +66,8 @@ func getRootDir(path string) string {
 	}
 	return rootDir
 }
+
+//Escapes the single quotes in the Cassandra query
+func SanitizeInput(input string) string {
+	return strings.Replace(input, "'", "''", -1)
+}
