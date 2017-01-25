@@ -61,7 +61,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 			errors.MissingIDError, errors.IncompletePOSTBodyError,
 			errors.InvalidPOSTBodyError, errors.InvalidPUTBodyError:
 			statusCode = http.StatusBadRequest
-		case errors.SavingError:
+		case errors.SavingError, errors.ReadError:
 			statusCode = http.StatusInternalServerError
 		case errors.NoSuchIDError:
 			statusCode = http.StatusNotFound

@@ -42,7 +42,7 @@ func NewSkill(id, name, skillType string) Skill {
 }
 
 // GetType satisfies data.ReadAllInterface
-func (s *Skill) GetType() interface{} {
+func (s Skill) GetType() interface{} {
 	return Skill{}
 }
 
@@ -67,10 +67,11 @@ type SkillDTO struct {
 }
 
 // NewSkillDTO returns a new SkillDTO object using receiver and specified params
-func (s Skill) NewSkillDTO(links []Link) SkillDTO {
+func (s Skill) NewSkillDTO(links []Link, icon SkillIcon) SkillDTO {
 	return SkillDTO{
 		Skill: s,
 		Links: links,
+		Icon:  icon,
 	}
 }
 

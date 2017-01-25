@@ -104,11 +104,14 @@ func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	if err != nil {
 		return err
 	}
-	return c.Query("INSERT INTO " + table + " JSON '" + string(b) + "'").Exec()
+	query := "INSERT INTO " + table + " JSON '" + string(b) + "'"
+	c.Debugf("Running this CQL Query: \n\t%q\n", query)
+	return c.Query(query).Exec()
 }
 
 func (c CassandraConnector) Read(table, key string, object interface{}) error {
 	query := "SELECT JSON * FROM " + table + " WHERE id = " + key
+	c.Debugf("Running this CQL Query: \n\t%q\n", query)
 	byteQ := []byte{}
 	err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
 	if err != nil {
@@ -131,7 +134,7 @@ func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions)
 	if query == "" {
 		return errors.New("Attempting to delete with no id")
 	}
-	c.Infof("Running the following DELETE query:\n\t%q\n", query)
+	c.Debugf("Running the following DELETE query:\n\t%q\n", query)
 	return c.Query(query).Exec()
 }
 

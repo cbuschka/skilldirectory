@@ -102,7 +102,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	if err != nil {
 		c.Print(err)
 	}
-	skillDTO = skill.NewSkillDTO(*links)
+	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
 	return skillDTO, nil
 }
 
