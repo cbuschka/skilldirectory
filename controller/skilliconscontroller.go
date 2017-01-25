@@ -1,18 +1,14 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	"skilldirectory/util"
-
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-
-	"mime/multipart"
 )
 
 type SkillIconsController struct {
@@ -79,12 +75,14 @@ func (c *SkillIconsController) removeSkillIcon() error {
 	}
 
 	// Attempt to delete image resource from S3
-	err := c.deleteOnAWS(skillID)
-	if err != nil {
-		c.Warnf("Failed to delete skill icon from AWS S3.")
-		return errors.NoSuchIDError(fmt.Errorf(
-			"no skill icon exists with specified ID: %s", skillID))
-	}
+	fileSystem, err := data.NewS3Session()
+	err = fileSystem.Delete("andrew/" + skillID)
+	// err := c.deleteOnAWS(skillID)
+	// if err != nil {
+	// 	c.Warnf("Failed to delete skill icon from AWS S3.")
+	// 	return errors.NoSuchIDError(fmt.Errorf(
+	// 		"no skill icon exists with specified ID: %s", skillID))
+	// }
 
 	// Attempt to delete record from database
 	err = c.session.Delete("skillicons", skillID, data.CassandraQueryOptions{})
@@ -101,7 +99,6 @@ func (c *SkillIconsController) removeSkillIcon() error {
 // Creates new SkillIcon in database for POST requests to "/skillicons"
 func (c *SkillIconsController) addSkillIcon() error {
 	// Extract icon data from HTTP request
-	c.r.ParseMultipartForm(1500000) // using 1.5 MB buffer
 	iconFile, _, err := c.r.FormFile("icon")
 	if err != nil {
 		c.Warn("error getting icon form file: " + err.Error())
@@ -114,8 +111,13 @@ func (c *SkillIconsController) addSkillIcon() error {
 		SkillID: c.r.FormValue("skill_id"),
 	}
 
+	// Capture data for later use before it is consumed by util.ValidateIcon
+	iconFileBytes, _ := ioutil.ReadAll(iconFile)
+
 	// Validity and error checking
-	_, err = util.ValidateIcon(iconFile)
+	dataCopy := make([]byte, len(iconFileBytes))
+	copy(dataCopy, iconFileBytes)
+	_, err = util.ValidateIcon(bytes.NewReader(dataCopy))
 	if err != nil {
 		c.Warn("Invalid image data: ", err)
 		return errors.InvalidPOSTBodyError(err)
@@ -128,14 +130,15 @@ func (c *SkillIconsController) addSkillIcon() error {
 	}
 
 	// Upload image to S3 cloud
-	err = c.saveOnAWS(iconFile, skillIcon.SkillID)
+	fileSystem := data.NewLocalFileSystem()
+	url, err := fileSystem.Write("andrew/"+skillIcon.SkillID,
+		bytes.NewReader(iconFileBytes))
 	if err != nil {
 		return fmt.Errorf("failed to save icon: %s", err)
 	}
 
 	// Store its URL in Cassandra table
-	skillIcon.URL = "https://s3.amazonaws.com/skilldirectory/andrew/" +
-		skillIcon.SkillID
+	skillIcon.URL = url
 	err = c.session.Save("skillicons", skillIcon.SkillID, skillIcon)
 	if err != nil {
 		return errors.SavingError(err)
@@ -143,59 +146,4 @@ func (c *SkillIconsController) addSkillIcon() error {
 
 	c.Printf("Saved icon: %s", skillIcon.URL)
 	return nil
-}
-
-// Stores icon in the '/skilldirectory' AWS bucket
-func (c *SkillIconsController) saveOnAWS(icon multipart.File, name string) error {
-	// Establish connection to AWS
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1")},
-	)
-	if err != nil {
-		return fmt.Errorf("failed to connect to AWS S3 instance")
-	}
-	svc := s3.New(sess)
-
-	// Setup object to save in AWS
-	params := &s3.PutObjectInput{
-		Bucket: aws.String("skilldirectory"), // Required
-		Key:    aws.String("andrew/" + name), // Required
-		Body:   icon,
-		Metadata: map[string]*string{
-			"Andrew": aws.String("Dillon"),
-		},
-	}
-
-	// Try to save the icon to AWS
-	_, err = svc.PutObject(params)
-	if err != nil {
-		return fmt.Errorf("Failed to save icon to AWS S3 instance")
-	}
-	return nil
-}
-
-// Deletes icon with name in '/skilldirectory' AWS bucket
-func (c *SkillIconsController) deleteOnAWS(name string) error {
-	// Establish connection to AWS
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1")},
-	)
-	if err != nil {
-		return fmt.Errorf("failed to connect to AWS S3 instance")
-	}
-	svc := s3.New(sess)
-
-	// Setup object to delete from AWS
-	params := &s3.DeleteObjectInput{
-		Bucket: aws.String("skilldirectory"), // Required
-		Key:    aws.String("andrew/" + name), // Required
-	}
-
-	// Try to delete the icon from AWS
-	_, err = svc.DeleteObject(params)
-	if err != nil {
-		return fmt.Errorf("Failed to delete icon from AWS S3 instance")
-	}
-	return nil
-
 }
