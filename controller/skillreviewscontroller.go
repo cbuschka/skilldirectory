@@ -85,6 +85,9 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 
 func (c *SkillReviewsController) getSkillReview(id string) error {
 	skillReview, err := c.loadSkillReview(id)
+	b, err := json.Marshal(id)
+	c.w.Write(b)
+
 	if err != nil {
 		return err
 	}
@@ -104,8 +107,8 @@ func (c *SkillReviewsController) getSkillReview(id string) error {
 	}
 
 	skillReviewDTO := skillReview.NewSkillReviewDTO(skillName, teamMemberName)
-	b, err := json.Marshal(skillReviewDTO)
-	c.w.Write(b)
+	bytes, err := json.Marshal(skillReviewDTO)
+	c.w.Write(bytes)
 	return err
 }
 
@@ -124,6 +127,7 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
 	error) {
 	teamMember := model.TeamMember{}
+	println(sr.TeamMemberID)
 	err := c.session.Read("teammembers", sr.TeamMemberID, &teamMember)
 	if err != nil {
 		return "", err

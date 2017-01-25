@@ -162,6 +162,10 @@ func (c *SkillsController) addSkill() error {
 		return errors.SavingError(err)
 	}
 	c.Printf("Saved skill: %s", skill.Name)
+
+	b, err := json.Marshal(skill)
+	c.w.Write(b)
+
 	return nil
 }
 
