@@ -75,14 +75,11 @@ func (c *SkillIconsController) removeSkillIcon() error {
 	}
 
 	// Attempt to delete image resource from S3
-	fileSystem, err := data.NewS3Session()
-	err = fileSystem.Delete("andrew/" + skillID)
-	// err := c.deleteOnAWS(skillID)
-	// if err != nil {
-	// 	c.Warnf("Failed to delete skill icon from AWS S3.")
-	// 	return errors.NoSuchIDError(fmt.Errorf(
-	// 		"no skill icon exists with specified ID: %s", skillID))
-	// }
+	err := c.fileSystem.Delete("dev/" + skillID)
+	if err != nil {
+		c.Warn(err)
+		return err
+	}
 
 	// Attempt to delete record from database
 	err = c.session.Delete("skillicons", skillID, data.CassandraQueryOptions{})
@@ -130,8 +127,7 @@ func (c *SkillIconsController) addSkillIcon() error {
 	}
 
 	// Upload image to S3 cloud
-	fileSystem := data.NewLocalFileSystem()
-	url, err := fileSystem.Write("andrew/"+skillIcon.SkillID,
+	url, err := c.fileSystem.Write("dev/"+skillIcon.SkillID,
 		bytes.NewReader(iconFileBytes))
 	if err != nil {
 		return fmt.Errorf("failed to save icon: %s", err)

@@ -6,13 +6,15 @@ import (
 
 	"bytes"
 
+	"io/ioutil"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // S3Session represents a connection to the project's AWS S3 bucket. Implements
-// data.FileSystem interface
+// data.FileSystem interface.
 type S3Session struct {
 	session  *s3.S3
 	protocol string
@@ -54,9 +56,8 @@ func (s *S3Session) Read(path string) (resource io.Reader, err error) {
 	}
 
 	// Extract data from response body and return it
-	var bodyBytes []byte
-	result.Body.Read(bodyBytes)
-	defer result.Body.Close()
+	bodyBytes, _ := ioutil.ReadAll(result.Body)
+	result.Body.Close()
 	return bytes.NewReader(bodyBytes), nil
 }
 

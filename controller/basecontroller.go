@@ -11,12 +11,15 @@ type BaseController struct {
 	w http.ResponseWriter
 	r *http.Request
 	*logrus.Logger
-	session data.DataAccess
+	session    data.DataAccess
+	fileSystem data.FileSystem
 }
 
-func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request, session data.DataAccess, logger *logrus.Logger) {
+func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request,
+	session data.DataAccess, fs data.FileSystem, logger *logrus.Logger) {
 	bc.w = w
 	bc.r = r
 	bc.Logger = logger
 	bc.session = session
+	bc.fileSystem = fs
 }
