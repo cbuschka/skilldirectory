@@ -109,8 +109,20 @@ func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	return c.Query(query).Exec()
 }
 
-func (c CassandraConnector) Read(table, key string, object interface{}) error {
-	query := "SELECT JSON * FROM " + table + " WHERE id = " + key
+// func (c CassandraConnector) Read(table, key string, object interface{}) error {
+// 	// query := "SELECT JSON * FROM " + table + " WHERE id = " + key
+// 	// c.Debugf("Running this CQL Query: \n\t%q\n", query)
+// 	// byteQ := []byte{}
+// 	// err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
+// 	// if err != nil {
+// 	// 	return err
+// 	// }
+// 	// return json.Unmarshal(byteQ, &object)
+// 	return c.ReadTest(table, key, opts, true), object)
+// }
+
+func (c CassandraConnector) Read(table, id string, opts CassandraQueryOptions, object interface{}) error {
+	query := makeReadQueryStr(table, id, opts, c)
 	c.Debugf("Running this CQL Query: \n\t%q\n", query)
 	byteQ := []byte{}
 	err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
@@ -120,15 +132,6 @@ func (c CassandraConnector) Read(table, key string, object interface{}) error {
 	return json.Unmarshal(byteQ, &object)
 }
 
-/*
-Delete will run a DELETE query on the database, thereby removing the specified record.
-Delete requires a table to delete from, and an id to identify the record. If the table
-uses a compound PRIMARY KEY, then it is necessary to specify the column names of all
-additional columns used in the PRIMARY KEY besides "id" (it is assumed that "id" is used
-in the PRIMARY KEY).
-
-Note that Delete will still be able to execute the DELETE query if "id" is specified as a primary_key_column.
-*/
 func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
 	query := makeDeleteQueryStr(table, id, opts, c)
 	if query == "" {
@@ -138,9 +141,20 @@ func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions)
 	return c.Query(query).Exec()
 }
 
+func makeReadQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+	query := "SELECT JSON * FROM " + table + makeQueryConditionStr(table, id, opts, c)
+	c.Infof("Reading:%s,%s,%v", table, id, opts)
+	return query
+}
+
 func makeDeleteQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
-	query := "DELETE FROM " + table + " WHERE " // Base query
+	query := "DELETE FROM " + table + makeQueryConditionStr(table, id, opts, c)
 	c.Infof("Deleting:%s,%s,%v", table, id, opts)
+	return query
+}
+
+func makeQueryConditionStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+	query := " WHERE "
 	firstField := true
 
 	if id != "" {

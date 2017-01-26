@@ -56,7 +56,9 @@ func (c *SkillIconsController) getAllSkillIcons() error {
 
 func (c *SkillIconsController) getSkillIcon(skillID string) error {
 	skillIcon := model.SkillIcon{}
-	err := c.session.Read("skillicons", skillID, &skillIcon)
+	err := c.session.Read("skillicons", "",
+		data.NewCassandraQueryOptions("skill_id", skillID, true), &skillIcon)
+	// err := c.session.Read("skillicons", "", &skillIcon)
 	if err != nil {
 		return errors.NoSuchIDError(
 			fmt.Errorf("no skill icon exists for skill with ID: %s", skillID))
@@ -82,7 +84,8 @@ func (c *SkillIconsController) removeSkillIcon() error {
 	}
 
 	// Attempt to delete record from database
-	err = c.session.Delete("skillicons", skillID, data.CassandraQueryOptions{})
+	err = c.session.Delete("skillicons", "",
+		data.NewCassandraQueryOptions("skill_id", skillID, true))
 	if err != nil {
 		c.Warnf("Failed to delete skill icon from database.")
 		return errors.NoSuchIDError(fmt.Errorf(

@@ -112,7 +112,8 @@ func (c *SkillReviewsController) getSkillReview(id string) error {
 func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 	error) {
 	skillReview := model.SkillReview{}
-	err := c.session.Read("skillreviews", id, &skillReview)
+	err := c.session.Read("skillreviews", id, data.CassandraQueryOptions{},
+		&skillReview)
 	if err != nil {
 		log.Printf("loadSkillReview() generated the following error:\n\t%q", err)
 		return nil, errors.NoSuchIDError(fmt.Errorf(
@@ -124,7 +125,8 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
 	error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", sr.TeamMemberID, &teamMember)
+	err := c.session.Read("teammembers", sr.TeamMemberID,
+		data.CassandraQueryOptions{}, &teamMember)
 	if err != nil {
 		return "", err
 	}
@@ -134,7 +136,8 @@ func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (strin
 func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
 	error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", sr.SkillID, &skill)
+	err := c.session.Read("skills", sr.SkillID, data.CassandraQueryOptions{},
+		&skill)
 	if err != nil {
 		return "", err
 	}

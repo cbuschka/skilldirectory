@@ -2,7 +2,7 @@ package model
 
 // SkillIcon models a small (1 MB max) graphical image for a Skill
 type SkillIcon struct {
-	SkillID string `json:"id"`
+	SkillID string `json:"skill_id"`
 	URL     string `json:"url"`
 }
 

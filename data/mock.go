@@ -7,8 +7,10 @@ import (
 
 type MockDataAccessor struct{}
 
-func (m MockDataAccessor) Save(t, s string, i interface{}) error                     { return nil }
-func (m MockDataAccessor) Read(t, s string, i interface{}) error                     { return nil }
+func (m MockDataAccessor) Save(t, s string, i interface{}) error { return nil }
+func (m MockDataAccessor) Read(t, s string, opts CassandraQueryOptions, i interface{}) error {
+	return nil
+}
 func (c MockDataAccessor) Delete(table, id string, opts CassandraQueryOptions) error { return nil }
 func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
@@ -20,7 +22,9 @@ func (d MockDataAccessor) FilteredReadAll(t string, opts CassandraQueryOptions, 
 type MockErrorDataAccessor struct{}
 
 func (e MockErrorDataAccessor) Save(t, s string, i interface{}) error { return fmt.Errorf("") }
-func (e MockErrorDataAccessor) Read(t, s string, i interface{}) error { return fmt.Errorf("") }
+func (e MockErrorDataAccessor) Read(t, s string, opts CassandraQueryOptions, i interface{}) error {
+	return fmt.Errorf("")
+}
 func (c MockErrorDataAccessor) Delete(table, id string, opts CassandraQueryOptions) error {
 	return fmt.Errorf("")
 }

@@ -109,7 +109,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	tmSkill := model.TMSkill{}
-	err := c.session.Read("tmskills", id, &tmSkill)
+	err := c.session.Read("tmskills", id, data.CassandraQueryOptions{}, &tmSkill)
 	if err != nil {
 		c.Warnf("loadTMSkill() generated the following error: %v", err)
 		return nil, errors.NoSuchIDError(fmt.Errorf(
@@ -120,7 +120,8 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 
 func (c *TMSkillsController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", tmSkill.TeamMemberID, &teamMember)
+	err := c.session.Read("teammembers", tmSkill.TeamMemberID,
+		data.CassandraQueryOptions{}, &teamMember)
 	if err != nil {
 		return "", err
 	}
@@ -129,7 +130,8 @@ func (c *TMSkillsController) getTeamMemberName(tmSkill *model.TMSkill) (string, 
 
 func (c *TMSkillsController) getSkillName(tmSkill *model.TMSkill) (string, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", tmSkill.SkillID, &skill)
+	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+		&skill)
 	if err != nil {
 		return "", err
 	}
@@ -243,13 +245,15 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 	}
 
 	// Validate that the IDs point to valid data.
-	err := c.session.Read("skills", tmSkill.SkillID, &model.Skill{})
+	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+		&model.Skill{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all TMSkills must contain ID of an existing Skill "+
 				"in the database", "skill_id"))
 	}
-	err = c.session.Read("teammembers", tmSkill.TeamMemberID, &model.TeamMember{})
+	err = c.session.Read("teammembers", tmSkill.TeamMemberID,
+		data.CassandraQueryOptions{}, &model.TeamMember{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all TMSkills must contain ID of an existing TeamMember"+
@@ -271,7 +275,8 @@ existing TMSkill entry in the database.
 */
 func (c *TMSkillsController) validateTMSkillID(tmSkill *model.TMSkill) error {
 	// Validate that the TMSkill's ID exists in the database
-	err := c.session.Read("tmskills", tmSkill.ID, &model.TMSkill{})
+	err := c.session.Read("tmskills", tmSkill.ID, data.CassandraQueryOptions{},
+		&model.TMSkill{})
 	if err != nil {
 		return errors.NoSuchIDError(fmt.Errorf(
 			"the following ID is not valid: %s", tmSkill.ID))
