@@ -1,6 +1,36 @@
 hash: bdf5c0b43903ad8f1246f2cdfe547d87d5dcc3a4055c326109e5a2a40514e3e3
-updated: 2017-01-03T11:33:34.534556739-06:00
+updated: 2017-01-25T19:55:18.810733596-06:00
 imports:
+- name: github.com/aws/aws-sdk-go
+  version: 5f8c77604d405643d9bd8440d47b57bc40748824
+  subpackages:
+  - aws
+  - aws/awserr
+  - aws/awsutil
+  - aws/client
+  - aws/client/metadata
+  - aws/corehandlers
+  - aws/credentials
+  - aws/credentials/ec2rolecreds
+  - aws/credentials/endpointcreds
+  - aws/credentials/stscreds
+  - aws/defaults
+  - aws/ec2metadata
+  - aws/endpoints
+  - aws/request
+  - aws/session
+  - aws/signer/v4
+  - private/protocol
+  - private/protocol/query
+  - private/protocol/query/queryutil
+  - private/protocol/rest
+  - private/protocol/restxml
+  - private/protocol/xml/xmlutil
+  - private/waiter
+  - service/s3
+  - service/sts
+- name: github.com/go-ini/ini
+  version: e3c2d47c61e5333f9aa2974695dd94396eb69c75
 - name: github.com/gocql/gocql
   version: db6f35eb602dd0770a7162e0e23e5cfb1cc05b91
   subpackages:
@@ -11,6 +41,8 @@ imports:
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - name: github.com/hailocab/go-hostpool
   version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
+- name: github.com/jmespath/go-jmespath
+  version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
 - name: github.com/Sirupsen/logrus
   version: 881bee4e20a5d11a6a88a5667c6f292072ac1963
 - name: golang.org/x/net
