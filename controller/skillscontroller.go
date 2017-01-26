@@ -158,14 +158,17 @@ func (c *SkillsController) addSkill() error {
 
 	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
+
 	if err != nil {
 		return errors.SavingError(err)
 	}
-	c.Printf("Saved skill: %s", skill.Name)
-
-	b, err := json.Marshal(skill)
+	b, err := json.Marshal(skill.ID)
+	if err != nil {
+		return errors.SavingError(err)
+	}
 	c.w.Write(b)
 
+	c.Printf("Saved skill: %s", skill.Name)
 	return nil
 }
 

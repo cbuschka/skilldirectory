@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "SkillDirectory Requests",
-		"_postman_id": "cfd5bd95-a4a9-4aa9-ebf4-e044baa9ff12",
+		"_postman_id": "2255b631-6abf-bee1-1755-88e59ac32bbc",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -13,7 +13,10 @@
 				"url": "http://localhost:8080/teammembers",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -24,7 +27,10 @@
 				"url": "http://localhost:8080/teammembers/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -35,7 +41,10 @@
 				"url": "http://localhost:8080/tmskills/",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -46,7 +55,10 @@
 				"url": "http://localhost:8080/tmskills/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -57,7 +69,10 @@
 				"url": "http://localhost:8080/skills",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -79,7 +94,10 @@
 				"url": "http://localhost:8080/links/",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -90,7 +108,10 @@
 				"url": "http://localhost:8080/links/[ID]",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -101,7 +122,10 @@
 				"url": "http://localhost:8080/skillreviews",
 				"method": "GET",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -109,7 +133,7 @@
 		{
 			"name": "Get A Skill Review",
 			"request": {
-				"url": "http://localhost:8080/skillreviews/8433ac35-cd6d-11e6-850f-6c4008bcfa84",
+				"url": "http://localhost:8080/skillreviews/[ID]",
 				"method": "GET",
 				"header": [],
 				"body": {},
@@ -119,6 +143,17 @@
 		},
 		{
 			"name": "New Team Member - Basic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Body is correct\"] = responseBody.name !== \"\";"
+						]
+					}
+				}
+			],
 			"request": {
 				"url": "http://localhost:8080/teammembers/",
 				"method": "POST",
@@ -139,6 +174,25 @@
 		},
 		{
 			"name": "New TMSkill - Basic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"",
+							"tests[\"Body matches string\"] = responseBody.has(\"fields must be specified for all TMSkills\");",
+							"",
+							"tests[\"Successful POST request\"] = responseCode.code === 400;",
+							"",
+							"",
+							"",
+							"tests[\"Body is correct\"] = responseBody === \"\";"
+						]
+					}
+				}
+			],
 			"request": {
 				"url": "http://localhost:8080/tmskills/",
 				"method": "POST",
@@ -151,7 +205,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"4321\"\n}\n"
+					"raw": "{\n\t\"team_member_id\": \"4321\"\n}\n\n"
 				},
 				"description": ""
 			},
@@ -179,6 +233,17 @@
 		},
 		{
 			"name": "New Skill - Basic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Body is correct\"] = responseBody.id !== \"\";"
+						]
+					}
+				}
+			],
 			"request": {
 				"url": "http://localhost:8080/skills/",
 				"method": "POST",
@@ -239,6 +304,17 @@
 		},
 		{
 			"name": "New Skill Review - Basic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Body is correct\"] = responseBody.id !== \"\";"
+						]
+					}
+				}
+			],
 			"request": {
 				"url": "http://localhost:8080/skillreviews",
 				"method": "POST",
@@ -251,7 +327,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"1234\",\n\t\"body\":\"blahblahblah\",\n\t\"positive\":true\n}\n"
+					"raw": "{\n\t\"skill_id\":\"1234\",\n\t\"team_member_id\":\"de746101-e3ed-11e6-90f6-c4b301c26839\",\n\t\"body\":\"blahblahblah\",\n\t\"positive\":true\n}\n"
 				},
 				"description": ""
 			},
@@ -283,7 +359,10 @@
 				"url": "http://localhost:8080/teammembers/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -294,7 +373,10 @@
 				"url": "http://localhost:8080/tmskills/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
 			},
 			"response": []
@@ -312,8 +394,19 @@
 		},
 		{
 			"name": "Delete A Link",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;"
+						]
+					}
+				}
+			],
 			"request": {
-				"url": "http://localhost:8080/links/bf30d9d6-d448-11e6-ad52-6c4008bcfa84",
+				"url": "http://localhost:3000/#/home/get",
 				"method": "DELETE",
 				"header": [],
 				"body": {},
@@ -327,8 +420,77 @@
 				"url": "http://localhost:8080/skillreviews/[ID]",
 				"method": "DELETE",
 				"header": [],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Skill - NoName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 400;",
+							"",
+							"",
+							"",
+							"tests[\"Body is correct\"] = responseBody === \"The JSON in a POST Request for new Skill must contain values for \\\"name\\\" and \\\"skill_type\\\" fields.\";"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/skills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"skill_type\": \"database\"\n}\n"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "New Skill - Basic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Body is correct\"] = responseBody.id !== \"\";"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/skills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Java\",\n\t\"skill_type\": \"database\"\n}\n"
+				},
+				"description": "Tests to make confirm \"name\" field is not nil."
 			},
 			"response": []
 		}

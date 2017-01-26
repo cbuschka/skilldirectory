@@ -85,8 +85,6 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 
 func (c *SkillReviewsController) getSkillReview(id string) error {
 	skillReview, err := c.loadSkillReview(id)
-	b, err := json.Marshal(id)
-	c.w.Write(b)
 
 	if err != nil {
 		return err
@@ -216,7 +214,13 @@ func (c *SkillReviewsController) addSkillReview() error {
 
 	skillReview.Timestamp = time.Now().Format(data.TimestampFormat) // CSQL-compatible timestamp format
 	skillReview.ID = util.NewID()
+	b, err := json.Marshal(skillReview)
+	if err != nil {
+		return errors.SavingError(err)
+	}
+	c.w.Write(b)
 	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
+
 	if err != nil {
 		return errors.SavingError(err)
 	}
