@@ -109,18 +109,6 @@ func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	return c.Query(query).Exec()
 }
 
-// func (c CassandraConnector) Read(table, key string, object interface{}) error {
-// 	// query := "SELECT JSON * FROM " + table + " WHERE id = " + key
-// 	// c.Debugf("Running this CQL Query: \n\t%q\n", query)
-// 	// byteQ := []byte{}
-// 	// err := c.Query(query).Consistency(gocql.One).Scan(&byteQ)
-// 	// if err != nil {
-// 	// 	return err
-// 	// }
-// 	// return json.Unmarshal(byteQ, &object)
-// 	return c.ReadTest(table, key, opts, true), object)
-// }
-
 func (c CassandraConnector) Read(table, id string, opts CassandraQueryOptions, object interface{}) error {
 	query := makeReadQueryStr(table, id, opts, c)
 	c.Debugf("Running this CQL Query: \n\t%q\n", query)

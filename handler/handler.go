@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"sync"
 	"net/http"
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/util"
 )
+
+// This mutex will prevent race conditions on concurrent requests
+var mutex = &sync.Mutex{}
 
 /*
 MakeHandler() returns a new function of the adapter type http.HandlerFunc using
@@ -39,6 +43,11 @@ log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController,
 	session data.DataAccess, fs data.FileSystem) {
+
+	//Lock the critical section
+	mutex.Lock()
+	//Make sure we always unlock when the function extends
+	defer mutex.Unlock()
 
 	log := util.LogInit()
 	log.Printf("Handling Request: %s", r.Method)

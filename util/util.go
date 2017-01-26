@@ -87,3 +87,8 @@ func ValidateIcon(icon io.Reader) (string, error) {
 	}
 	return format, nil
 }
+
+//Escapes the single quotes in the Cassandra query
+func SanitizeInput(input string) string {
+	return strings.Replace(input, "'", "''", -1)
+}
