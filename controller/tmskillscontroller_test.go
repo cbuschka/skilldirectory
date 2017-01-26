@@ -207,7 +207,7 @@ TMSkillsController created with that BaseController.
 */
 func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) TMSkillsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
+	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return TMSkillsController{BaseController: &base}
 }
 

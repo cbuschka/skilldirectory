@@ -233,12 +233,13 @@ func Test_validateLinkFields(t *testing.T) {
 }
 
 /*
-getLinksController is a helper function for creating and initializing a new BaseController with
-the given HTTP request and DataAccessor. Returns a new LinksController created with that BaseController.
+getLinksController is a helper function for creating and initializing a new
+BaseController with the given HTTP request and DataAccessor. Returns a new
+LinksController created with that BaseController.
 */
 func getLinksController(request *http.Request, dataAccessor data.DataAccess) LinksController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
+	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return LinksController{BaseController: &base}
 }
 

@@ -158,7 +158,7 @@ the given HTTP request and DataAccessor. Returns a new SkillsController created 
 */
 func getSkillsController(request *http.Request, dataAccessor data.DataAccess) SkillsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
+	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return SkillsController{BaseController: &base}
 }
 

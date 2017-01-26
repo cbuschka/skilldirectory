@@ -99,7 +99,7 @@ func (c *SkillIconsController) addSkillIcon() error {
 	iconFile, _, err := c.r.FormFile("icon")
 	if err != nil {
 		c.Warn("error getting icon form file: " + err.Error())
-		return errors.ReadError(fmt.Errorf("Failed to parse icon field"))
+		return errors.ReadError(fmt.Errorf("Failed to parse icon field: %s", err))
 	}
 	defer iconFile.Close()
 

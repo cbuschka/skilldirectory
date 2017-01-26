@@ -6,6 +6,8 @@ import (
 	"skilldirectory/data"
 	"skilldirectory/handler"
 	util "skilldirectory/util"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 /*
@@ -59,8 +61,10 @@ func initFileSystem() {
 		if err != nil {
 			panic("Failed to connect to AWS S3!")
 		}
+		log.Info("Using AWS S3 as file system.")
 	default: // Use local disk as file system by default
 		fileSystem = data.NewLocalFileSystem()
+		log.Info("Using local disk as file system.")
 	}
 }
 

@@ -27,8 +27,8 @@ do
 done
 
 ### Run project tests with 'go test'
-#echo "Running Tests..."
-#go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
+echo "Running Tests..."
+go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
 echo "Running skilldirectory project..."
 ### Build executable for Ubuntu docker container

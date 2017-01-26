@@ -205,7 +205,7 @@ the given HTTP request and DataAccessor. Returns a new TeamMembersController cre
 */
 func getTeamMembersController(request *http.Request, dataAccessor data.DataAccess) TeamMembersController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
+	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return TeamMembersController{BaseController: &base}
 }
 
