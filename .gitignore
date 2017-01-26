@@ -7,4 +7,4 @@ skills/*
 teammembers/*
 *~
 *.swp
-vendor/*
+vendor/
