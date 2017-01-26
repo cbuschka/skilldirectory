@@ -37,6 +37,10 @@ func (c SkillReviewsController) Put() error {
 }
 
 func (c *SkillReviewsController) performGet() error {
+	queries := c.r.URL.Query()
+	if skill_id := queries.Get("skill_id"); skill_id != "" {
+		return c.getReviewForSkill(skill_id)
+	}
 	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		return c.getAllSkillReviews()
@@ -83,9 +87,47 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 	return err
 }
 
+func (c *SkillReviewsController) getReviewForSkill(skill_id string) error {
+	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
+	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
+	if err != nil {
+		return err
+	}
+	skillReviewsRaw, err := json.Marshal(skillReviewsInterface)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+
+	skillReviews := []model.SkillReview{}
+	err = json.Unmarshal(skillReviewsRaw, &skillReviews)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+
+	skillReviewDTOs := []model.SkillReviewDTO{}
+	for idx := 0; idx < len(skillReviews); idx++ {
+		skillName, err := c.getSkillName(&skillReviews[idx])
+		if err != nil {
+			c.Warnf("Possible invalid id: %v", err)
+			continue
+		}
+
+		teamMemberName, err := c.getTeamMemberName(&skillReviews[idx])
+		if err != nil {
+			c.Warnf("Possible invalid id: %v", err)
+			continue
+		}
+		skillReviewDTOs = append(skillReviewDTOs,
+			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
+	}
+
+	b, err := json.Marshal(skillReviewDTOs)
+	c.w.Write(b)
+	return err
+}
+
 func (c *SkillReviewsController) getSkillReview(id string) error {
 	skillReview, err := c.loadSkillReview(id)
-
 	if err != nil {
 		return err
 	}
@@ -105,8 +147,8 @@ func (c *SkillReviewsController) getSkillReview(id string) error {
 	}
 
 	skillReviewDTO := skillReview.NewSkillReviewDTO(skillName, teamMemberName)
-	bytes, err := json.Marshal(skillReviewDTO)
-	c.w.Write(bytes)
+	b, err := json.Marshal(skillReviewDTO)
+	c.w.Write(b)
 	return err
 }
 
@@ -125,7 +167,6 @@ func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
 	error) {
 	teamMember := model.TeamMember{}
-	println(sr.TeamMemberID)
 	err := c.session.Read("teammembers", sr.TeamMemberID, &teamMember)
 	if err != nil {
 		return "", err
@@ -225,6 +266,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 		return errors.SavingError(err)
 	}
 	log.Printf("Saved SkillReview: %s", skillReview.ID)
+
 	return nil
 }
 
