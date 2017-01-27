@@ -187,9 +187,17 @@ func (c *TeamMembersController) addTeamMember() error {
 
 	teamMember.ID = util.NewID()
 	err = c.session.Save("teammembers", teamMember.ID, teamMember)
+
 	if err != nil {
 		return errors.SavingError(err)
 	}
+
+	b, err := json.Marshal(teamMember)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+	c.w.Write(b)
+
 	c.Infof("Saved Team Member: %s", teamMember.Name)
 	return nil
 }
