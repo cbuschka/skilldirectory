@@ -71,7 +71,7 @@ func (c *TeamMembersController) getTeamMember(id string) error {
 
 func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", id, &teamMember)
+	err := c.session.Read("teammembers", id, data.CassandraQueryOptions{}, &teamMember)
 	if err != nil {
 		return nil, errors.NoSuchIDError(fmt.Errorf(
 			"no TeamMeber exists with specified ID: %q", id))
@@ -134,7 +134,8 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 
 func (c *TeamMembersController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", tmSkill.TeamMemberID, &teamMember)
+	err := c.session.Read("teammembers", tmSkill.TeamMemberID,
+		data.CassandraQueryOptions{}, &teamMember)
 	if err != nil {
 		return "", err
 	}
@@ -143,7 +144,8 @@ func (c *TeamMembersController) getTeamMemberName(tmSkill *model.TMSkill) (strin
 
 func (c *TeamMembersController) getSkillName(tmSkill *model.TMSkill) (string, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", tmSkill.SkillID, &skill)
+	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+		&skill)
 	if err != nil {
 		return "", err
 	}

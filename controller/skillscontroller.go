@@ -77,7 +77,7 @@ func (c *SkillsController) getSkill(id string) error {
 
 func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", id, &skill)
+	err := c.session.Read("skills", id, data.CassandraQueryOptions{}, &skill)
 	if err != nil {
 		return nil, errors.NoSuchIDError(fmt.Errorf(
 			"no Skill exists with specified ID: %s", id))
@@ -102,7 +102,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	if err != nil {
 		c.Print(err)
 	}
-	skillDTO = skill.NewSkillDTO(*links)
+	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
 	return skillDTO, nil
 }
 

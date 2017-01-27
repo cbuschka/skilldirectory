@@ -16,13 +16,16 @@ var mutex = &sync.Mutex{}
 MakeHandler() returns a new function of the adapter type http.HandlerFunc using
 the passed-in function, fn.
 */
-func MakeHandler(fn func(http.ResponseWriter, *http.Request, controller.RESTController, data.DataAccess),
-	cont controller.RESTController, session data.DataAccess) http.HandlerFunc {
+func MakeHandler(
+	fn func(http.ResponseWriter, *http.Request, controller.RESTController,
+		data.DataAccess, data.FileSystem),
+	cont controller.RESTController, session data.DataAccess,
+	fs data.FileSystem) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		fn(w, r, cont, session)
+		fn(w, r, cont, session, fs)
 	}
 }
 
@@ -39,7 +42,7 @@ If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController,
-	session data.DataAccess) {
+	session data.DataAccess, fs data.FileSystem) {
 
 	//Lock the critical section
 	mutex.Lock()
@@ -49,7 +52,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	log := util.LogInit()
 	log.Printf("Handling Request: %s", r.Method)
 	log.Debugf("Request: %s", r.Body)
-	cont.Base().Init(w, r, session, log)
+	cont.Base().Init(w, r, session, fs, log)
 
 	var err error
 	switch r.Method {
@@ -70,7 +73,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 			errors.MissingIDError, errors.IncompletePOSTBodyError,
 			errors.InvalidPOSTBodyError, errors.InvalidPUTBodyError:
 			statusCode = http.StatusBadRequest
-		case errors.SavingError:
+		case errors.SavingError, errors.ReadError:
 			statusCode = http.StatusInternalServerError
 		case errors.NoSuchIDError:
 			statusCode = http.StatusNotFound

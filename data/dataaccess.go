@@ -8,7 +8,7 @@ providing, the specified key string.
 */
 type DataAccess interface {
 	Save(table, key string, object interface{}) error
-	Read(table, key string, object interface{}) error
+	Read(table, key string, opts CassandraQueryOptions, object interface{}) error
 	ReadAll(table string, readType ReadAllInterface) ([]interface{}, error)
 	FilteredReadAll(table string, opts CassandraQueryOptions,
 		readType ReadAllInterface) ([]interface{}, error)

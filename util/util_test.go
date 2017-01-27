@@ -3,6 +3,7 @@ package util
 import (
 	"net/url"
 	"os"
+	"path"
 	"testing"
 )
 
@@ -63,5 +64,17 @@ func TestRootDirSlash(t *testing.T) {
 	rootDir := getRootDir(path)
 	if rootDir != "skills/" {
 		t.Errorf("Rootdir parse failed")
+	}
+}
+
+func TestValidateIcon(t *testing.T) {
+	// Open test PNG image file
+	wd, _ := os.Getwd()
+	icon, _ := os.Open(path.Dir(wd) + "/resources/test.png")
+	defer icon.Close()
+
+	_, err := ValidateIcon(icon)
+	if err != nil {
+		t.Errorf("Flagged valid icon as invalid: %s", err)
 	}
 }
