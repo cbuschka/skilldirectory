@@ -1,8 +1,6 @@
 ################################################################################
 # This file is used to run SkillDirectory's unit tests, build the project's    #
-# executable, setup Docker containers to hold the Cassandra database and to    #
-# run SkillDirectory itself, and lastly, run the executable in the Ubuntu      #
-# container.                                                                   #
+# executable, and run it.                                                      #
 ################################################################################
 
 ### Default flags and env vars
@@ -30,6 +28,11 @@ done
 echo "Running Tests..."
 go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
+### Serve files in /skilldirectory/dev statically on port 2121
+if [[ $FILE_SYSTEM != "S3" ]]; then
+  echo 'Serving "/skilldirectory" on "localhost:2121"'
+  http-server /skilldirectory -p 2121 > /dev/null &
+fi
+
 echo "Running skilldirectory project..."
-### Build executable for Ubuntu docker container
 go run main.go -debug=$DEBUG_FLAG

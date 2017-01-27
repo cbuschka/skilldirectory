@@ -83,12 +83,14 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 			"no Skill exists with specified ID: %s", id))
 	}
 	skillDTO, _ := c.addLinks(skill)
+	c.addIcon(&skillDTO)
 	return &skillDTO, nil
 }
 
 func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links", data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
+	linksInterface, err := c.session.FilteredReadAll("links",
+		data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
 	if err != nil {
 		c.Print(err)
 		return skillDTO, err
@@ -104,6 +106,13 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	}
 	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
 	return skillDTO, nil
+}
+
+func (c *SkillsController) addIcon(skillDTO *model.SkillDTO) {
+	skillIcon := model.SkillIcon{}
+	c.session.Read("skillicons", "",
+		data.NewCassandraQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
+	skillDTO.Icon = skillIcon
 }
 
 func (c *SkillsController) removeSkill() error {
