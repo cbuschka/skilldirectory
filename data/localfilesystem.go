@@ -20,16 +20,16 @@ type LocalFileSystem struct {
 // operate within the project's directory in the local file system
 func NewLocalFileSystem() *LocalFileSystem {
 	return &LocalFileSystem{
-		protocol: "file://",
-		hostname: "/",
-		rootdir:  "skilldirectory/",
+		protocol: "http://",
+		hostname: "localhost:2121",
+		rootdir:  "/skilldirectory/",
 	}
 }
 
 // Read returns an io.Reader tht reads from the resource at the specified path
 // within the project's directory in the local file system.
 func (lfs *LocalFileSystem) Read(path string) (resource io.Reader, err error) {
-	fullPath := lfs.hostname + lfs.rootdir + path
+	fullPath := lfs.rootdir + path
 	// Open file on local file system (return error if fails or file doesn't exist)
 	file, err := os.Open(fullPath)
 	if err != nil {
@@ -51,7 +51,7 @@ func (lfs *LocalFileSystem) Read(path string) (resource io.Reader, err error) {
 // file system under the specified path.
 func (lfs *LocalFileSystem) Write(path string, resource io.ReadSeeker) (url string,
 	err error) {
-	fullPath := lfs.hostname + lfs.rootdir + path
+	fullPath := lfs.rootdir + path
 	// Create file on local file system (or truncate and open if already exists)
 	file, err := os.Create(fullPath)
 	if err != nil {
@@ -69,14 +69,14 @@ func (lfs *LocalFileSystem) Write(path string, resource io.ReadSeeker) (url stri
 	}
 
 	// Successfully wrote resource to disk!
-	url = lfs.protocol + fullPath
+	url = lfs.protocol + lfs.hostname + "/" + path
 	return url, nil
 }
 
 // Delete removes the resource located at the specified path from the project's
 // directory in the local file system.
 func (lfs *LocalFileSystem) Delete(path string) (err error) {
-	fullPath := lfs.hostname + lfs.rootdir + path
+	fullPath := lfs.rootdir + path
 	// Delete file from local file system
 	err = os.Remove(fullPath)
 	if err != nil {
