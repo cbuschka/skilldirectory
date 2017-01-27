@@ -189,7 +189,11 @@ func (c *TeamMembersController) addTeamMember() error {
 	if err != nil {
 		return errors.SavingError(err)
 	}
+
 	b, err := json.Marshal(teamMember)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
 	c.w.Write(b)
 
 	c.Infof("Saved Team Member: %s", teamMember.Name)

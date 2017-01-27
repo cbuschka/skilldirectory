@@ -39,7 +39,7 @@ func (c SkillReviewsController) Put() error {
 func (c *SkillReviewsController) performGet() error {
 	queries := c.r.URL.Query()
 	if skill_id := queries.Get("skill_id"); skill_id != "" {
-		return c.getReviewForSkill(skill_id)
+		return c.getReviewsForSkill(skill_id)
 	}
 	path := util.CheckForID(c.r.URL)
 	if path == "" {
@@ -83,11 +83,14 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 	}
 
 	b, err := json.Marshal(skillReviewDTOs)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
 	c.w.Write(b)
-	return err
+	return nil
 }
 
-func (c *SkillReviewsController) getReviewForSkill(skill_id string) error {
+func (c *SkillReviewsController) getReviewsForSkill(skill_id string) error {
 	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
 	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
 	if err != nil {
@@ -122,6 +125,9 @@ func (c *SkillReviewsController) getReviewForSkill(skill_id string) error {
 	}
 
 	b, err := json.Marshal(skillReviewDTOs)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
 	c.w.Write(b)
 	return err
 }
