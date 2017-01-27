@@ -104,7 +104,7 @@ func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	if err != nil {
 		return err
 	}
-	return c.Query("INSERT INTO " + table + " JSON '" + string(b) + "'").Exec()
+	return c.Query("INSERT INTO " + table + " JSON '" + util.SanitizeInput(string(b)) + "'").Exec()
 }
 
 func (c CassandraConnector) Read(table, key string, object interface{}) error {
