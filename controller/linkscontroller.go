@@ -75,7 +75,7 @@ func (c *LinksController) getLink(id string) error {
 
 func (c *LinksController) loadLink(id string) (*model.Link, error) {
 	link := model.Link{}
-	err := c.session.Read("links", id, &link)
+	err := c.session.Read("links", id, data.CassandraQueryOptions{}, &link)
 	if err != nil {
 		return nil, errors.NoSuchIDError(
 			fmt.Errorf("no Link exists with specified ID: %s", id))
@@ -147,7 +147,8 @@ func (c *LinksController) validateLinkFields(link *model.Link) error {
 	}
 
 	// Validate that SkillID points to valid data
-	err := c.session.Read("skills", link.SkillID, &model.Skill{})
+	err := c.session.Read("skills", link.SkillID, data.CassandraQueryOptions{},
+		&model.Skill{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all Links must contain ID of an existing skill in "+

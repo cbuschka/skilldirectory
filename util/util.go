@@ -1,12 +1,20 @@
 package util
 
 import (
+	"fmt"
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 	"net/url"
 	"os"
 	"path"
+	"skilldirectory/errors"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	// Uncomment below line(s) to recognize these image types as valid
+	// _ "image/gif"
 )
 
 // GetProperty returns the value from the environment or key/value store
@@ -35,6 +43,7 @@ func IsValidEndpoint(endpoint string) bool {
 		"/tmskills", "/tmskills/",
 		"/links", "/links/",
 		"/skillreviews", "/skillreviews/",
+		"/skillicons", "/skillicons/",
 	}
 	if StringSliceContains(endpoints, endpoint) {
 		return true
@@ -65,6 +74,18 @@ func getRootDir(path string) string {
 		rootDir = path + "/"
 	}
 	return rootDir
+}
+
+// ValidateIcon returns a non-nil error if the icon cannot be decoded into a
+// recognized image format. If image is successfully decoded, then return string
+// contains the image encoding format (e.g. PNG, JPG, GIF)
+func ValidateIcon(icon io.Reader) (string, error) {
+	_, format, err := image.Decode(icon)
+	if err != nil {
+		return "", errors.InvalidDataModelState(fmt.Errorf(
+			"failed to decode image data in %q field: %s", "Icon", err.Error()))
+	}
+	return format, nil
 }
 
 //Escapes the single quotes in the Cassandra query

@@ -172,7 +172,7 @@ SkillReviewsController created with that BaseController.
 func getSkillReviewsController(request *http.Request,
 	dataAccessor data.DataAccess) SkillReviewsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, logrus.New())
+	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return SkillReviewsController{BaseController: &base}
 }
 
