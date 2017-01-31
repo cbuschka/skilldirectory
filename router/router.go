@@ -100,6 +100,11 @@ func loadRoutes() {
 	}
 	skillIconsHandlerFunc := handler.MakeHandler(handler.Handler, &skillIconsController, session, fileSystem)
 
+	userController := controller.UserController{
+		BaseController: &controller.BaseController{},
+	}
+	userHandlerFunc := handler.MakeHandler(handler.Handler, &userController, session, fileSystem)
+
 	routes = []Route{
 		{"/skills/", skillsHandlerFunc},
 		{"/skills", skillsHandlerFunc},
@@ -113,6 +118,8 @@ func loadRoutes() {
 		{"/skillreviews/", skillReviewsHandlerFunc},
 		{"/skillicons", skillIconsHandlerFunc},
 		{"/skillicons/", skillIconsHandlerFunc},
+		{"/users", userHandlerFunc},
+		{"/users/", userHandlerFunc},
 	}
 }
 
