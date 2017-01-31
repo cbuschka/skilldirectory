@@ -24,7 +24,7 @@ We are working on [a frontend client using ReactJS](https://github.com/maryville
 [Homebrew](http://brew.sh/) installed to do that).
 
 **3)** Install `http-server` by running `npm install http-server -g`
-(you will need [`npm` installed](https://nodejs.org/en/) to do that).
+(you will need [`npm`](https://nodejs.org/en/) installed to do that).
 
 **4)** Clone the repo onto your machine:
 ```
