@@ -130,7 +130,7 @@ func (c *SkillsController) removeSkill() error {
 	err := c.session.Delete("skills", skillID, data.CassandraQueryOptions{})
 
 	if err != nil {
-		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
+		c.Warnf("removeSkill() failed for the following reason: %s", err)
 		return errors.NoSuchIDError(fmt.Errorf(
 			"no Skill exists with specified ID: %s", skillID))
 	}
@@ -167,14 +167,11 @@ func (c *SkillsController) addSkill() error {
 
 	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
+	if err != nil {
+		return errors.SavingError(err)
+	}
 
-	if err != nil {
-		return errors.SavingError(err)
-	}
-	b, err := json.Marshal(skill.ID)
-	if err != nil {
-		return errors.SavingError(err)
-	}
+	b, _ := json.Marshal(skill.ID)
 	c.w.Write(b)
 
 	c.Printf("Saved skill: %s", skill.Name)

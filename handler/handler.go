@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"sync"
 	"net/http"
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/util"
+	"sync"
 )
 
 // This mutex will prevent race conditions on concurrent requests
@@ -71,9 +71,10 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		switch err.(type) {
 		case errors.MarshalingError, errors.InvalidSkillTypeError,
 			errors.MissingIDError, errors.IncompletePOSTBodyError,
-			errors.InvalidPOSTBodyError, errors.InvalidPUTBodyError:
+			errors.InvalidPOSTBodyError, errors.InvalidPUTBodyError,
+			errors.InvalidQueryStringError:
 			statusCode = http.StatusBadRequest
-		case errors.SavingError, errors.ReadError:
+		case errors.SavingError, errors.ReadError, errors.DeleteError:
 			statusCode = http.StatusInternalServerError
 		case errors.NoSuchIDError:
 			statusCode = http.StatusNotFound

@@ -12,6 +12,7 @@ type SkillReview struct {
 	TeamMemberID string `json:"team_member_id"`
 	Body         string `json:"body"`
 	Timestamp    string `json:"timestamp"`
+	Year         string `json:"year"`
 	Positive     bool   `json:"positive"`
 }
 
@@ -28,13 +29,15 @@ type SkillReviewDTO struct {
 /*
 NewSkillReview returns a new instance of SkillReview. All fields must be specified.
 */
-func NewSkillReview(id, skillID, teamMemberID, body, timestamp string, positive bool) SkillReview {
+func NewSkillReview(id, skillID, teamMemberID, body, timestamp, year string,
+	positive bool) SkillReview {
 	return SkillReview{
 		ID:           id,
 		SkillID:      skillID,
 		TeamMemberID: teamMemberID,
 		Body:         body,
 		Timestamp:    timestamp,
+		Year:         year,
 		Positive:     positive,
 	}
 }

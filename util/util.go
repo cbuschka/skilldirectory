@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"skilldirectory/errors"
+	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -88,7 +89,12 @@ func ValidateIcon(icon io.Reader) (string, error) {
 	return format, nil
 }
 
-//Escapes the single quotes in the Cassandra query
+// SanitizeInput escapes the single quotes in the Cassandra query
 func SanitizeInput(input string) string {
 	return strings.Replace(input, "'", "''", -1)
+}
+
+// YearAsTimestamp returns a valid CQL timestamp string for start of the given year
+func YearAsTimestamp(year int) string {
+	return strconv.Itoa(year) + "-01-01 00:05+0000"
 }

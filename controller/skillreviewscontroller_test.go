@@ -9,6 +9,8 @@ import (
 	"skilldirectory/model"
 	"testing"
 
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -62,12 +64,14 @@ func TestGetSkillReview_Error(t *testing.T) {
 }
 
 func TestDeleteSkillReview(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews/1234", nil)
+	body := strings.NewReader(
+		`{"id":"1234", "skill_id":"1234", "timestamp":"1234", "year":"1234"}`)
+	request := httptest.NewRequest(http.MethodDelete, "/skillreviews/1234", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
 	if err != nil {
-		t.Errorf("Expected error: %s", err.Error())
+		t.Errorf("Expected no error: %s", err.Error())
 	}
 }
 
@@ -92,7 +96,7 @@ func TestDeleteSkillReview_NoKey(t *testing.T) {
 }
 
 func TestPostSkillReview(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
 		"1234", true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -104,7 +108,7 @@ func TestPostSkillReview(t *testing.T) {
 }
 
 func TestPostSkillReview_NoSkillID(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "", "3456", "blah", "1234",
+	body := getReaderForNewSkillReview("1234", "", "3456", "blah", "1234", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -117,7 +121,7 @@ func TestPostSkillReview_NoSkillID(t *testing.T) {
 }
 
 func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "", "blah", "1234",
+	body := getReaderForNewSkillReview("1234", "2345", "", "blah", "1234", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -130,7 +134,7 @@ func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
 }
 
 func TestPostSkillReview_NoBody(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "3456", "", "1234",
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "", "1234", "1234",
 		true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
@@ -153,7 +157,7 @@ func TestPostSkillReview_NoSkillReview(t *testing.T) {
 }
 
 func TestPostSkillReview_Error(t *testing.T) {
-	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
 		"1234", true)
 	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
@@ -181,10 +185,10 @@ getReaderForNewSkillReview is a helper function for a new SkillReview with the g
 id, skillID, teamMemberID, body, date, and positive flag. This SkillReview is then
 marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
-func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp string,
-	positive bool) *bytes.Reader {
+func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp,
+	year string, positive bool) *bytes.Reader {
 	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
-		body, timestamp, positive)
+		body, timestamp, year, positive)
 	b, _ := json.Marshal(newSkillReview)
 	return bytes.NewReader(b)
 }
