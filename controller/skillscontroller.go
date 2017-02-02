@@ -165,15 +165,17 @@ func (c *SkillsController) addSkill() error {
 			"invalid Skill type: %s", skill.SkillType))
 	}
 
+	// Save to database
 	skill.ID = util.NewID()
 	err = c.session.Save("skills", skill.ID, skill)
-
 	if err != nil {
 		return errors.SavingError(err)
 	}
-	b, err := json.Marshal(skill.ID)
+
+	// Return object JSON as response
+	b, err := json.Marshal(skill)
 	if err != nil {
-		return errors.SavingError(err)
+		return errors.MarshalingError(err)
 	}
 	c.w.Write(b)
 

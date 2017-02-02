@@ -224,6 +224,14 @@ func (c *TMSkillsController) addTMSkill() error {
 	if err != nil {
 		return errors.SavingError(err)
 	}
+
+	// Return object JSON as response
+	b, err := json.Marshal(tmSkill)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+	c.w.Write(b)
+
 	c.Printf("Saved TMSkill: %s", tmSkill.ID)
 	return nil
 }

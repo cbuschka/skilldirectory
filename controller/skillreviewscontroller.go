@@ -262,20 +262,22 @@ func (c *SkillReviewsController) addSkillReview() error {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
 
+	// Save to database
 	skillReview.Timestamp = time.Now().Format(data.TimestampFormat) // CSQL-compatible timestamp format
 	skillReview.ID = util.NewID()
+	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
+	if err != nil {
+		return errors.SavingError(err)
+	}
+
+	// Return review JSON as response
 	b, err := json.Marshal(skillReview)
 	if err != nil {
-		return errors.SavingError(err)
+		return errors.MarshalingError(err)
 	}
 	c.w.Write(b)
-	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
 
-	if err != nil {
-		return errors.SavingError(err)
-	}
 	log.Printf("Saved SkillReview: %s", skillReview.ID)
-
 	return nil
 }
 
