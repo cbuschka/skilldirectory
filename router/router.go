@@ -65,6 +65,13 @@ func initFileSystem() {
 	default: // Use local disk as file system by default
 		fileSystem = data.NewLocalFileSystem()
 		log.Info("Using local disk as file system.")
+		log.Info(`Hosting /skilldirectory on localhost:2121.`)
+		go func() {
+			err := http.ListenAndServe(":2121", http.FileServer(http.Dir("/skilldirectory")))
+			if err != nil {
+				log.Error("Error produced while running static file server: %s", err)
+			}
+		}()
 	}
 }
 

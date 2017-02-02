@@ -28,11 +28,5 @@ done
 echo "Running Tests..."
 go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
-### Serve files in /skilldirectory/dev statically on port 2121
-if [[ $FILE_SYSTEM != "S3" ]]; then
-  echo 'Serving "/skilldirectory" on "localhost:2121"'
-  http-server /skilldirectory -p 2121 > /dev/null &
-fi
-
 echo "Running skilldirectory project..."
 go run main.go -debug=$DEBUG_FLAG

@@ -23,22 +23,19 @@ We are working on [a frontend client using ReactJS](https://github.com/maryville
 **2)** Install glide by running `brew install glide` (You'll need to have 
 [Homebrew](http://brew.sh/) installed to do that).
 
-**3)** Install `http-server` by running `npm install http-server -g`
-(you will need [`npm`](https://nodejs.org/en/) installed to do that).
-
-**4)** Clone the repo onto your machine:
+**3)** Clone the repo onto your machine:
 ```
 cd $GOPATH/src # MUST clone into this specific directory!
 git clone https://github.com/maryvilledev/skilldirectory.git
 ```
 
-**5)** Install/download the dependencies:
+**4)** Install/download the dependencies:
 ```
 cd $GOPATH/src/skilldirectory
 glide install
 ```
 
-**6)** Run `./make` to start the API server locally on port `8080`
+**5)** Run `./make` to start the API server locally on port `8080`
 (see https://github.com/maryvilledev/skilldirectory/wiki/Make-File for more info 
 on the `make` file).
 

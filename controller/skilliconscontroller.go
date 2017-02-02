@@ -142,6 +142,12 @@ func (c *SkillIconsController) addSkillIcon() error {
 		return errors.SavingError(err)
 	}
 
+	b, err := json.Marshal(skillIcon)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+	c.w.Write(b)
+
 	c.Printf("Saved icon: %s", skillIcon.URL)
 	return nil
 }
