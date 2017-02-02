@@ -120,12 +120,19 @@ func (c *LinksController) addLink() error {
 		return err
 	}
 
-	// Save the Link to database under a new UUID
+	// Save the Link to database and send back as response
 	link.ID = util.NewID()
 	err = c.session.Save("links", link.ID, link)
 	if err != nil {
 		return errors.SavingError(err)
 	}
+
+	b, err := json.Marshal(link)
+	if err != nil {
+		return errors.MarshalingError(err)
+	}
+	c.w.Write(b)
+
 	c.Printf("Saved link: %s", link.Name)
 	return nil
 }
