@@ -149,12 +149,8 @@ func (c *SkillsController) addSkill() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	skill := model.Skill{}
-	err := json.Unmarshal(body, &skill)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	err = c.validatePOSTBody(&skill)
+	json.Unmarshal(body, &skill)
+	err := c.validatePOSTBody(&skill)
 	if err != nil {
 		c.Debugf("Invalid Post: Name: %s, ID: %s", skill.Name, skill.SkillType)
 		return err // Will be of errors.IncompletePOSTBodyError type
@@ -192,7 +188,7 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
 	if skill.Name == "" || skill.SkillType == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
-			"The JSON in a POST Request for new Skill must contain values for "+
+			"A Skill must be a JSON object and must contain values for "+
 				"%q and %q fields.", "name", "skill_type"))
 	}
 	return nil

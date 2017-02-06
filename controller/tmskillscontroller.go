@@ -207,13 +207,9 @@ func (c *TMSkillsController) addTMSkill() error {
 
 	// Unmarshal the request body into new object of type TMSkill
 	tmSkill := model.TMSkill{}
-	err := json.Unmarshal(body, &tmSkill)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
+	json.Unmarshal(body, &tmSkill)
 	// Validate fields of the TMSkill
-	err = c.validateTMSkillFields(&tmSkill)
+	err := c.validateTMSkillFields(&tmSkill)
 	if err != nil {
 		return err
 	}
@@ -248,7 +244,7 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 	// Validate that SkillID and TeamMemberID fields exist.
 	if tmSkill.SkillID == "" || tmSkill.TeamMemberID == "" {
 		return errors.InvalidDataModelState(fmt.Errorf(
-			"the %q and %q fields must be specified for all TMSkills",
+			"A TMSkill must be a JSON object and must contain values for the %q and %q fields.",
 			"skill_id", "team_member_id"))
 	}
 

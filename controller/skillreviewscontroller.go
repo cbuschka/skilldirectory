@@ -252,12 +252,8 @@ func (c *SkillReviewsController) addSkillReview() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	skillReview := model.SkillReview{}
-	err := json.Unmarshal(body, &skillReview)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	err = c.validatePOSTBody(&skillReview)
+	json.Unmarshal(body, &skillReview)
+	err := c.validatePOSTBody(&skillReview)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
@@ -292,7 +288,7 @@ func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview
 	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
 		skillReview.Body == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
-			"The JSON in a POST Request for new SkillReview must contain values for"+
+			"A SkillReview must be a JSON object and must contain values for"+
 				" %q, %q, and %q fields.", "skill_id", "team_member_id", "body"))
 	}
 	return nil

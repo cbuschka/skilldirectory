@@ -109,13 +109,9 @@ func (c *LinksController) addLink() error {
 
 	// Unmarshal the request body into new object of type Link
 	link := model.Link{}
-	err := json.Unmarshal(body, &link)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
+	json.Unmarshal(body, &link)
 	// Validate fields of the Link
-	err = c.validateLinkFields(&link)
+	err := c.validateLinkFields(&link)
 	if err != nil {
 		return err
 	}
@@ -149,7 +145,7 @@ func (c *LinksController) validateLinkFields(link *model.Link) error {
 	if link.SkillID == "" || link.LinkType == "" ||
 		link.Name == "" || link.URL == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
-			"the JSON in a POST Request for new Link must contain values for "+
+			"A Link must be a JSON object and must contain values for "+
 				"%q, %q, %q, and %q fields", "name", "link_type", "skill_id", "url"))
 	}
 
