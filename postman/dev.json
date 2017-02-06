@@ -1,0 +1,16 @@
+{
+  "id": "1755f6eb-48f1-704c-2b1f-b8e138b548d2",
+  "name": "Dev",
+  "values": [
+    {
+      "key": "url",
+      "value": "http://ec2-52-202-79-201.compute-1.amazonaws.com:8080",
+      "enabled": true,
+      "type": "text"
+    }
+  ],
+  "timestamp": 1486416271313,
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2017-02-06T21:24:49.770Z",
+  "_postman_exported_using": "Postman/4.9.3"
+}
