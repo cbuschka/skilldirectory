@@ -254,7 +254,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	skillReview := model.SkillReview{}
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {
-		return errors.MarshalingError(err)
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
 	}
 
 	err = c.validatePOSTBody(&skillReview)
@@ -292,7 +292,7 @@ func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview
 	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
 		skillReview.Body == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
-			"The JSON in a POST Request for new SkillReview must contain values for"+
+			"A SkillReview must be a JSON object and must contain values for"+
 				" %q, %q, and %q fields.", "skill_id", "team_member_id", "body"))
 	}
 	return nil

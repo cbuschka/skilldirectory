@@ -177,9 +177,9 @@ func (c *TeamMembersController) addTeamMember() error {
 	teamMember := model.TeamMember{}
 	err := json.Unmarshal(body, &teamMember)
 	if err != nil {
-		return errors.MarshalingError(err)
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
 	}
-
+	
 	err = c.validatePOSTBody(&teamMember)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError type
@@ -212,7 +212,7 @@ fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
-			"The JSON in a POST Request for new Team Member must contain values for"+
+			"A Team Member must be a JSON object and must contain values for"+
 				" %q and %q fields.", "name", "title"))
 	}
 	return nil
