@@ -252,8 +252,12 @@ func (c *SkillReviewsController) addSkillReview() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	skillReview := model.SkillReview{}
-	json.Unmarshal(body, &skillReview)
-	err := c.validatePOSTBody(&skillReview)
+	err := json.Unmarshal(body, &skillReview)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
+
+	err = c.validatePOSTBody(&skillReview)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}

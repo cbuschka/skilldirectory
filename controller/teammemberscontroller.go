@@ -175,8 +175,12 @@ func (c *TeamMembersController) addTeamMember() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	teamMember := model.TeamMember{}
-	json.Unmarshal(body, &teamMember)
-	err := c.validatePOSTBody(&teamMember)
+	err := json.Unmarshal(body, &teamMember)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
+	
+	err = c.validatePOSTBody(&teamMember)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError type
 	}

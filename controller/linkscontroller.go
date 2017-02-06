@@ -109,9 +109,12 @@ func (c *LinksController) addLink() error {
 
 	// Unmarshal the request body into new object of type Link
 	link := model.Link{}
-	json.Unmarshal(body, &link)
+	err := json.Unmarshal(body, &link)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
 	// Validate fields of the Link
-	err := c.validateLinkFields(&link)
+	err = c.validateLinkFields(&link)
 	if err != nil {
 		return err
 	}

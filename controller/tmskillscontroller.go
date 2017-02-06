@@ -207,9 +207,12 @@ func (c *TMSkillsController) addTMSkill() error {
 
 	// Unmarshal the request body into new object of type TMSkill
 	tmSkill := model.TMSkill{}
-	json.Unmarshal(body, &tmSkill)
+	err := json.Unmarshal(body, &tmSkill)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
 	// Validate fields of the TMSkill
-	err := c.validateTMSkillFields(&tmSkill)
+	err = c.validateTMSkillFields(&tmSkill)
 	if err != nil {
 		return err
 	}

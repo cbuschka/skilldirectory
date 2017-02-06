@@ -149,8 +149,12 @@ func (c *SkillsController) addSkill() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	skill := model.Skill{}
-	json.Unmarshal(body, &skill)
-	err := c.validatePOSTBody(&skill)
+	err := json.Unmarshal(body, &skill)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
+	
+	err = c.validatePOSTBody(&skill)
 	if err != nil {
 		c.Debugf("Invalid Post: Name: %s, ID: %s", skill.Name, skill.SkillType)
 		return err // Will be of errors.IncompletePOSTBodyError type
