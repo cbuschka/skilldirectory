@@ -23,6 +23,14 @@ ENV_FILE='env.json'
 COLOR='\033[0;36m' # Cyan
 
 # Process all command line flags
+VALID_OPTIONS="Valid options are: 
+            --verbose 
+            --200 
+            --400 
+            --file
+            --export 
+            --api-url=<URL to API>
+            --all\n"
 for arg in "$@"
 do
 case $arg in
@@ -56,10 +64,13 @@ case $arg in
     API_URL="${arg#*=}"
     shift;; # past argument=value
 
+    -h|--help)
+    printf "$VALID_OPTIONS"
+    shift;; # past argument
+
     *) # unknown option
     printf "Unrecognized option: $arg \n"
-    printf "Valid options are: --verbose, --200, --400, --file, and --all "
-    printf "--export, and --api-url=\n"
+    printf "$VALID_OPTIONS"
     exit 127;; # exit code for option not found
 esac
 done
