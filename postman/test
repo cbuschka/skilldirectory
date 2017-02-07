@@ -24,14 +24,14 @@ COLOR='\033[0;36m' # Cyan
 
 # Process all command line flags
 VALID_OPTIONS="Valid options are: 
-            --verbose 
-            --200 
-            --400 
-            --file
-            --export 
-            --api-url=<URL to API>
-            --all
-            --help\n"
+  --verbose (turns on verbose output)
+  --200     (runs 200 suite of tests)
+  --400     (runs 400 suite of tests)
+  --file    (runs FILE suite of tests)
+  --export  (saves JSON file of environment after completion of specified suites)
+  --api-url=<URL to API> (sets the URL to hit when running tests)
+  --all     (runs all suites of tests; 200, 400, and FILE)
+  --help    (displays list of valid options)\n"
 for arg in "$@"
 do
 case $arg in
