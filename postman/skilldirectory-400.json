@@ -377,7 +377,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
+									"tests['Response body is correct'] = responseBody.has('A Team Member must be a JSON object and must contain values for \"name\" and \"title\" fields.');"
 								]
 							}
 						}
@@ -400,7 +400,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
+									"tests['Response body is correct'] = responseBody.has('A Skill must be a JSON object and must contain values for \"name\" and \"skill_type\" fields.');"
 								]
 							}
 						}
@@ -423,7 +423,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
+									"tests['Response body is correct'] = responseBody.has('A TMSkill must be a JSON object and must contain values for the \"skill_id\" and \"team_member_id\" fields.');"
 								]
 							}
 						}
@@ -446,7 +446,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
+									"tests['Response body is correct'] = responseBody.has('A Link must be a JSON object and must contain values for \"name\", \"link_type\", \"skill_id\", and \"url\" fields');"
 								]
 							}
 						}
@@ -469,7 +469,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
+									"tests['Response body is correct'] = responseBody.has('A SkillReview must be a JSON object and must contain values for \"skill_id\", \"team_member_id\", and \"body\" fields.');"
 								]
 							}
 						}
@@ -492,7 +492,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('The JSON in a POST Request for new Team Member must contain values for \"name\" and \"title\" fields.');"
+									"tests['Response body is correct'] = responseBody.has('A Team Member must be a JSON object and must contain values for \"name\" and \"title\" fields.');"
 								]
 							}
 						}
@@ -524,7 +524,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('The JSON in a POST Request for new Skill must contain values for \"name\" and \"skill_type\" fields.');"
+									"tests['Response body is correct'] = responseBody.has('A Skill must be a JSON object and must contain values for \"name\" and \"skill_type\" fields.');"
 								]
 							}
 						}
@@ -556,7 +556,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('the \"skill_id\" and \"team_member_id\" fields must be specified for all TMSkills');"
+									"tests['Response body is correct'] = responseBody.has('A TMSkill must be a JSON object and must contain values for the \"skill_id\" and \"team_member_id\" fields.');"
 								]
 							}
 						}
@@ -588,7 +588,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('the JSON in a POST Request for new Link must contain values for \"name\", \"link_type\", \"skill_id\", and \"url\" fields');"
+									"tests['Response body is correct'] = responseBody.has('A Link must be a JSON object and must contain values for \"name\", \"link_type\", \"skill_id\", and \"url\" fields');"
 								]
 							}
 						}
@@ -620,7 +620,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('The JSON in a POST Request for new SkillReview must contain values for \"skill_id\", \"team_member_id\", and \"body\" fields.');"
+									"tests['Response body is correct'] = responseBody.has('A SkillReview must be a JSON object and must contain values for \"skill_id\", \"team_member_id\", and \"body\" fields.');"
 								]
 							}
 						}
