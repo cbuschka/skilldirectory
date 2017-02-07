@@ -30,7 +30,8 @@ VALID_OPTIONS="Valid options are:
             --file
             --export 
             --api-url=<URL to API>
-            --all\n"
+            --all
+            --help\n"
 for arg in "$@"
 do
 case $arg in
