@@ -33,15 +33,19 @@ test:
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && glide install
   override:
     - go version
-    ##TODO Get all these modules up to snuff so we can stop whitelisting them 
+    ##TODO Get all these modules up to snuff so we can stop whitelisting them
     - cd "${GOPATH}/src/${IMPORT_PATH}/" && ./test -a --whitelist -m ./controller -m ./data -m ./model -m ./util && go build
 
 deployment:
+  release:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
+      - docker build -t $DOCKER_IMAGE:$CIRCLE_TAG --rm=false .
+      - docker push $DOCKER_IMAGE:$CIRCLE_TAG
   master:
     branch: master
     commands:
-      - echo $CIRCLE_BRANCH
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
-      - cd ${GOPATH}/src/${IMPORT_PATH} && export DEBUG_FLAG=false && docker build -t $DOCKER_IMAGE:$CIRCLE_BRANCH .
-      - docker images
+      - docker build -t $DOCKER_IMAGE:$CIRCLE_BRANCH --rm=false .
       - docker push $DOCKER_IMAGE:$CIRCLE_BRANCH
