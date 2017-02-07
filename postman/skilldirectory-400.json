@@ -1,0 +1,649 @@
+{
+	"variables": [],
+	"info": {
+		"name": "SkillDirectory 400",
+		"_postman_id": "29fb0937-68b8-24b0-2e5b-d6a3e0fc2179",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DELETE",
+			"description": "",
+			"item": [
+				{
+					"name": "No Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no TeamMember ID in request URL');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "No Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Skill ID in request URL');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "No TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no TMSkill ID in request URL');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "No Link",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Link ID specified in request URL');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "No Skill Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no SkillReview ID in request URL');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('No Team Member Exists with Specified ID: \"invalid-id\"');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/invalid-id",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Skill exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/invalid-id",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no TMSkill exists with specified ID: \"invalid-id\"');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/invalid-id",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Link",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Link exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/invalid-id",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill Reviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/invalid-id",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GET",
+			"description": "",
+			"item": [
+				{
+					"name": "Invalid Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no TeamMeber exists with specified ID: \"invalid-id\"');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/invalid-id",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Skill exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/invalid-id",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('No TMSkill Exists with Specified ID: invalid-id ');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/invalid-id",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Link",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no Link exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/invalid-id",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID: invalid-id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/invalid-id",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "POST",
+			"description": "",
+			"item": [
+				{
+					"name": "Empty Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Team Member must be a JSON object and must contain values for \"name\" and \"title\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Empty Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Skill must be a JSON object and must contain values for \"name\" and \"skill_type\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Empty TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A TMSkill must be a JSON object and must contain values for the \"skill_id\" and \"team_member_id\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Empty Link",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Link must be a JSON object and must contain values for \"name\", \"link_type\", \"skill_id\", and \"url\" fields');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Empty Skill Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A SkillReview must be a JSON object and must contain values for \"skill_id\", \"team_member_id\", and \"body\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Team Member must be a JSON object and must contain values for \"name\" and \"title\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"qux\":\"baz\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Skill must be a JSON object and must contain values for \"name\" and \"skill_type\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"qux\":\"baz\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A TMSkill must be a JSON object and must contain values for the \"skill_id\" and \"team_member_id\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"qux\":\"baz\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Links",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A Link must be a JSON object and must contain values for \"name\", \"link_type\", \"skill_id\", and \"url\" fields');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"qux\":\"baz\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid Skill Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('A SkillReview must be a JSON object and must contain values for \"skill_id\", \"team_member_id\", and \"body\" fields.');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"qux\":\"baz\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

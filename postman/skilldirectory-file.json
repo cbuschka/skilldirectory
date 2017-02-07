@@ -1,0 +1,296 @@
+{
+	"variables": [],
+	"info": {
+		"name": "SkillDirectory File",
+		"_postman_id": "c80894b2-17ca-1857-3ef0-dd50cbfec553",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Skill",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse response & init vars",
+							"const { id, name, skill_type } = JSON.parse(responseBody);",
+							"var code = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200'] =       code       === 200;",
+							"tests['Body contains id']   =       id         !== '' && id         !== undefined;",
+							"tests['Body contains name'] =       name       !== '' && name       !== undefined;",
+							"tests['Body contains skill_type'] = skill_type !== '' && skill_type !== undefined;",
+							"",
+							"// Env Vars (for chaining use)",
+							"postman.setEnvironmentVariable('skill', responseBody)",
+							"postman.setEnvironmentVariable('skillID', id);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skills/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\":       \"Java\",\n\t\"skill_type\": \"compiled\",\n\t\"webpage\": {\n\t  \"link_type\": \"Webpage\",\n\t  \"name\":      \"Java\",\n\t  \"url\":       \"http://www.javaworld.com/blog/java-101/\"\n\t},\n\t\"tutorials\":  [\n\t  {\n\t    \"link_type\": \"Tutorial\",\n\t    \"name\":      \"Java\",\n\t    \"url\":       \"http://www.javaworld.com/blog/java-101/\"\n\t  }\n\t],\n\t\"blogs\": [\n\t  {\n\t    \"link_type\": \"Blog\",\n\t    \"name\":      \"Java\",\n\t    \"url\":       \"http://www.javaworld.com/blog/java-101/\"\n\t  }\n\t]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Skill Icon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse response & init vars",
+							"const { skill_id, url } = JSON.parse(responseBody);",
+							"var code = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200']     = code     === 200;",
+							"tests['Body contains skill_id'] = skill_id !== '' && skill_id !== undefined;",
+							"tests['Body contains url']      = url      !== '' && url      !== undefined;",
+							"",
+							"// Env Vars (for chaining use)",
+							"postman.setEnvironmentVariable('skillIcon', responseBody)"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skillicons/",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "skill_id",
+							"value": "{{skillID}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "icon",
+							"type": "file",
+							"enabled": true,
+							"src": "test.png",
+							"value": ""
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Skill Icon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse response & init vars",
+							"const { skill_id, url } = JSON.parse(responseBody);",
+							"var code = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200']     = code     === 200;",
+							"tests['Body contains skill_id'] = skill_id !== '' && skill_id !== undefined;",
+							"tests['Body contains url']      = url      !== '' && url      !== undefined;",
+							"",
+							"// Env Vars (for chaining use)",
+							"postman.setEnvironmentVariable('skillIcon', responseBody)"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skillicons/",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "skill_id",
+							"value": "{{skillID}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "icon",
+							"type": "file",
+							"enabled": true,
+							"src": "test.png",
+							"value": ""
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "All Skill Icons",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse response",
+							"const resp = JSON.parse(responseBody);",
+							"const prevIcon = JSON.parse(environment.skillIcon);",
+							"const code = responseCode.code;",
+							"",
+							"var isValidIconArr = true;",
+							"var containsPrevIcon = false;",
+							"resp.forEach((obj) => {",
+							"  // Make sure all elements in reponse have required fields for a skill icon",
+							"  if (obj.skill_id === undefined ||",
+							"      obj.url === undefined)",
+							"    isValidIconArr = false;",
+							"  // Make sure response contains previously posted icon",
+							"  if (obj.skill_id  === prevIcon.skill_id  &&",
+							"      obj.url       === prevIcon.url)",
+							"    containsPrevIcon = true;",
+							"});",
+							"",
+							"",
+							"// Tests",
+							"tests['Status code is 200'] = code === 200;",
+							"tests['Body is array of Icons'] = isValidIconArr;",
+							"tests['Body contains previously POSTed Icon'] = containsPrevIcon;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skillicons/",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "skill_id",
+							"value": "{{skillID}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "icon",
+							"type": "file",
+							"enabled": true,
+							"src": "test.png",
+							"value": ""
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "A Skill Icon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Parse response",
+							"const { skill_id, url } = JSON.parse(responseBody);",
+							"const prevIcon = JSON.parse(environment.skillIcon);",
+							"const code     = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200']                   = code === 200;",
+							"tests['Body contains previously POSTed icon'] = skill_id === prevIcon.skill_id &&",
+							"                                                url      === prevIcon.url;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skillicons/{{skillID}}",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Skill Icon",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Init Vars",
+							"const code = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200']     = responseCode.code === 200;",
+							"tests['Response body is empty'] = responseBody      === '';",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skillicons/{{skillID}}",
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

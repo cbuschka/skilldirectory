@@ -1,0 +1,131 @@
+#!/bin/bash
+
+################################################################################
+# This script is used to run the postman/newman API tests.                     #
+################################################################################
+
+# Make sure newman is installed
+if [[ -z $(command -v newman) ]]; then
+  printf "newman is not installed. "
+  printf "Please install newman before running this script.\n"
+  printf "See: https://www.npmjs.com/package/newman\n"
+  exit 1
+fi
+
+# Default values
+VERBOSITY='--reporter-no-assertions'
+RUN_200=false
+RUN_400=false
+RUN_FILE=false
+EXPORT_ENV=false
+API_URL='http://localhost:8080'
+ENV_FILE='env.json'
+COLOR='\033[0;36m' # Cyan
+
+# Process all command line flags
+VALID_OPTIONS="Valid options are: 
+  --verbose (turns on verbose output)
+  --200     (runs 200 suite of tests)
+  --400     (runs 400 suite of tests)
+  --file    (runs FILE suite of tests)
+  --export  (saves JSON file of environment after completion of specified suites)
+  --api-url=<URL to API> (sets the URL to hit when running tests)
+  --all     (runs all suites of tests; 200, 400, and FILE)
+  --help    (displays list of valid options)\n"
+for arg in "$@"
+do
+case $arg in
+    -v|--verbose)
+    VERBOSITY=''
+    shift;; # past argument
+
+    --200)
+    RUN_200=true
+    shift;; # past argument
+
+    --400)
+    RUN_400=true
+    shift;; # past argument
+
+    --file)
+    RUN_FILE=true
+    shift;; # past argument
+
+    -a|--all)
+    RUN_200=true
+    RUN_400=true
+    RUN_FILE=true 
+    shift;; # past argument
+
+    -e|--export)
+    EXPORT_ENV=true
+    shift;; # past argument
+    
+    -u=*|--api-url=*)
+    API_URL="${arg#*=}"
+    shift;; # past argument=value
+
+    -h|--help)
+    printf "$VALID_OPTIONS"
+    shift;; # past argument
+
+    *) # unknown option
+    printf "Unrecognized option: $arg \n"
+    printf "$VALID_OPTIONS"
+    exit 127;; # exit code for option not found
+esac
+done
+
+# Create/Truncate environments file for newman
+ENV_JSON='{
+  "id": "1755f6eb-48f1-704c-2b1f-b8e138b548d2",
+  "name": "Dev",
+  "values": [
+     {
+       "key": "url",
+       "value":"'$API_URL'",
+       "enabled": true,
+       "type": "text"
+     }
+  ],
+  "timestamp": 1486416271313,
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2017-02-06T21:24:49.770Z",
+  "_postman_exported_using": "Postman/4.9.3"
+}' 
+echo "$ENV_JSON" > $ENV_FILE
+
+# Run tests suites based on command lines flags
+OPTIONS="-e $ENV_FILE $VERBOSITY --export-environment $ENV_FILE"
+EXIT_STATUS=0
+if $RUN_200; then
+  printf "${COLOR}<<<<< Running 200 Suite... >>>>>\n"
+  newman run skilldirectory-200.json $OPTIONS  
+  if [[ $EXIT_STATUS == 1 || $? == 1 ]]; then
+    EXIT_STATUS=1
+  fi
+  printf "${COLOR}<<<<< Done with 200 Suite. >>>>>\n"
+fi
+if $RUN_400; then
+  printf "${COLOR}<<<<< Running 400 Suite... >>>>>\n"
+  newman run skilldirectory-400.json $OPTIONS
+  if [[ $EXIT_STATUS == 1 || $? == 1 ]]; then
+    EXIT_STATUS=1
+  fi
+  printf "${COLOR}<<<<< Done with 400 Suite. >>>>>\n"
+fi
+if $RUN_FILE; then
+  printf "${COLOR}<<<<< Running FILE Suite... >>>>>\n"
+  newman run skilldirectory-file.json $OPTIONS  
+  if [[ $EXIT_STATUS == 1 || $? == 1 ]]; then
+    EXIT_STATUS=1
+  fi
+  printf "${COLOR}<<<<< Done with FILE Suite. >>>>>\n"
+fi
+
+# Remove environment file unless --export flag was used
+if ! $EXPORT_ENV; then
+  rm $ENV_FILE
+fi
+
+exit $EXIT_STATUS
