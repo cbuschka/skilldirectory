@@ -214,21 +214,30 @@ func TestConvertToStruct(t *testing.T) {
 	}
 }
 
-func TestConvertSkillsToDTOs(t *testing.T) {
-	preTMSkills := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
-	preTMSkillsDTO := []model.TMSkillDTO{preTMSkills[0].NewTMSkillDTO("", ""), preTMSkills[1].NewTMSkillDTO("", "")}
+func TestConvertTMSkillsToDTOs(t *testing.T) {
+	preTMSkills := []model.TMSkill{
+		model.TMSkill{SkillID: "1234"},
+		model.TMSkill{SkillID: "5678"},
+	}
+	preTMSkillsDTO := []model.TMSkillDTO{
+		preTMSkills[0].NewTMSkillDTO("", ""),
+		preTMSkills[1].NewTMSkillDTO("", ""),
+	}
 	tmController := getTMSkillsController(nil, data.MockDataAccessor{})
-	tmSkillsDTO := tmController.converSkillsToDTOs(preTMSkills)
+	tmSkillsDTO := tmController.convertTMSkillsToDTOs(preTMSkills)
 	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
 		t.Error("Expecting a match of tmskills -> tmskillsDTO")
 	}
 }
 
 func TestConvertSkillsToDTOsError(t *testing.T) {
-	preTMSkills := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
+	preTMSkills := []model.TMSkill{
+		model.TMSkill{SkillID: "1234"},
+		model.TMSkill{SkillID: "5678"},
+	}
 	preTMSkillsDTO := []model.TMSkillDTO{}
 	tmController := getTMSkillsController(nil, data.MockErrorDataAccessor{})
-	tmSkillsDTO := tmController.converSkillsToDTOs(preTMSkills)
+	tmSkillsDTO := tmController.convertTMSkillsToDTOs(preTMSkills)
 	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
 		t.Error("Expecting an array of 0 TMSkills")
 	}
@@ -236,7 +245,7 @@ func TestConvertSkillsToDTOsError(t *testing.T) {
 
 func TestUpdateTMSkill(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/tmskills/1234", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -247,7 +256,7 @@ func TestUpdateTMSkill(t *testing.T) {
 
 func TestUpdateTMSkillError(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/tmskills/1234", body)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Put()

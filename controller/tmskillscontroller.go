@@ -59,7 +59,7 @@ func (c *TMSkillsController) getAllTMSkills() error {
 		return err
 	}
 
-	tmSkillDTOs := c.converSkillsToDTOs(tmSkills)
+	tmSkillDTOs := c.convertTMSkillsToDTOs(tmSkills)
 
 	b, err := json.Marshal(tmSkillDTOs)
 	c.w.Write(b)
@@ -80,7 +80,7 @@ func convertToStruct(tmSkillsInterface []interface{}) ([]model.TMSkill, error) {
 	return tmSkills, nil
 }
 
-func (c *TMSkillsController) converSkillsToDTOs(tmSkills []model.TMSkill) []model.TMSkillDTO {
+func (c *TMSkillsController) convertTMSkillsToDTOs(tmSkills []model.TMSkill) []model.TMSkillDTO {
 	tmSkillDTOs := []model.TMSkillDTO{}
 	for idx := 0; idx < len(tmSkills); idx++ {
 		skillName, err := c.getSkillName(&tmSkills[idx])

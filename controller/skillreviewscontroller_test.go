@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
@@ -161,6 +162,85 @@ func TestPostSkillReview_Error(t *testing.T) {
 	err := sc.Post()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPutSkillReview(t *testing.T) {
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
+		true)
+	request := httptest.NewRequest(http.MethodPut, "/skillreviews/1234", body)
+	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
+
+	err := sc.Put()
+	if err != nil {
+		t.Errorf("Expected error due to empty %q field in SkillReview POST"+
+			" request", "body")
+	}
+}
+
+func TestPutSkillReviewNoId(t *testing.T) {
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
+		true)
+	request := httptest.NewRequest(http.MethodPut, "/skillreviews", body)
+	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
+
+	err := sc.Put()
+	if err == nil {
+		t.Errorf("Expected error due to no id in request path")
+	}
+}
+
+func TestPutSkillReviewError(t *testing.T) {
+	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
+		true)
+	request := httptest.NewRequest(http.MethodPut, "/skillreviews/1234", body)
+	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
+
+	err := sc.Put()
+	if err == nil {
+		t.Errorf("Expected error due to no backend fail")
+	}
+}
+
+func TestConvertToReviewsStruct(t *testing.T) {
+	preReview := []interface{}{model.SkillReview{SkillID: "1234"}, model.SkillReview{SkillID: "5678"}}
+	pretReviewStruct := []model.SkillReview{model.SkillReview{SkillID: "1234"}, model.SkillReview{SkillID: "5678"}}
+	skillReview, err := convertToReviewsStruct(preReview)
+	if err != nil {
+		t.Errorf("Convert to struct failed: %v", err)
+	}
+
+	if !reflect.DeepEqual(pretReviewStruct, skillReview) {
+		t.Error("Deep equal failed for convert review to struct")
+	}
+}
+
+func TestConvertReviewsToDTOs(t *testing.T) {
+	preReview := []model.SkillReview{
+		model.SkillReview{SkillID: "1234"},
+		model.SkillReview{SkillID: "5678"},
+	}
+	preReviewDTO := []model.SkillReviewDTO{
+		preReview[0].NewSkillReviewDTO("", ""),
+		preReview[1].NewSkillReviewDTO("", ""),
+	}
+	reviewsController := getSkillReviewsController(nil, data.MockDataAccessor{})
+	reviewsDTO := reviewsController.convertReviewsToDTOs(preReview)
+	if !reflect.DeepEqual(preReviewDTO, reviewsDTO) {
+		t.Error("Expecting a match of tmskills -> tmskillsDTO")
+	}
+}
+
+func TestConvertReviewsToDTOsError(t *testing.T) {
+	preReview := []model.SkillReview{
+		model.SkillReview{SkillID: "1234"},
+		model.SkillReview{SkillID: "5678"},
+	}
+	preReviewDTO := []model.SkillReviewDTO{}
+	reviewsController := getSkillReviewsController(nil, data.MockErrorDataAccessor{})
+	reviewsDTO := reviewsController.convertReviewsToDTOs(preReview)
+	if !reflect.DeepEqual(preReviewDTO, reviewsDTO) {
+		t.Error("Expecting an array of 0 SkillReviews")
 	}
 }
 
