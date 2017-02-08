@@ -1,8 +1,6 @@
 machine:
-
   services:
     - docker
-
   environment:
     GODIST: "go1.7.3.linux-amd64.tar.gz"
     IMPORT_PATH: "$CIRCLE_PROJECT_REPONAME"
@@ -10,15 +8,14 @@ machine:
     GOPATH: /home/ubuntu/.go_workspace
     DOCKER_USER: thebho
     DOCKER_EMAIL: brian.hoehne@maryville.com
-    DOCKER_IMAGE: maryville/skilldirectory
-
+    IMAGE: maryville/skilldirectory
+    TESTER_IMAGE: maryville/skilldirectory-tester
 
   post:
     - mkdir -p download
     - test -e download/$GODIST || curl -o download/$GODIST https://storage.googleapis.com/golang/$GODIST
     - sudo rm -rf /usr/local/go
     - sudo tar -C /usr/local -xzf download/$GODIST
-
 
 dependencies:
   override:
@@ -42,6 +39,8 @@ deployment:
     commands:
       - echo $CIRCLE_BRANCH
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
-      - cd ${GOPATH}/src/${IMPORT_PATH} && export DEBUG_FLAG=false && docker build -t $DOCKER_IMAGE:$CIRCLE_BRANCH .
+      - cd ${GOPATH}/src/${IMPORT_PATH} && export DEBUG_FLAG=false && docker build -t $IMAGE:$CIRCLE_BRANCH .
+      - cd postman && docker build -t $TESTER_IMAGE:$CIRCLE_BRANCH .
       - docker images
-      - docker push $DOCKER_IMAGE:$CIRCLE_BRANCH
+      - docker push $IMAGE:$CIRCLE_BRANCH
+      - docker push $TESTER_IMAGE:$CIRCLE_BRANCH
