@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
@@ -196,6 +197,25 @@ func TestPutTeamMember_Error(t *testing.T) {
 	err := tc.Put()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestGetTeamMemberSkillName(t *testing.T) {
+	tc := getTeamMembersController(nil, &data.MockDataAccessor{})
+	name, err := tc.getSkillName(&model.TMSkill{})
+	if err != nil {
+		t.Error("Error trying to mock getSkillName")
+	}
+	if !reflect.DeepEqual(name, "") {
+		t.Error("Name doesn't equal null")
+	}
+}
+
+func TestGetTeamMemberSkillNameError(t *testing.T) {
+	tc := getTeamMembersController(nil, &data.MockErrorDataAccessor{})
+	_, err := tc.getSkillName(&model.TMSkill{})
+	if err == nil {
+		t.Error("Expecting error from backend")
 	}
 }
 
