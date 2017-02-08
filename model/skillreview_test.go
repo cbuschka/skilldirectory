@@ -25,3 +25,10 @@ func TestNewSkillReview(t *testing.T) {
 		t.Errorf("constructor newSkillReview() produced incorrect SkillReview.")
 	}
 }
+
+func TestGetSkillReviewType(t *testing.T) {
+	s := NewSkillReview("", "", "", "", "", true)
+	if !reflect.DeepEqual(s.GetType(), SkillReview{}) {
+		t.Error("SkillReview getType not returning empty skill review")
+	}
+}

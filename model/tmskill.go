@@ -64,26 +64,26 @@ func (t TMSkill) NewTMSkillDTO(skillName, teamMemberName string) TMSkillDTO {
 }
 
 /*
-setProficiency sets the Proficiency field of the TMSkill instance to the
+SetProficiency sets the Proficiency field of the TMSkill instance to the
 specified proficiency. The specified proficiency must be in the range of 0-5. If
 a value is passed in outside of this range, it is clipped to 0 if it's below 0,
 or 5 if it's above 5.
 */
-func (tmSkill *TMSkill) SetProficiency(proficiency int) {
+func (t *TMSkill) SetProficiency(proficiency int) {
 	if proficiency > 5 {
 		proficiency = 5
 	}
 	if proficiency < 0 {
 		proficiency = 0
 	}
-	tmSkill.Proficiency = proficiency
+	t.Proficiency = proficiency
 }
 
 /*
-getProficiency returns a string representation of the TMSkill's Proficiency level.
+GetProficiencyString returns a string representation of the TMSkill's Proficiency level.
 */
-func (tmSkill *TMSkill) GetProficiencyString() string {
-	switch tmSkill.Proficiency {
+func (t *TMSkill) GetProficiencyString() string {
+	switch t.Proficiency {
 	case 0:
 		return "Not Applicable"
 	case 1:
@@ -102,6 +102,6 @@ func (tmSkill *TMSkill) GetProficiencyString() string {
 }
 
 // GetType returns an interface{} with an underlying concrete type of TMSkill{}.
-func (s TMSkill) GetType() interface{} {
+func (t TMSkill) GetType() interface{} {
 	return TMSkill{}
 }
