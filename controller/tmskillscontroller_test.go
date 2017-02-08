@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
@@ -200,6 +201,19 @@ func Test_validateTMSkillID(t *testing.T) {
 	}
 }
 
+func TestConvertToStruct(t *testing.T) {
+	preTMSkills := []interface{}{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
+	pretTMSkillsStruct := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
+	tmskill, err := convertToStruct(preTMSkills)
+	if err != nil {
+		t.Errorf("Convert to struct failed: %v", err)
+	}
+
+	if !reflect.DeepEqual(pretTMSkillsStruct, tmskill) {
+		t.Error("Deep equal failed fro Convert to struct")
+	}
+}
+
 /*
 getTMSkillsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new
@@ -220,4 +234,8 @@ func getReaderForNewTMSkill(id, skillID, teamMemberID string) *bytes.Reader {
 	newTMSkill := model.NewTMSkillDefaults(id, skillID, teamMemberID)
 	b, _ := json.Marshal(newTMSkill)
 	return bytes.NewReader(b)
+}
+
+type WrapInterface struct {
+	array []interface{}
 }
