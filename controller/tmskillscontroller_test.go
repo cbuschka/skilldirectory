@@ -214,6 +214,27 @@ func TestConvertToStruct(t *testing.T) {
 	}
 }
 
+func TestConvertSkillsToDTOs(t *testing.T) {
+	preTMSkills := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
+	preTMSkillsDTO := []model.TMSkillDTO{preTMSkills[0].NewTMSkillDTO("", ""), preTMSkills[1].NewTMSkillDTO("", "")}
+	tmController := getTMSkillsController(nil, data.MockDataAccessor{})
+	tmSkillsDTO := tmController.converSkillsToDTOs(preTMSkills)
+	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
+		t.Error("Expecting a match of tmskills -> tmskillsDTO")
+	}
+}
+
+func TestConvertSkillsToDTOsError(t *testing.T) {
+	preTMSkills := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
+	preTMSkillsDTO := []model.TMSkillDTO{}
+	tmController := getTMSkillsController(nil, data.MockErrorDataAccessor{})
+	tmSkillsDTO := tmController.converSkillsToDTOs(preTMSkills)
+	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
+		t.Error("Expecting a match of tmskills -> tmskillsDTO")
+	}
+
+}
+
 /*
 getTMSkillsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new
