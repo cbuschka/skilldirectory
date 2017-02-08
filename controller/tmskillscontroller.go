@@ -285,7 +285,6 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 			"the %q field of all TMSkills must contain ID of an existing TeamMember"+
 				" in the database", "team_member_id"))
 	}
-
 	// Validate that the proficiency is within the required range.
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
 		return errors.InvalidDataModelState(fmt.Errorf(

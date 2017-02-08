@@ -230,9 +230,60 @@ func TestConvertSkillsToDTOsError(t *testing.T) {
 	tmController := getTMSkillsController(nil, data.MockErrorDataAccessor{})
 	tmSkillsDTO := tmController.converSkillsToDTOs(preTMSkills)
 	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
-		t.Error("Expecting a match of tmskills -> tmskillsDTO")
+		t.Error("Expecting an array of 0 TMSkills")
 	}
+}
 
+func TestUpdateTMSkill(t *testing.T) {
+	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	request := httptest.NewRequest(http.MethodPost, "/tmskills/1234", body)
+	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err != nil {
+		t.Errorf("Put failed: %s", err.Error())
+	}
+}
+
+func TestUpdateTMSkillError(t *testing.T) {
+	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	request := httptest.NewRequest(http.MethodPost, "/tmskills/1234", body)
+	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expecting error on update")
+	}
+}
+
+func TestUpdateTMSkillNoID(t *testing.T) {
+	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+
+	err := tc.Put()
+	if err == nil {
+		t.Errorf("Expecting error on update with no id in url")
+	}
+}
+
+func TestValidProf(t *testing.T) {
+	tmskill := model.NewTMSkillSetDefaults("id", "skillID", "teamMemberID", false, 0)
+	c := getTMSkillsController(nil, &data.MockDataAccessor{})
+	err := c.validateTMSkillFields(&tmskill)
+	if err != nil {
+		t.Errorf("Expecting a valid tmskill: %v", tmskill)
+	}
+}
+
+func TestInvalidProf(t *testing.T) {
+	tmskill := model.NewTMSkillSetDefaults("id", "skillID", "teamMemberID", false, -1)
+	c := getTMSkillsController(nil, &data.MockDataAccessor{})
+	tmskill.Proficiency = -1
+	err := c.validateTMSkillFields(&tmskill)
+	if err == nil {
+		t.Error("Proficiency of -1 should not be valid")
+	}
 }
 
 /*
