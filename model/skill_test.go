@@ -62,3 +62,10 @@ func TestGetSkillType(t *testing.T) {
 		t.Error("Skill getType not returning empty skill")
 	}
 }
+
+func TestGetSkillIconType(t *testing.T) {
+	s := NewSkillIcon("", "")
+	if !reflect.DeepEqual(s.GetType(), SkillIcon{}) {
+		t.Error("SkillIcon getType not returning empty skillicon")
+	}
+}

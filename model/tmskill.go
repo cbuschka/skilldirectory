@@ -1,5 +1,6 @@
 package model
 
+// TMSkill has a many-to-one relationship to Skills and TeamMembers
 type TMSkill struct {
 	ID           string `json:"id"`
 	SkillID      string `json:"skill_id"`
@@ -8,6 +9,7 @@ type TMSkill struct {
 	Proficiency  int    `json:"proficiency"`
 }
 
+// TMSkillDTO is the transer object type for pass TMSkills with TeamMember name and Skill Name
 type TMSkillDTO struct {
 	TMSkill
 	SkillName      string `json:"skill_name"`
