@@ -34,7 +34,7 @@ func CheckForID(url *url.URL) string {
 	return base
 }
 
-// IsValidEndpoint() returns true if endpoint is an endpoint being
+// IsValidEndpoint returns true if endpoint is an endpoint being
 // served by the SkillDirectory server AND doesn't contain an ID.
 func IsValidEndpoint(endpoint string) bool {
 	endpoints := []string{
@@ -51,7 +51,7 @@ func IsValidEndpoint(endpoint string) bool {
 	return false
 }
 
-// StringSliceContains() returns true if slice contains target, false if not.
+// StringSliceContains returns true if slice contains target, false if not.
 func StringSliceContains(slice []string, target string) bool {
 	for _, element := range slice {
 		if element == target {
@@ -88,7 +88,7 @@ func ValidateIcon(icon io.Reader) (string, error) {
 	return format, nil
 }
 
-//Escapes the single quotes in the Cassandra query
+// SanitizeInput escapes the single quotes in the Cassandra query
 func SanitizeInput(input string) string {
 	return strings.Replace(input, "'", "''", -1)
 }

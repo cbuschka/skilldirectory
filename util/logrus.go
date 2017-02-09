@@ -2,6 +2,7 @@ package util
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -18,6 +19,11 @@ func LogInit() *log.Logger {
 	logger.Out = os.Stderr
 
 	debugFlag := flag.Lookup("debug")
+	if debugFlag == nil {
+		logger.Level = log.InfoLevel
+		return logger
+	}
+	fmt.Println(debugFlag)
 	if debugFlag.Value.String() == "true" {
 		logger.Level = log.DebugLevel
 	} else {
