@@ -41,7 +41,7 @@ deployment:
       - cd ${GOPATH}/src/${IMPORT_PATH} && export DEBUG_FLAG=false && docker build -t $DOCKER_IMAGE:$CIRCLE_TAG .
       - docker push $DOCKER_IMAGE:$CIRCLE_TAG
   master:
-    branch: [master, automate-api-tests187]
+    branch: master    
     commands:
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
       - cd ${GOPATH}/src/${IMPORT_PATH} && export DEBUG_FLAG=false && docker build -t $IMAGE:$CIRCLE_BRANCH .
