@@ -35,7 +35,7 @@ test:
 
 deployment:
   master:
-    branch: master
+    branch: [master, automate-api-tests187]
     commands:
       - echo $CIRCLE_BRANCH
       - docker login -u "$DOCKER_USER" -p "$dockerPass" --email "$DOCKER_EMAIL"
