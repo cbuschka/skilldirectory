@@ -12,7 +12,7 @@
 printf "Running tests...\n"
 RESULTS="$(./test --all --verbose --api-url=$API)"
 EXIT_CODE=$?
-echo $RESULTS > test-results.txt
+echo "$RESULTS" > test-results.txt
 printf "Test Output: \n$RESULTS\n"
 printf "Done running tests.\n"
 
