@@ -10,7 +10,7 @@
 
 # Run tests & store results
 printf "Running tests...\n"
-RESULTS="$(./test --all --verbose --api-url=$API)"
+echo "$(./test --all --verbose --api-url=$API)" > test-results.txt
 EXIT_CODE=$?
 printf "Done running tests.\n"
 
@@ -58,3 +58,6 @@ PAYLOAD=\
 curl -X POST -H 'Content-type: application/json' \
 --data "$PAYLOAD" $SLACK_HOOK
 printf "\nDone sending results to Slack...\n"
+
+# Remove test results file
+rm test-results.txt
