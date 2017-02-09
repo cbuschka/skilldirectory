@@ -192,22 +192,24 @@ func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
 }
 
 func (c *SkillReviewsController) removeSkillReview() error {
-	// Get the ID at end of the specified request
-	skillReviewID := util.CheckForID(c.r.URL)
-	if skillReviewID == "" {
-		return errors.MissingIDError(fmt.Errorf("no SkillReview ID in request URL"))
-	}
+	body, _ := ioutil.ReadAll(c.r.Body)
 
-	err := c.session.Delete("skillreviews", skillReviewID, data.NewCassandraQueryOptions("skillsreviews", "", true))
+    skillReview := model.SkillReview{}
+    err := json.Unmarshal(body, &skillReview)
+    if err != nil {
+        c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+    }
+
+    err = c.session.Delete("skillreviews", skillReview.ID, data.NewCassandraQueryOptions("skill_id", skillReview.SkillID, false))
 	// TODO Add skillid field to opts
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
 			"\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no SkillReview exists with specified ID: %s", skillReviewID))
+			"no SkillReview exists with specified ID: %s", skillReview.ID))
 	}
 
-	log.Printf("SkillReview Deleted with ID: %s", skillReviewID)
+	log.Printf("SkillReview Deleted with ID: %s", skillReview.ID)
 	return nil
 }
 
