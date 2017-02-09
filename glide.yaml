@@ -1,0 +1,12 @@
+package: skilldirectory
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/aws/aws-sdk-go
+  subpackages:
+  - aws
+  - aws/session
+  - service/s3
+- package: github.com/gocql/gocql
+- package: github.com/jinzhu/gorm
+  subpackages:
+  - dialects/postgres
