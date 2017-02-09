@@ -1,0 +1,60 @@
+#!/bin/bash
+
+################################################################################
+# This script is used to run the test script, and report the results to Slack. #
+# Relies on existence of three environment variables:                          #
+#  * API         - should hold URL for tests to hit                            #
+#  * SLACK_HOOK  - should hold URL to send results to                          #
+#  * SLACK_TOKEN - should hold token allow script to post file to Slack        #
+################################################################################
+
+# Run tests & store results
+printf "Running tests...\n"
+RESULTS="$(./test --all --verbose --api-url=$API)"
+EXIT_CODE=$?
+printf "Done running tests.\n"
+
+# Post results as file to Slack
+MULTIPART_RESPONSE=$( \
+curl \
+  --form "token=$SLACK_TOKEN" \
+  --form "filetype=txt" \
+  --form "filename=test-results.txt" \
+  --form "title=Postman Test Results" \
+  --form "channels=#skilldirectory-bots" \
+  --form "file=@test-results.txt" \
+  https://slack.com/api/files.upload)
+
+# Extract file URL from POST response
+FILE_URL=$(
+echo $MULTIPART_RESPONSE | # From response
+grep -o '"permalink":".*test-results.txt"' | # extract json "key":"value", then
+grep -o 'https:.*test-results.txt' | # extract value (a file url), then
+sed "s/[\\]//g") # strip out escape backslashes.
+
+# Post message with test results file URL to Slack channel
+printf "Sending results to Slack...\n"
+if [[ $EXIT_CODE == 0 ]]; then
+  TEXT='*Postman API Tests Passed!*'
+  COLOR='3EB890'
+else
+  TEXT='*Postman API Tests Failed*'
+  COLOR='E01765'
+fi
+
+PAYLOAD=\
+'{
+  "channel": "#skilldirectory-bots", 
+  "username": "SkillDirectory Bot", 
+  "text": "'$TEXT'",
+  "attachments": [
+    {
+      "text": "Test Results:\n'$FILE_URL'",
+      "color": "'$COLOR'"
+    }
+  ]
+}' 
+
+curl -X POST -H 'Content-type: application/json' \
+--data "$PAYLOAD" $SLACK_HOOK
+printf "\nDone sending results to Slack...\n"
