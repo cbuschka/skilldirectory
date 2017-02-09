@@ -86,7 +86,7 @@ func (c CassandraConnector) Read(table, id string, opts QueryOptions, object int
 	return json.Unmarshal(byteQ, &object)
 }
 
-func (c CassandraConnector) Delete(table, id string, opts QueryOptions) error {
+func (c CassandraConnector) Delete(table, id string, opts QueryOptions, object ...interface{}) error {
 	query := makeDeleteQueryStr(table, id, opts, c)
 	if query == "" {
 		return errors.New("Attempting to delete with no id")

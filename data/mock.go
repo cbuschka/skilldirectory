@@ -11,7 +11,7 @@ func (m MockDataAccessor) Save(t, s string, i interface{}) error { return nil }
 func (m MockDataAccessor) Read(t, s string, opts QueryOptions, i interface{}) error {
 	return nil
 }
-func (c MockDataAccessor) Delete(table, id string, opts QueryOptions) error { return nil }
+func (c MockDataAccessor) Delete(table, id string, opts QueryOptions, objects ...interface{}) error { return nil }
 func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
 	return nil, nil
 }
@@ -25,7 +25,7 @@ func (e MockErrorDataAccessor) Save(t, s string, i interface{}) error { return f
 func (e MockErrorDataAccessor) Read(t, s string, opts QueryOptions, i interface{}) error {
 	return fmt.Errorf("")
 }
-func (c MockErrorDataAccessor) Delete(table, id string, opts QueryOptions) error {
+func (c MockErrorDataAccessor) Delete(table, id string, opts QueryOptions, objects ...interface{}) error {
 	return fmt.Errorf("")
 }
 func (e MockErrorDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {

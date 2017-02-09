@@ -12,7 +12,7 @@ type DataAccess interface {
 	ReadAll(table string, readType ReadAllInterface) ([]interface{}, error)
 	FilteredReadAll(table string, opts QueryOptions,
 		readType ReadAllInterface) ([]interface{}, error)
-	Delete(table, id string, opts QueryOptions) error
+	Delete(table, id string, opts QueryOptions, objects ...interface{}) error
 }
 
 /*
