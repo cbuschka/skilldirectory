@@ -1,5 +1,5 @@
-hash: bdf5c0b43903ad8f1246f2cdfe547d87d5dcc3a4055c326109e5a2a40514e3e3
-updated: 2017-01-25T19:55:18.810733596-06:00
+hash: f70f3d8bd1255db6ca49d8a34fba84884015567ecc99577b6c032ddab4d0da91
+updated: 2017-02-09T11:33:02.588693899-06:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: 5f8c77604d405643d9bd8440d47b57bc40748824
@@ -41,8 +41,19 @@ imports:
   version: d9eb7a3d35ec988b8585d4a0068e462c27d28380
 - name: github.com/hailocab/go-hostpool
   version: e80d13ce29ede4452c43dea11e79b9bc8a15b478
+- name: github.com/jinzhu/gorm
+  version: c730b30a7830a04a4a3d536edcb1f8c5f77d3482
+  subpackages:
+  - dialects/postgres
+- name: github.com/jinzhu/inflection
+  version: 1c35d901db3da928c72a72d8458480cc9ade058f
 - name: github.com/jmespath/go-jmespath
   version: bd40a432e4c76585ef6b72d3fd96fb9b6dc7b68d
+- name: github.com/lib/pq
+  version: 0477eb88c5ca4009cb281f13c90633375b6a9987
+  subpackages:
+  - hstore
+  - oid
 - name: github.com/Sirupsen/logrus
   version: 881bee4e20a5d11a6a88a5667c6f292072ac1963
 - name: golang.org/x/net
