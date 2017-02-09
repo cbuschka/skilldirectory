@@ -10,8 +10,10 @@
 
 # Run tests & store results
 printf "Running tests...\n"
-echo "$(./test --all --verbose --api-url=$API)" > test-results.txt
+RESULTS="$(./test --all --verbose --api-url=$API)"
 EXIT_CODE=$?
+echo $RESULTS > test-results.txt
+printf "Test Output: \n$RESULTS\n"
 printf "Done running tests.\n"
 
 # Post results as file to Slack
