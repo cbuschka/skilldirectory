@@ -7,6 +7,8 @@ import (
 	"skilldirectory/handler"
 	util "skilldirectory/util"
 
+	"os/user"
+
 	log "github.com/Sirupsen/logrus"
 )
 
@@ -65,9 +67,12 @@ func initFileSystem() {
 	default: // Use local disk as file system by default
 		fileSystem = data.NewLocalFileSystem()
 		log.Info("Using local disk as file system.")
-		log.Info(`Hosting /skilldirectory on localhost:2121.`)
+		user, _ := user.Current()
+		log.Infof("Hosting static file server for '%s/skilldirectory' on localhost:2121.",
+			user.HomeDir)
 		go func() {
-			err := http.ListenAndServe(":2121", http.FileServer(http.Dir("/skilldirectory")))
+			err := http.ListenAndServe(":2121", http.FileServer(http.Dir(
+				user.HomeDir+"/skilldirectory")))
 			if err != nil {
 				log.Error("Error produced while running static file server: %s", err)
 			}
