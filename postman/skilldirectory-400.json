@@ -112,7 +112,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no SkillReview ID in request URL');"
+									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID');"
 								]
 							}
 						}
@@ -235,8 +235,17 @@
 					"request": {
 						"url": "{{url}}/skillreviews/invalid-id",
 						"method": "DELETE",
-						"header": [],
-						"body": {},
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\":       \"invalid-id\",\n\t\"skill_id\": \"invalid-skill_id\"\n}"
+						},
 						"description": ""
 					},
 					"response": []
