@@ -63,32 +63,24 @@ func TestGetSkillReview_Error(t *testing.T) {
 }
 
 func TestDeleteSkillReview(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews/1234", nil)
+	body := getReaderForDeleteSkillReview("1234", "2345")
+	request := httptest.NewRequest(http.MethodDelete, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
 	if err != nil {
-		t.Errorf("Expected error: %s", err.Error())
+		t.Errorf("Did not expect error: %s", err.Error())
 	}
 }
 
 func TestDeleteSkillReview_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews/1234", nil)
+	body := getReaderForDeleteSkillReview("1234", "2345")
+	request := httptest.NewRequest(http.MethodDelete, "/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Delete()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
-	}
-}
-
-func TestDeleteSkillReview_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews/", nil)
-	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
-
-	err := sc.Delete()
-	if err == nil {
-		t.Errorf("Expected error when no key: %s", err.Error())
 	}
 }
 
@@ -265,6 +257,15 @@ func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp strin
 	positive bool) *bytes.Reader {
 	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
 		body, timestamp, positive)
+	b, _ := json.Marshal(newSkillReview)
+	return bytes.NewReader(b)
+}
+
+func getReaderForDeleteSkillReview(id string, skillID string) *bytes.Reader {
+	newSkillReview := model.SkillReview{
+		ID:           id,
+		SkillID:      skillID,
+	}
 	b, _ := json.Marshal(newSkillReview)
 	return bytes.NewReader(b)
 }
