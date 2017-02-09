@@ -48,11 +48,11 @@ func (c *SkillsController) getAllSkills() error {
 	var skills []interface{}
 	var err error
 	filter := c.r.URL.Query().Get("skilltype")
-	var opts data.CassandraQueryOptions
+	var opts data.QueryOptions
 
 	// Add approved query filters here
 	if filter != "" {
-		opts = data.NewCassandraQueryOptions("skilltype", filter, false)
+		opts = data.NewQueryOptions("skilltype", filter, false)
 	}
 	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
 
@@ -77,7 +77,7 @@ func (c *SkillsController) getSkill(id string) error {
 
 func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", id, data.CassandraQueryOptions{}, &skill)
+	err := c.session.Read("skills", id, data.QueryOptions{}, &skill)
 	if err != nil {
 		return nil, errors.NoSuchIDError(fmt.Errorf(
 			"no Skill exists with specified ID: %s", id))
@@ -90,7 +90,7 @@ func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
 func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 	skillDTO := model.SkillDTO{}
 	linksInterface, err := c.session.FilteredReadAll("links",
-		data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
+		data.NewQueryOptions("skill_id", skill.ID, true), model.Link{})
 	if err != nil {
 		c.Print(err)
 		return skillDTO, err
@@ -111,7 +111,7 @@ func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
 func (c *SkillsController) addIcon(skillDTO *model.SkillDTO) {
 	skillIcon := model.SkillIcon{}
 	c.session.Read("skillicons", "",
-		data.NewCassandraQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
+		data.NewQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
 	skillDTO.Icon = skillIcon
 }
 
@@ -127,7 +127,7 @@ func (c *SkillsController) removeSkill() error {
 
 	}
 
-	err := c.session.Delete("skills", skillID, data.CassandraQueryOptions{})
+	err := c.session.Delete("skills", skillID, data.QueryOptions{})
 
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
@@ -140,7 +140,7 @@ func (c *SkillsController) removeSkill() error {
 }
 
 func (c *SkillsController) removeSkillChildren(skillID string) error {
-	return c.session.Delete("links", "", data.NewCassandraQueryOptions("skill_ID", skillID, true))
+	return c.session.Delete("links", "", data.NewQueryOptions("skill_ID", skillID, true))
 
 }
 

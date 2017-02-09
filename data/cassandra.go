@@ -23,16 +23,6 @@ type CassandraConnector struct {
 	password string
 }
 
-type CassandraQueryOptions struct {
-	Filters []Filter
-}
-
-type Filter struct {
-	key   string
-	value string
-	id    bool
-}
-
 func (f Filter) query() string {
 	queryString := fmt.Sprintf("%s", f.key)
 	queryString += " = "
@@ -75,30 +65,6 @@ func NewCassandraConnector(path, port, keyspace, username,
 	return &cassConn
 }
 
-/*
-NewCassandraQueryOptions creates a new options object.
-key: query field name
-value: query value
-id: True if field is a UUID Cassandra key
-*/
-func NewCassandraQueryOptions(key, value string, id bool) CassandraQueryOptions {
-	filter := Filter{key, value, id}
-	return CassandraQueryOptions{
-		Filters: []Filter{filter},
-	}
-}
-
-/*
-AddFilter adds a filter to an CassandraQueryOptions object
-key: query field name
-value: query value
-id: True if field is a UUID Cassandra key
-*/
-func (o *CassandraQueryOptions) AddFilter(key, value string, id bool) {
-	filter := Filter{key, value, id}
-	o.Filters = append(o.Filters, filter)
-}
-
 func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	b, err := json.Marshal(object)
 	if err != nil {
@@ -109,7 +75,7 @@ func (c CassandraConnector) Save(table, key string, object interface{}) error {
 	return c.Query(query).Exec()
 }
 
-func (c CassandraConnector) Read(table, id string, opts CassandraQueryOptions, object interface{}) error {
+func (c CassandraConnector) Read(table, id string, opts QueryOptions, object interface{}) error {
 	query := makeReadQueryStr(table, id, opts, c)
 	c.Debugf("Running this CQL Query: \n\t%q\n", query)
 	byteQ := []byte{}
@@ -120,7 +86,7 @@ func (c CassandraConnector) Read(table, id string, opts CassandraQueryOptions, o
 	return json.Unmarshal(byteQ, &object)
 }
 
-func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions) error {
+func (c CassandraConnector) Delete(table, id string, opts QueryOptions) error {
 	query := makeDeleteQueryStr(table, id, opts, c)
 	if query == "" {
 		return errors.New("Attempting to delete with no id")
@@ -129,19 +95,19 @@ func (c CassandraConnector) Delete(table, id string, opts CassandraQueryOptions)
 	return c.Query(query).Exec()
 }
 
-func makeReadQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+func makeReadQueryStr(table string, id string, opts QueryOptions, c CassandraConnector) string {
 	query := "SELECT JSON * FROM " + table + makeQueryConditionStr(table, id, opts, c)
 	c.Infof("Reading:%s,%s,%v", table, id, opts)
 	return query
 }
 
-func makeDeleteQueryStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+func makeDeleteQueryStr(table string, id string, opts QueryOptions, c CassandraConnector) string {
 	query := "DELETE FROM " + table + makeQueryConditionStr(table, id, opts, c)
 	c.Infof("Deleting:%s,%s,%v", table, id, opts)
 	return query
 }
 
-func makeQueryConditionStr(table string, id string, opts CassandraQueryOptions, c CassandraConnector) string {
+func makeQueryConditionStr(table string, id string, opts QueryOptions, c CassandraConnector) string {
 	query := " WHERE "
 	firstField := true
 
@@ -198,10 +164,10 @@ func (c CassandraConnector) readCol(table, id, col string) (string, error) {
 }
 
 func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
-	return c.FilteredReadAll(table, CassandraQueryOptions{}, readType)
+	return c.FilteredReadAll(table, QueryOptions{}, readType)
 }
 
-func (c CassandraConnector) FilteredReadAll(table string, opts CassandraQueryOptions, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) FilteredReadAll(table string, opts QueryOptions, readType ReadAllInterface) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	if opts.Filters != nil {
 		query += " WHERE "

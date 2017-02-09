@@ -11,7 +11,7 @@ import (
 var logger = logrus.New()
 
 func TestIDQuery(t *testing.T) {
-	options := NewCassandraQueryOptions("key", "id_value", true)
+	options := NewQueryOptions("key", "id_value", true)
 	queryString := "key = id_value"
 
 	if options.Filters[0].query() != queryString {
@@ -21,7 +21,7 @@ func TestIDQuery(t *testing.T) {
 }
 
 func TestTextQuery(t *testing.T) {
-	options := NewCassandraQueryOptions("key", "text_value", false)
+	options := NewQueryOptions("key", "text_value", false)
 	queryString := "key = 'text_value'"
 
 	if options.Filters[0].query() != queryString {
@@ -30,8 +30,8 @@ func TestTextQuery(t *testing.T) {
 }
 
 func TestNewOptions(t *testing.T) {
-	options1 := CassandraQueryOptions{Filters: []Filter{Filter{"key", "value", true}}}
-	options2 := NewCassandraQueryOptions("key", "value", true)
+	options1 := QueryOptions{Filters: []Filter{Filter{"key", "value", true}}}
+	options2 := NewQueryOptions("key", "value", true)
 
 	if !reflect.DeepEqual(options1, options2) {
 		t.Error("Expecting NewOptions constructor to match")
@@ -49,7 +49,7 @@ func TestDeleteSkillChildren(t *testing.T) {
 	table := "links"
 	id := ""
 	skillID := "1234"
-	opts := NewCassandraQueryOptions("skill_ID", skillID, true)
+	opts := NewQueryOptions("skill_ID", skillID, true)
 	valid := "DELETE FROM links WHERE skill_ID = 1234;"
 	logger := logrus.New()
 	queryString := makeDeleteQueryStr(table, id, opts, CassandraConnector{Logger: logger})
@@ -63,7 +63,7 @@ func TestDeleteNoId(t *testing.T) {
 	table := "test_table"
 	id := "1234"
 	want := "DELETE FROM test_table WHERE id = 1234;"
-	got := makeDeleteQueryStr(table, id, CassandraQueryOptions{}, CassandraConnector{Logger: logger})
+	got := makeDeleteQueryStr(table, id, QueryOptions{}, CassandraConnector{Logger: logger})
 
 	if got != want {
 		t.Errorf("Expected to get: %s ,but got: %s", want, got)
@@ -73,7 +73,7 @@ func TestDeleteNoId(t *testing.T) {
 func TestDeleteDuplicatedId(t *testing.T) {
 	table := "test_table"
 	id := "1234"
-	opts := NewCassandraQueryOptions("id", "1234", true)
+	opts := NewQueryOptions("id", "1234", true)
 	want := "DELETE FROM test_table WHERE id = 1234;"
 	got := makeDeleteQueryStr(table, id, opts, CassandraConnector{Logger: logger})
 
@@ -84,9 +84,9 @@ func TestDeleteDuplicatedId(t *testing.T) {
 
 func TestDeleteMultipleFilters(t *testing.T) {
 	table := "test_table"
-	// opts := NewCassandraQueryOptions("id", "1234", true)
+	// opts := NewQueryOptions("id", "1234", true)
 
-	opts := NewCassandraQueryOptions("hair_color", "red", false)
+	opts := NewQueryOptions("hair_color", "red", false)
 	opts.AddFilter("name", "Andrew", false)
 	want := "DELETE FROM test_table WHERE hair_color = 'red' AND name = 'Andrew';"
 	got := makeDeleteQueryStr(table, "", opts, CassandraConnector{Logger: logger})

@@ -71,7 +71,7 @@ func (c *TeamMembersController) getTeamMember(id string) error {
 
 func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, error) {
 	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", id, data.CassandraQueryOptions{}, &teamMember)
+	err := c.session.Read("teammembers", id, data.QueryOptions{}, &teamMember)
 	if err != nil {
 		return nil, errors.NoSuchIDError(fmt.Errorf(
 			"no TeamMeber exists with specified ID: %q", id))
@@ -84,7 +84,7 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 	[]model.TMSkillDTO, error) {
 	// Get all TMSkills that reference the passed-in TeamMember
-	options := data.NewCassandraQueryOptions(
+	options := data.NewQueryOptions(
 		"team_member_id", teamMember.ID, false)
 	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills",
 		options, model.TMSkill{})
@@ -126,7 +126,7 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 
 func (c *TeamMembersController) getSkillName(tmSkill *model.TMSkill) (string, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+	err := c.session.Read("skills", tmSkill.SkillID, data.QueryOptions{},
 		&skill)
 	if err != nil {
 		return "", err
@@ -141,7 +141,7 @@ func (c *TeamMembersController) removeTeamMember() error {
 		return errors.MissingIDError(fmt.Errorf("no TeamMember ID in request URL"))
 	}
 
-	err := c.session.Delete("teammembers", teamMemberID, data.CassandraQueryOptions{})
+	err := c.session.Delete("teammembers", teamMemberID, data.QueryOptions{})
 	if err != nil {
 		c.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(

@@ -128,7 +128,7 @@ func (c *TMSkillsController) getTMSkill(id string) error {
 
 func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 	tmSkill := model.TMSkill{}
-	err := c.session.Read("tmskills", id, data.CassandraQueryOptions{}, &tmSkill)
+	err := c.session.Read("tmskills", id, data.QueryOptions{}, &tmSkill)
 	if err != nil {
 		c.Warnf("loadTMSkill() generated the following error: %v", err)
 		return nil, errors.NoSuchIDError(fmt.Errorf(
@@ -140,7 +140,7 @@ func (c *TMSkillsController) loadTMSkill(id string) (*model.TMSkill, error) {
 func (c *TMSkillsController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
 	teamMember := model.TeamMember{}
 	err := c.session.Read("teammembers", tmSkill.TeamMemberID,
-		data.CassandraQueryOptions{}, &teamMember)
+		data.QueryOptions{}, &teamMember)
 	if err != nil {
 		return "", err
 	}
@@ -149,7 +149,7 @@ func (c *TMSkillsController) getTeamMemberName(tmSkill *model.TMSkill) (string, 
 
 func (c *TMSkillsController) getSkillName(tmSkill *model.TMSkill) (string, error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+	err := c.session.Read("skills", tmSkill.SkillID, data.QueryOptions{},
 		&skill)
 	if err != nil {
 		return "", err
@@ -164,7 +164,7 @@ func (c *TMSkillsController) removeTMSkill() error {
 		return errors.MissingIDError(fmt.Errorf("no TMSkill ID in request URL"))
 	}
 
-	err := c.session.Delete("tmskills", tmSkillID, data.NewCassandraQueryOptions("team_member_id", "", true))
+	err := c.session.Delete("tmskills", tmSkillID, data.NewQueryOptions("team_member_id", "", true))
 
 	if err != nil {
 		c.Printf("removeTMSkill() failed for the following reason:\n\t%q\n", err)
@@ -271,7 +271,7 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 	}
 
 	// Validate that the IDs point to valid data.
-	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
+	err := c.session.Read("skills", tmSkill.SkillID, data.QueryOptions{},
 		&model.Skill{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
@@ -279,7 +279,7 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 				"in the database", "skill_id"))
 	}
 	err = c.session.Read("teammembers", tmSkill.TeamMemberID,
-		data.CassandraQueryOptions{}, &model.TeamMember{})
+		data.QueryOptions{}, &model.TeamMember{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all TMSkills must contain ID of an existing TeamMember"+
@@ -300,7 +300,7 @@ existing TMSkill entry in the database.
 */
 func (c *TMSkillsController) validateTMSkillID(tmSkill *model.TMSkill) error {
 	// Validate that the TMSkill's ID exists in the database
-	err := c.session.Read("tmskills", tmSkill.ID, data.CassandraQueryOptions{},
+	err := c.session.Read("tmskills", tmSkill.ID, data.QueryOptions{},
 		&model.TMSkill{})
 	if err != nil {
 		return errors.NoSuchIDError(fmt.Errorf(

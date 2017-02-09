@@ -46,11 +46,11 @@ func (c *LinksController) getAllLinks() error {
 	var links []interface{}
 	var err error
 	filter := c.r.URL.Query().Get("linktype")
-	var opts data.CassandraQueryOptions
+	var opts data.QueryOptions
 
 	// Add approved query filters here
 	if filter != "" {
-		opts = data.NewCassandraQueryOptions("linktype", filter, false)
+		opts = data.NewQueryOptions("linktype", filter, false)
 	}
 	links, err = c.session.FilteredReadAll("links", opts, model.Link{})
 
@@ -75,7 +75,7 @@ func (c *LinksController) getLink(id string) error {
 
 func (c *LinksController) loadLink(id string) (*model.Link, error) {
 	link := model.Link{}
-	err := c.session.Read("links", id, data.CassandraQueryOptions{}, &link)
+	err := c.session.Read("links", id, data.QueryOptions{}, &link)
 	if err != nil {
 		return nil, errors.NoSuchIDError(
 			fmt.Errorf("no Link exists with specified ID: %s", id))
@@ -90,7 +90,7 @@ func (c *LinksController) removeLink() error {
 		return errors.MissingIDError(fmt.Errorf("no Link ID specified in request URL"))
 	}
 
-	err := c.session.Delete("links", linkID, data.NewCassandraQueryOptions("skill_id", "", true))
+	err := c.session.Delete("links", linkID, data.NewQueryOptions("skill_id", "", true))
 
 	if err != nil {
 		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
@@ -153,7 +153,7 @@ func (c *LinksController) validateLinkFields(link *model.Link) error {
 	}
 
 	// Validate that SkillID points to valid data
-	err := c.session.Read("skills", link.SkillID, data.CassandraQueryOptions{},
+	err := c.session.Read("skills", link.SkillID, data.QueryOptions{},
 		&model.Skill{})
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(

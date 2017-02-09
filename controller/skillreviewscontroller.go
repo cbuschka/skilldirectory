@@ -110,7 +110,7 @@ func (c *SkillReviewsController) convertReviewsToDTOs(skillReviews []model.Skill
 }
 
 func (c *SkillReviewsController) getReviewsForSkill(skill_id string) error {
-	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
+	opts := data.NewQueryOptions("skill_id", skill_id, false)
 	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
 	if err != nil {
 		return err
@@ -159,7 +159,7 @@ func (c *SkillReviewsController) getSkillReview(id string) error {
 func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
 	error) {
 	skillReview := model.SkillReview{}
-	err := c.session.Read("skillreviews", id, data.CassandraQueryOptions{},
+	err := c.session.Read("skillreviews", id, data.QueryOptions{},
 		&skillReview)
 	if err != nil {
 		log.Printf("loadSkillReview() generated the following error:\n\t%q", err)
@@ -173,7 +173,7 @@ func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (strin
 	error) {
 	teamMember := model.TeamMember{}
 	err := c.session.Read("teammembers", sr.TeamMemberID,
-		data.CassandraQueryOptions{}, &teamMember)
+		data.QueryOptions{}, &teamMember)
 	if err != nil {
 		return "", err
 	}
@@ -183,7 +183,7 @@ func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (strin
 func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
 	error) {
 	skill := model.Skill{}
-	err := c.session.Read("skills", sr.SkillID, data.CassandraQueryOptions{},
+	err := c.session.Read("skills", sr.SkillID, data.QueryOptions{},
 		&skill)
 	if err != nil {
 		return "", err
@@ -198,7 +198,7 @@ func (c *SkillReviewsController) removeSkillReview() error {
 		return errors.MissingIDError(fmt.Errorf("no SkillReview ID in request URL"))
 	}
 
-	err := c.session.Delete("skillreviews", skillReviewID, data.NewCassandraQueryOptions("skillsreviews", "", true))
+	err := c.session.Delete("skillreviews", skillReviewID, data.NewQueryOptions("skillsreviews", "", true))
 	// TODO Add skillid field to opts
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
