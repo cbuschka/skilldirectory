@@ -28,5 +28,8 @@ done
 echo "Running Tests..."
 go test $(glide novendor) || { echo "Tests failed" ; exit 1; }
 
+echo 'Making $HOME/skilldirectory/dev'
+mkdir -p $HOME/skilldirectory/dev
+
 echo "Running skilldirectory project..."
 go run main.go -debug=$DEBUG_FLAG

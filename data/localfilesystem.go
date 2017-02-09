@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/user"
 )
 
 // LocalFileSystem represents the project's directory on the local machine's
@@ -19,10 +20,11 @@ type LocalFileSystem struct {
 // NewLocalFileSystem returns a new LocalFileSystem object initialized to
 // operate within the project's directory in the local file system
 func NewLocalFileSystem() *LocalFileSystem {
+	user, _ := user.Current()
 	return &LocalFileSystem{
 		protocol: "http://",
 		hostname: "localhost:2121",
-		rootdir:  "/skilldirectory/",
+		rootdir:  user.HomeDir + "/skilldirectory/",
 	}
 }
 
