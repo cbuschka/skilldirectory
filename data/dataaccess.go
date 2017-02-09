@@ -47,7 +47,7 @@ or affected by a particular Query
 */
 type Filter struct {
 	key		string
-	value	string
+	value	interface{}
 	id		bool
 }
 /*

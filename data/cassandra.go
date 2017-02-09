@@ -29,7 +29,7 @@ func (f Filter) query() string {
 	if !f.id {
 		queryString += "'"
 	}
-	queryString += f.value
+	queryString += f.value.(string)
 	if !f.id {
 		queryString += "'"
 	}
