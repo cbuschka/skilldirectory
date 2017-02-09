@@ -2,12 +2,12 @@ package util
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
 )
 
+// LogInit intializes a logger with debug flag
 func LogInit() *log.Logger {
 	logger := log.New()
 	// Log as JSON instead of the default ASCII formatter.
@@ -23,7 +23,6 @@ func LogInit() *log.Logger {
 		logger.Level = log.InfoLevel
 		return logger
 	}
-	fmt.Println(debugFlag)
 	if debugFlag.Value.String() == "true" {
 		logger.Level = log.DebugLevel
 	} else {
