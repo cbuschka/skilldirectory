@@ -31,7 +31,7 @@ test:
   override:
     - go version
     ##TODO Get all these modules up to snuff so we can stop whitelisting them
-    - cd "${GOPATH}/src/${IMPORT_PATH}/" && ./test -a --whitelist -m ./controller -m ./data -m ./model -m ./util && go build
+    - cd "${GOPATH}/src/${IMPORT_PATH}/" && ./test -a --whitelist -m ./data && go build
 
 deployment:
   release:

@@ -10,26 +10,32 @@ import (
 	util "skilldirectory/util"
 )
 
+// TMSkillsController handles TMSkills Requests
 type TMSkillsController struct {
 	*BaseController
 }
 
+// Base implemented
 func (c TMSkillsController) Base() *BaseController {
 	return c.BaseController
 }
 
+// Get implemented
 func (c TMSkillsController) Get() error {
 	return c.performGet()
 }
 
+// Post implemented
 func (c TMSkillsController) Post() error {
 	return c.addTMSkill()
 }
 
+// Delete implemented
 func (c TMSkillsController) Delete() error {
 	return c.removeTMSkill()
 }
 
+// Put implemented
 func (c TMSkillsController) Put() error {
 	return c.updateTMSkill()
 }
@@ -48,17 +54,33 @@ func (c *TMSkillsController) getAllTMSkills() error {
 		return err
 	}
 
+	tmSkills, err := convertToStruct(tmSkillsInterface)
+	if err != nil {
+		return err
+	}
+
+	tmSkillDTOs := c.convertTMSkillsToDTOs(tmSkills)
+
+	b, err := json.Marshal(tmSkillDTOs)
+	c.w.Write(b)
+	return err
+}
+
+func convertToStruct(tmSkillsInterface []interface{}) ([]model.TMSkill, error) {
 	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
 	if err != nil {
-		return errors.MarshalingError(err)
+		return nil, errors.MarshalingError(err)
 	}
 
 	tmSkills := []model.TMSkill{}
 	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
 	if err != nil {
-		return errors.MarshalingError(err)
+		return nil, errors.MarshalingError(err)
 	}
+	return tmSkills, nil
+}
 
+func (c *TMSkillsController) convertTMSkillsToDTOs(tmSkills []model.TMSkill) []model.TMSkillDTO {
 	tmSkillDTOs := []model.TMSkillDTO{}
 	for idx := 0; idx < len(tmSkills); idx++ {
 		skillName, err := c.getSkillName(&tmSkills[idx])
@@ -67,18 +89,15 @@ func (c *TMSkillsController) getAllTMSkills() error {
 			continue
 		}
 
-		teamMemberName, err := c.getTeamMemberName(&tmSkills[idx])
-		if err != nil {
+		teamMemberName, err2 := c.getTeamMemberName(&tmSkills[idx])
+		if err2 != nil {
 			c.Warnf("Possible invalid id: %v", err)
 			continue
 		}
 		tmSkillDTOs = append(tmSkillDTOs,
 			tmSkills[idx].NewTMSkillDTO(skillName, teamMemberName))
 	}
-
-	b, err := json.Marshal(tmSkillDTOs)
-	c.w.Write(b)
-	return err
+	return tmSkillDTOs
 }
 
 func (c *TMSkillsController) getTMSkill(id string) error {
@@ -163,7 +182,7 @@ func (c *TMSkillsController) updateTMSkill() error {
 	tmSkillID := util.CheckForID(c.r.URL)
 	if tmSkillID == "" {
 		return errors.MissingIDError(fmt.Errorf(
-			"must specify a TMSkill ID in PUT request URL."))
+			"must specify a TMSkill ID in PUT request URL"))
 	}
 
 	// Store request's body in raw byte slice
@@ -266,11 +285,10 @@ func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error
 			"the %q field of all TMSkills must contain ID of an existing TeamMember"+
 				" in the database", "team_member_id"))
 	}
-
 	// Validate that the proficiency is within the required range.
 	if tmSkill.Proficiency < 0 || tmSkill.Proficiency > 5 {
 		return errors.InvalidDataModelState(fmt.Errorf(
-			"the %q field for a TMSkill must contain a value between 0 and 5.",
+			"the %q field for a TMSkill must contain a value between 0 and 5",
 			"proficiency"))
 	}
 	return nil

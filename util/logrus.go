@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+// LogInit intializes a logger with debug flag
 func LogInit() *log.Logger {
 	logger := log.New()
 	// Log as JSON instead of the default ASCII formatter.
@@ -18,6 +19,10 @@ func LogInit() *log.Logger {
 	logger.Out = os.Stderr
 
 	debugFlag := flag.Lookup("debug")
+	if debugFlag == nil {
+		logger.Level = log.InfoLevel
+		return logger
+	}
 	if debugFlag.Value.String() == "true" {
 		logger.Level = log.DebugLevel
 	} else {

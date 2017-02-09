@@ -109,14 +109,6 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 	// names of each TMSkill's TeamMember and Skill IDs are returned.
 	tmSkillsDTO := []model.TMSkillDTO{}
 	for _, tmSkill := range tmSkills {
-		// Get name of TeamMember, skip if encounter an error
-		teamMemberName, err := c.getTeamMemberName(&tmSkill)
-		// If encounter an error, log and continue to next TMSkill
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-
 		// Get name of Skill, skip if encounter an error
 		skillName, err := c.getSkillName(&tmSkill)
 		if err != nil {
@@ -126,20 +118,10 @@ func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
 
 		// Append new TMSkillDTO to return object w/ the names
 		tmSkillsDTO = append(tmSkillsDTO,
-			tmSkill.NewTMSkillDTO(skillName, teamMemberName))
+			tmSkill.NewTMSkillDTO(skillName, teamMember.Name))
 	}
 
 	return tmSkillsDTO, nil
-}
-
-func (c *TeamMembersController) getTeamMemberName(tmSkill *model.TMSkill) (string, error) {
-	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", tmSkill.TeamMemberID,
-		data.CassandraQueryOptions{}, &teamMember)
-	if err != nil {
-		return "", err
-	}
-	return teamMember.Name, nil
 }
 
 func (c *TeamMembersController) getSkillName(tmSkill *model.TMSkill) (string, error) {
@@ -179,7 +161,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
 	}
-	
+
 	err = c.validatePOSTBody(&teamMember)
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError type

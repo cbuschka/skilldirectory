@@ -82,6 +82,30 @@ func TestTMSkill_GetProficiencyString(t *testing.T) {
 			"representation for Proficiency level 0.")
 	}
 
+	tmSkill.SetProficiency(1)
+	if tmSkill.GetProficiencyString() != "Fundamentally Aware" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 1.")
+	}
+
+	tmSkill.SetProficiency(2)
+	if tmSkill.GetProficiencyString() != "Novice" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 2.")
+	}
+
+	tmSkill.SetProficiency(3)
+	if tmSkill.GetProficiencyString() != "Intermediate" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 3.")
+	}
+
+	tmSkill.SetProficiency(4)
+	if tmSkill.GetProficiencyString() != "Advanced" {
+		t.Error("method TMSkill.GetProficiency() failed to give correct " +
+			"representation for Proficiency level 4.")
+	}
+
 	tmSkill.SetProficiency(5)
 	if tmSkill.GetProficiencyString() != "Expert" {
 		t.Error("method TMSkill.GetProficiency() failed to give correct " +
@@ -92,5 +116,12 @@ func TestTMSkill_GetProficiencyString(t *testing.T) {
 	if tmSkill.GetProficiencyString() != "No String Representation Available" {
 		t.Error("method TMSkill.GetProficiency() failed to give correct " +
 			"representation for Proficiency level outside range 0-5.")
+	}
+}
+
+func TestGetTMSkillType(t *testing.T) {
+	tms := NewTMSkillDefaults("", "", "")
+	if !reflect.DeepEqual(tms.GetType(), TMSkill{}) {
+		t.Error("TMSkill getType not returning empty tmskill")
 	}
 }

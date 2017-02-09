@@ -12,6 +12,7 @@ type TeamMember struct {
 	Title string `json:"title"`
 }
 
+// TeamMemberDTO is the transfer object that includes TMSkills that a TeamMember has
 type TeamMemberDTO struct {
 	TeamMember
 	TMSkillDTOs []TMSkillDTO `json:"tm_skills"`

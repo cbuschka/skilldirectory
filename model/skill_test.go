@@ -55,3 +55,17 @@ func TestValidSkillType(t *testing.T) {
 		t.Error("func IsValidSkillType() flagged valid SkillType as invalid")
 	}
 }
+
+func TestGetSkillType(t *testing.T) {
+	s := NewSkill("", "", "")
+	if !reflect.DeepEqual(s.GetType(), Skill{}) {
+		t.Error("Skill getType not returning empty skill")
+	}
+}
+
+func TestGetSkillIconType(t *testing.T) {
+	s := NewSkillIcon("", "")
+	if !reflect.DeepEqual(s.GetType(), SkillIcon{}) {
+		t.Error("SkillIcon getType not returning empty skillicon")
+	}
+}

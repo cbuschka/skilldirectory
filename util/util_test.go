@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"reflect"
 	"testing"
 )
 
@@ -76,5 +77,25 @@ func TestValidateIcon(t *testing.T) {
 	_, err := ValidateIcon(icon)
 	if err != nil {
 		t.Errorf("Flagged valid icon as invalid: %s", err)
+	}
+}
+
+func TestValidateIconError(t *testing.T) {
+	wd, _ := os.Getwd()
+	icon, _ := os.Open(path.Dir(wd) + "/resources/est.png")
+	defer icon.Close()
+
+	_, err := ValidateIcon(icon)
+	if err == nil {
+		t.Errorf("Expected error with a nil Reader")
+	}
+}
+
+func TestSanitizeInput(t *testing.T) {
+	testString := "'test'"
+	expectedString := "''test''"
+	returnString := SanitizeInput(testString)
+	if !reflect.DeepEqual(returnString, expectedString) {
+		t.Errorf("Expected %s got %s", expectedString, returnString)
 	}
 }

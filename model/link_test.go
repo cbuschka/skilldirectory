@@ -1,6 +1,9 @@
 package model
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestLink_NewLink(t *testing.T) {
 	linkOne := NewLink("1234", "Google", "http://www.google.com", "1234", WebpageLinkType)
@@ -26,5 +29,12 @@ func TestIsValidLinkType1(t *testing.T) {
 func TestIsValidLinkType2(t *testing.T) {
 	if !IsValidLinkType(WebpageLinkType) {
 		t.Errorf("func IsValidLinkType() flagged valid LinkType as invalid.")
+	}
+}
+
+func TestGetLinkType(t *testing.T) {
+	l := NewLink("", "", "", "", "")
+	if !reflect.DeepEqual(l.GetType(), Link{}) {
+		t.Error("Link getType not returning empty link")
 	}
 }

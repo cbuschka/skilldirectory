@@ -12,26 +12,32 @@ import (
 	"time"
 )
 
+// SkillReviewsController handles SkillReview Requests
 type SkillReviewsController struct {
 	*BaseController
 }
 
+// Base implemented
 func (c SkillReviewsController) Base() *BaseController {
 	return c.BaseController
 }
 
+// Get implemented
 func (c SkillReviewsController) Get() error {
 	return c.performGet()
 }
 
+// Post implemented
 func (c SkillReviewsController) Post() error {
 	return c.addSkillReview()
 }
 
+// Delete implemented
 func (c SkillReviewsController) Delete() error {
 	return c.removeSkillReview()
 }
 
+// Put implemented
 func (c SkillReviewsController) Put() error {
 	return c.updateSkillReview()
 }
@@ -54,33 +60,12 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 		return err
 	}
 
-	skillReviewsRaw, err := json.Marshal(skillReviewsInterface)
+	skillReviews, err := convertToReviewsStruct(skillReviewsInterface)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
 
-	skillReviews := []model.SkillReview{}
-	err = json.Unmarshal(skillReviewsRaw, &skillReviews)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	skillReviewDTOs := []model.SkillReviewDTO{}
-	for idx := 0; idx < len(skillReviews); idx++ {
-		skillName, err := c.getSkillName(&skillReviews[idx])
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-
-		teamMemberName, err := c.getTeamMemberName(&skillReviews[idx])
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-		skillReviewDTOs = append(skillReviewDTOs,
-			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
-	}
+	skillReviewDTOs := c.convertReviewsToDTOs(skillReviews)
 
 	b, err := json.Marshal(skillReviewDTOs)
 	if err != nil {
@@ -90,39 +75,52 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 	return nil
 }
 
+func convertToReviewsStruct(skillReviewInterface []interface{}) ([]model.SkillReview, error) {
+	reviewRaw, err := json.Marshal(skillReviewInterface)
+	if err != nil {
+		return nil, errors.MarshalingError(err)
+	}
+
+	reviewSkills := []model.SkillReview{}
+	err = json.Unmarshal(reviewRaw, &reviewSkills)
+	if err != nil {
+		return nil, errors.MarshalingError(err)
+	}
+	return reviewSkills, nil
+}
+
+func (c *SkillReviewsController) convertReviewsToDTOs(skillReviews []model.SkillReview) []model.SkillReviewDTO {
+	skillReviewDTOs := []model.SkillReviewDTO{}
+	for idx := 0; idx < len(skillReviews); idx++ {
+		skillName, err1 := c.getSkillName(&skillReviews[idx])
+		if err1 != nil {
+			c.Warnf("Possible invalid id: %v", err1)
+			continue
+		}
+
+		teamMemberName, err2 := c.getTeamMemberName(&skillReviews[idx])
+		if err2 != nil {
+			c.Warnf("Possible invalid id: %v", err2)
+			continue
+		}
+		skillReviewDTOs = append(skillReviewDTOs,
+			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
+	}
+	return skillReviewDTOs
+}
+
 func (c *SkillReviewsController) getReviewsForSkill(skill_id string) error {
 	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
 	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
 	if err != nil {
 		return err
 	}
-	skillReviewsRaw, err := json.Marshal(skillReviewsInterface)
+	skillReviews, err := convertToReviewsStruct(skillReviewsInterface)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
 
-	skillReviews := []model.SkillReview{}
-	err = json.Unmarshal(skillReviewsRaw, &skillReviews)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	skillReviewDTOs := []model.SkillReviewDTO{}
-	for idx := 0; idx < len(skillReviews); idx++ {
-		skillName, err := c.getSkillName(&skillReviews[idx])
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-
-		teamMemberName, err := c.getTeamMemberName(&skillReviews[idx])
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-		skillReviewDTOs = append(skillReviewDTOs,
-			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
-	}
+	skillReviewDTOs := c.convertReviewsToDTOs(skillReviews)
 
 	b, err := json.Marshal(skillReviewDTOs)
 	if err != nil {
@@ -250,7 +248,6 @@ func (c *SkillReviewsController) updateSkillReview() error {
 func (c *SkillReviewsController) addSkillReview() error {
 	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
-
 	skillReview := model.SkillReview{}
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {

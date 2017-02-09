@@ -153,7 +153,7 @@ func (c *SkillsController) addSkill() error {
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
 	}
-	
+
 	err = c.validatePOSTBody(&skill)
 	if err != nil {
 		c.Debugf("Invalid Post: Name: %s, ID: %s", skill.Name, skill.SkillType)

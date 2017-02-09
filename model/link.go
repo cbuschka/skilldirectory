@@ -1,5 +1,6 @@
 package model
 
+// Link has a many-to-one relationship to a Skill
 type Link struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -9,11 +10,12 @@ type Link struct {
 }
 
 const (
-	BlogLinkType     = "blog"
-	TutorialLinkType = "tutorial"
-	WebpageLinkType  = "webpage"
+	BlogLinkType     = "blog"     //BlogLinkType is a blog enum
+	TutorialLinkType = "tutorial" //TutorialLinkType is a tutorial enum
+	WebpageLinkType  = "webpage"  //WebpageLinkType is a webpage enum
 )
 
+// NewLink is a Link constructor
 func NewLink(id, name, url, skillID, linkType string) Link {
 	return Link{
 		ID:       id,
@@ -24,6 +26,7 @@ func NewLink(id, name, url, skillID, linkType string) Link {
 	}
 }
 
+// IsValidLinkType is a switch that validates a give linkType string
 func IsValidLinkType(linkType string) bool {
 	switch linkType {
 	case
@@ -35,6 +38,7 @@ func IsValidLinkType(linkType string) bool {
 	return false
 }
 
+//GetType returns the implemented type
 func (l Link) GetType() interface{} {
 	return Link{}
 }
