@@ -11,11 +11,11 @@ func (m MockDataAccessor) Save(t, s string, i interface{}) error { return nil }
 func (m MockDataAccessor) Read(t, s string, opts QueryOptions, i interface{}) error {
 	return nil
 }
-func (c MockDataAccessor) Delete(table, id string, opts QueryOptions, objects ...interface{}) error { return nil }
-func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
+func (c MockDataAccessor) Delete(table, id string, opts QueryOptions, targets ...interface{}) error { return nil }
+func (m MockDataAccessor) ReadAll(t string, r ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	return nil, nil
 }
-func (d MockDataAccessor) FilteredReadAll(t string, opts QueryOptions, r ReadAllInterface) ([]interface{}, error) {
+func (d MockDataAccessor) FilteredReadAll(t string, opts QueryOptions, r ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	return nil, nil
 }
 
@@ -25,13 +25,13 @@ func (e MockErrorDataAccessor) Save(t, s string, i interface{}) error { return f
 func (e MockErrorDataAccessor) Read(t, s string, opts QueryOptions, i interface{}) error {
 	return fmt.Errorf("")
 }
-func (c MockErrorDataAccessor) Delete(table, id string, opts QueryOptions, objects ...interface{}) error {
+func (c MockErrorDataAccessor) Delete(table, id string, opts QueryOptions, targets ...interface{}) error {
 	return fmt.Errorf("")
 }
-func (e MockErrorDataAccessor) ReadAll(t string, r ReadAllInterface) ([]interface{}, error) {
+func (e MockErrorDataAccessor) ReadAll(t string, r ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
-func (d MockErrorDataAccessor) FilteredReadAll(t string, opts QueryOptions, r ReadAllInterface) ([]interface{}, error) {
+func (d MockErrorDataAccessor) FilteredReadAll(t string, opts QueryOptions, r ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	return nil, fmt.Errorf("")
 }
 

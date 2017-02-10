@@ -86,7 +86,7 @@ func (c CassandraConnector) Read(table, id string, opts QueryOptions, object int
 	return json.Unmarshal(byteQ, &object)
 }
 
-func (c CassandraConnector) Delete(table, id string, opts QueryOptions, object ...interface{}) error {
+func (c CassandraConnector) Delete(table, id string, opts QueryOptions, target ...interface{}) error {
 	query := makeDeleteQueryStr(table, id, opts, c)
 	if query == "" {
 		return errors.New("Attempting to delete with no id")
@@ -163,11 +163,11 @@ func (c CassandraConnector) readCol(table, id, col string) (string, error) {
 	return colVal, nil
 }
 
-func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) ReadAll(table string, readType ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	return c.FilteredReadAll(table, QueryOptions{}, readType)
 }
 
-func (c CassandraConnector) FilteredReadAll(table string, opts QueryOptions, readType ReadAllInterface) ([]interface{}, error) {
+func (c CassandraConnector) FilteredReadAll(table string, opts QueryOptions, readType ReadAllInterface, targets ...[]interface{}) ([]interface{}, error) {
 	query := "SELECT JSON * FROM " + table
 	if opts.Filters != nil {
 		query += " WHERE "

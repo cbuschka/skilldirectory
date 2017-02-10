@@ -9,10 +9,10 @@ providing, the specified key string.
 type DataAccess interface {
 	Save(table, key string, object interface{}) error
 	Read(table, key string, opts QueryOptions, object interface{}) error
-	ReadAll(table string, readType ReadAllInterface) ([]interface{}, error)
+	ReadAll(table string, readType ReadAllInterface, targets ...[]interface{}) ([]interface{}, error)
 	FilteredReadAll(table string, opts QueryOptions,
-		readType ReadAllInterface) ([]interface{}, error)
-	Delete(table, id string, opts QueryOptions, objects ...interface{}) error
+		readType ReadAllInterface, targets ...[]interface{}) ([]interface{}, error)
+	Delete(table, id string, opts QueryOptions, targets ...interface{}) error
 }
 
 /*
