@@ -40,6 +40,10 @@ func (c TMSkillsController) Put() error {
 	return c.updateTMSkill()
 }
 
+func (c TMSkillsController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c *TMSkillsController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {

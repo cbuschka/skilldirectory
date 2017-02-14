@@ -1,9 +1,14 @@
 package controller
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strconv"
+
 	"skilldirectory/errors"
 	"skilldirectory/model"
 )
@@ -17,7 +22,7 @@ func (c UsersController) Base() *BaseController {
 }
 
 func (c UsersController) Get() error {
-	return fmt.Errorf("GET requests nor currently supported.")
+	return fmt.Errorf("GET requests not currently supported.")
 }
 
 func (c UsersController) Post() error {
@@ -25,35 +30,63 @@ func (c UsersController) Post() error {
 }
 
 func (c UsersController) Delete() error {
-	return fmt.Errorf("DELETE requests nor currently supported.")
+	return fmt.Errorf("DELETE requests not currently supported.")
 }
 
 func (c UsersController) Put() error {
-	return fmt.Errorf("PUT requests nor currently supported.")
+	return fmt.Errorf("PUT requests not currently supported.")
+}
+
+func (c UsersController) Options() error {
+	return c.handleOptionsRequest()
 }
 
 func (c *UsersController) authenticateUser() error {
-	body, _ := ioutil.ReadAll(c.r.Body)
-
+	body, err := ioutil.ReadAll(c.r.Body)
+	if err != nil {
+		return err
+	}
+	c.Println(string(body))
 	// Create a new User instance and unmarshal the request data into it
-	user := model.User{}
-	err := json.Unmarshal(body, &user)
+	credentials := model.AuthCredentials{}
+	err = json.Unmarshal(body, &credentials)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
 
-	if err = c.validatePOSTBody(&user); err != nil {
+	if err = c.validatePOSTBody(&credentials); err != nil {
 		return err
 	}
+	// Will execute the request to Github
+	reqBody := url.Values{}
+	reqBody.Set("client_id", credentials.Id)
+	reqBody.Set("client_secret", credentials.Secret)
+	reqBody.Set("code", credentials.Code)
 
-	acc, err := c.getUserAccount(&user)
+	client := http.Client{}
+	req, err := http.NewRequest("POST", "https://www.github.com/", bytes.NewBufferString(reqBody.Encode()))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Add("Content-Length", strconv.Itoa(len(reqBody.Encode())))
+
+	response, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 
-	b, err := json.Marshal(acc)
+	tokenBody, _ := ioutil.ReadAll(response.Body)
+	tokenResp := model.TokenResponse{}
+	err = json.Unmarshal(tokenBody, &tokenResp)
 	if err != nil {
-		return errors.MarshalingError(err)
+		return err
+	}
+
+	c.Printf("Got token: %s", tokenResp.Token)
+	b, err := json.Marshal(tokenResp)
+	if err != nil {
+		return err
 	}
 
 	c.w.Write(b)
@@ -61,15 +94,16 @@ func (c *UsersController) authenticateUser() error {
 	return nil
 }
 
-func (c *UsersController) getUserAccount(user *model.User) (model.UserAccount, error) {
-	if user.Login != "test" || user.Password != "test" {
-		return model.UserAccount{}, errors.InvalidLoginData(fmt.Errorf("Invalid login data provided"))
-	}
-	return model.UserAccount{Login: "test", DisplayName: "Foo Bar"}, nil
+func (c *UsersController) handleOptionsRequest() error {
+	c.w.Header().Set("Access-Control-Allow-Origin", "*")
+	c.w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+	c.w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, access-control-allow-methods")
+	c.w.Write([]byte(""))
+	return nil
 }
 
-func (c *UsersController) validatePOSTBody(user *model.User) error {
-	if user.Login == "" || user.Password == "" {
+func (c *UsersController) validatePOSTBody(credentials *model.AuthCredentials) error {
+	if credentials.Id == "" || credentials.Code == "" || credentials.Secret == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"%q and %q fields must be non-empty", "Login", "Password"))
 	}

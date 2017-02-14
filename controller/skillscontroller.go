@@ -36,6 +36,10 @@ func (c SkillsController) Put() error {
 	return fmt.Errorf("PUT requests not currently supported.")
 }
 
+func (c SkillsController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c SkillsController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {

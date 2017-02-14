@@ -22,3 +22,15 @@ func NewUser(login, password string) User {
 		Password: password,
 	}
 }
+
+type AuthCredentials struct {
+	Id     string `json:"client_id"`
+	Secret string `json:"client_secret"`
+	Code   string `json:"code"`
+}
+
+type TokenResponse struct {
+	Token     string   `json:"access_token"`
+	Scope     []string `json:"scope"`
+	TokenType string   `json:"token_type"`
+}
