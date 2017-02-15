@@ -1,11 +1,11 @@
 package model
 
+import "github.com/jinzhu/gorm"
 // Link has a many-to-one relationship to a Skill
 type Link struct {
-	ID       string `json:"id"`
+	gorm.Model
 	Name     string `json:"name"`
 	URL      string `json:"url"`
-	SkillID  string `json:"skill_id"`
 	LinkType string `json:"link_type"`
 }
 
@@ -16,12 +16,10 @@ const (
 )
 
 // NewLink is a Link constructor
-func NewLink(id, name, url, skillID, linkType string) Link {
+func NewLink(name, url, linkType string) Link {
 	return Link{
-		ID:       id,
 		Name:     name,
 		URL:      url,
-		SkillID:  skillID,
 		LinkType: linkType,
 	}
 }
