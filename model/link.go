@@ -4,9 +4,12 @@ import "github.com/jinzhu/gorm"
 // Link has a many-to-one relationship to a Skill
 type Link struct {
 	gorm.Model
+
 	Name     string `json:"name"`
 	URL      string `json:"url"`
 	LinkType string `json:"link_type"`
+
+	SkillID	 uint
 }
 
 const (
