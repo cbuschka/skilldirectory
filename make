@@ -4,11 +4,11 @@
 ################################################################################
 
 ### Default flags and env vars
-export CASSANDRA_USERNAME=cassandra
-export CASSANDRA_PASSWORD=cassandra
-export CASSANDRA_URL="0.0.0.0"
-export CASSANDRA_PORT=9042
-export CASSANDRA_KEYSPACE=skill_directory_keyspace
+export POSTGRES_USERNAME=postgres
+export POSTGRES_PASSWORD=password
+export POSTGRES_URL="0.0.0.0"
+export POSTGRES_PORT=5432
+export POSTGRES_KEYSPACE=skilldirectory
 export DEBUG_FLAG=true
 export FILE_SYSTEM=LOCAL
 

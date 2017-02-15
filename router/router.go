@@ -36,19 +36,19 @@ var (
 	keyspace   string
 	username   string
 	password   string
-	session    *data.CassandraConnector
+	session    *data.PostgresConnector
 	fileSystem data.FileSystem
 	routes     []Route
 )
 
-// initCassandra sets global variables at start up
-func initCassandra() {
-	url = util.GetProperty("CASSANDRA_URL")
-	port = util.GetProperty("CASSANDRA_PORT")
-	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
-	username = util.GetProperty("CASSANDRA_USERNAME")
-	password = util.GetProperty("CASSANDRA_PASSWORD")
-	session = data.NewCassandraConnector(url, port, keyspace, username, password)
+// initPostgres sets global variables at start up
+func initPostgres() {
+	url = util.GetProperty("POSTGRES_URL")
+	port = util.GetProperty("POSTGRES_PORT")
+	keyspace = util.GetProperty("POSTGRES_KEYSPACE")
+	username = util.GetProperty("POSTGRES_USERNAME")
+	password = util.GetProperty("POSTGRES_PASSWORD")
+	session = data.NewPostgresConnector(url, port, keyspace, username, password)
 }
 
 // initFileSystem sets global variables at start up
@@ -136,7 +136,7 @@ endpoint that is currently being handled by the SkillDirectory REST API with an
 appropriate handler function for that endpoint. This http.ServeMux is returned.
 */
 func StartRouter() (mux *http.ServeMux) {
-	initCassandra()
+	initPostgres()
 	initFileSystem()
 	loadRoutes()
 	mux = http.NewServeMux()
