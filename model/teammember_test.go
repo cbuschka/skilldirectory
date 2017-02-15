@@ -6,27 +6,18 @@ import (
 )
 
 func TestNewTeamMember(t *testing.T) {
-	tmDTOOne := NewTeamMember("1234", "Yogi Bear", "Smarter Than Avg").
-		NewTeamMemberDTO([]TMSkillDTO{
-			NewTMSkillDefaults("2345", "3456", "1234").
-				NewTMSkillDTO("whatever", "Yogi Bear")})
-	tmDTOTwo := TeamMemberDTO{
-		TeamMember: TeamMember{
-			ID:    "1234",
+	tmOne := NewTeamMember("Yogi Bear", "Smarter Than Avg")
+	tmTwo := TeamMember{
 			Name:  "Yogi Bear",
 			Title: "Smarter Than Average Bear",
-		},
-		TMSkillDTOs: []TMSkillDTO{
-			NewTMSkillDefaults("2345", "3456", "1234").
-				NewTMSkillDTO("whatever", "Yogi Bear")},
 	}
-	if reflect.DeepEqual(tmDTOOne, tmDTOTwo) {
+	if reflect.DeepEqual(tmOne, tmTwo) {
 		t.Error("model.\"NewTeamMemberDTO()\" produced incorrect TeamMemberDTO")
 	}
 }
 
 func TestGetTeamMemberType(t *testing.T) {
-	tm := NewTeamMember("", "", "")
+	tm := NewTeamMember("", "")
 	if !reflect.DeepEqual(tm.GetType(), TeamMember{}) {
 		t.Error("TeamMember getType not returning empty team member")
 	}
