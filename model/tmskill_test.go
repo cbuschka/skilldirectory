@@ -24,7 +24,7 @@ func TestNewTMSkillSetDefaults(t *testing.T) {
 			Proficiency:  3,
 	}
 	// Verify that all of tmSkillOneDTO and tmSkillTwoDTO's fields are equal.
-	if tmSkillOne != tmSkillTwo {
+	if !reflect.DeepEqual(tmSkillOne, tmSkillTwo) {
 		t.Error("constructor NewTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
