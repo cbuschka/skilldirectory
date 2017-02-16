@@ -5,11 +5,13 @@ import "github.com/jinzhu/gorm"
 // TMSkill has a many-to-one relationship to Skills and TeamMembers
 type TMSkill struct {
 	gorm.Model
-	WishList     bool   `json:"wish_list"`
-	Proficiency  int    `json:"proficiency"`
+	WishList     	bool   			`json:"wish_list"`
+	Proficiency  	int    			`json:"proficiency"`
 
-	TeamMemberID uint		`gorm:"index"`
-	SkillID			 uint 	`gorm:"index"`
+	SkillID				uint				`gorm:"index"`
+	Skill					Skill				`json:"skill"`
+	TeamMemberID	uint				`gorm:"index"`
+	TeamMember 		TeamMember	`json:"team_member"`
 }
 
 /*

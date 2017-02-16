@@ -9,11 +9,13 @@ to a specific Skill and TeamMember, and must also contain a date and body
 */
 type SkillReview struct {
 	gorm.Model
-	Body        	string	`json:"body"`
-	Positive    	bool		`json:"positive"`
+	Body        	string			`json:"body"`
+	Positive    	bool				`json:"positive"`
 
-	SkillID				uint		`gorm:"index"`
-	TeamMemberID	uint		`gorm:"index"`
+	SkillID				uint				`gorm:"index"`
+	Skill					Skill				`json:"skill"`
+	TeamMemberID	uint				`gorm:"index"`
+	TeamMember 		TeamMember	`json:"team_member"`
 }
 
 /*
