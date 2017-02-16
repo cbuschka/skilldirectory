@@ -18,7 +18,7 @@ RUN_200=false
 RUN_400=false
 RUN_FILE=false
 EXPORT_ENV=false
-API_URL='http://localhost:8080'
+API_URL='http://localhost:8080/api'
 ENV_FILE='env.json'
 COLOR='\033[0;36m' # Cyan
 
