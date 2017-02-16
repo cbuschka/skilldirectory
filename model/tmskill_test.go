@@ -6,60 +6,44 @@ import (
 )
 
 func TestNewTMSkillDefaults(t *testing.T) {
-	tmSkillDTOOne := NewTMSkillDefaults("TMSkillID", "SkillID",
-		"TeamMemberID").NewTMSkillDTO("Coding", "Javatar")
-	tmSkillDTOTwo := TMSkillDTO{
-		TMSkill: TMSkill{
-			ID:           "TMSkillID",
-			SkillID:      "SkillID",
-			TeamMemberID: "TeamMemberID",
+	tmSkillOne := NewTMSkillDefaults()
+	tmSkillTwo := TMSkill{
 			WishList:     false,
 			Proficiency:  0,
-		},
-		SkillName:      "Coding",
-		TeamMemberName: "Javatar",
 	}
 	// Verify that all of tmSkillOne and tmSkillTwo's fields are equal
-	if !reflect.DeepEqual(tmSkillDTOOne, tmSkillDTOTwo) {
+	if !reflect.DeepEqual(tmSkillOne, tmSkillTwo) {
 		t.Error("constructor NewTMSkillDefaults() produced incorrect TMSkill.")
 	}
 }
 
 func TestNewTMSkillSetDefaults(t *testing.T) {
-	tmSkillDTOOne := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID",
-		true, 3).NewTMSkillDTO("Coding", "Javatar")
-	tmSkillDTOTwo := TMSkillDTO{
-		TMSkill: TMSkill{
-			ID:           "TMSkillId",
-			SkillID:      "SkillID",
-			TeamMemberID: "TeamMemberID",
+	tmSkillOne := NewTMSkillSetDefaults(true, 3)
+	tmSkillTwo := TMSkill{
 			WishList:     true,
 			Proficiency:  3,
-		},
-		SkillName:      "Coding",
-		TeamMemberName: "Javatar",
 	}
 	// Verify that all of tmSkillOneDTO and tmSkillTwoDTO's fields are equal.
-	if tmSkillDTOOne == tmSkillDTOTwo {
+	if tmSkillOne != tmSkillTwo {
 		t.Error("constructor NewTMSkillSetDefaults() produced incorrect TMSkill.")
 	}
 
-	tmSkill := NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 3)
+	tmSkill := NewTMSkillSetDefaults(true, 3)
 	// Verify that the constructor clips proficiencies > 5 to 5
-	tmSkill = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, 9000)
+	tmSkill = NewTMSkillSetDefaults(true, 9000)
 	if tmSkill.Proficiency != 5 {
 		t.Error("constructor NewTMSkillSetDefaults() failed to cap proficiency > 5")
 	}
 
 	// Verify that the constructor clips proficiencies < 0 to 0
-	tmSkill = NewTMSkillSetDefaults("TMSkillID", "SkillID", "TeamMemberID", true, -9000)
+	tmSkill = NewTMSkillSetDefaults(true, -9000)
 	if tmSkill.Proficiency != 0 {
 		t.Error("constructor NewTMSkillSetDefaults() failed to cap proficiency < 0")
 	}
 }
 
 func TestTMSkill_SetProficiency(t *testing.T) {
-	tmSkill := NewTMSkillDefaults("TMSkillID", "SkillID", "TeamMemberID")
+	tmSkill := NewTMSkillDefaults()
 
 	tmSkill.SetProficiency(9000)
 	if tmSkill.Proficiency != 5 {
@@ -74,7 +58,7 @@ func TestTMSkill_SetProficiency(t *testing.T) {
 
 // Make sure the method works properly at the extremes
 func TestTMSkill_GetProficiencyString(t *testing.T) {
-	tmSkill := NewTMSkillDefaults("TMSkillID", "SkillID", "TeamMemberID")
+	tmSkill := NewTMSkillDefaults()
 
 	tmSkill.SetProficiency(0)
 	if tmSkill.GetProficiencyString() != "Not Applicable" {
@@ -120,7 +104,7 @@ func TestTMSkill_GetProficiencyString(t *testing.T) {
 }
 
 func TestGetTMSkillType(t *testing.T) {
-	tms := NewTMSkillDefaults("", "", "")
+	tms := NewTMSkillDefaults()
 	if !reflect.DeepEqual(tms.GetType(), TMSkill{}) {
 		t.Error("TMSkill getType not returning empty tmskill")
 	}

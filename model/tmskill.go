@@ -1,30 +1,23 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 // TMSkill has a many-to-one relationship to Skills and TeamMembers
 type TMSkill struct {
-	ID           string `json:"id"`
-	SkillID      string `json:"skill_id"`
-	TeamMemberID string `json:"team_member_id"`
+	gorm.Model
 	WishList     bool   `json:"wish_list"`
 	Proficiency  int    `json:"proficiency"`
-}
 
-// TMSkillDTO is the transer object type for pass TMSkills with TeamMember name and Skill Name
-type TMSkillDTO struct {
-	TMSkill
-	SkillName      string `json:"skill_name"`
-	TeamMemberName string `json:"team_member_name"`
+	TeamMemberID uint		`gorm:"index"`
+	SkillID			 uint 	`gorm:"index"`
 }
 
 /*
 NewTMSkillDefaults returns a new instance of TMSkill, with defaults for WishList
 (false) and Proficiency (0).
 */
-func NewTMSkillDefaults(id, skillID, teamMemberID string) TMSkill {
+func NewTMSkillDefaults() TMSkill {
 	return TMSkill{
-		ID:           id,
-		SkillID:      skillID,
-		TeamMemberID: teamMemberID,
 		WishList:     false,
 		Proficiency:  0,
 	}
@@ -36,8 +29,7 @@ specified by the caller. The proficiency field must be in the range of 0-5. If a
 value is passed in outside of this range, it is clipped to 0 if it's below 0, or
 5 if it's above 5.
 */
-func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool,
-	proficiency int) TMSkill {
+func NewTMSkillSetDefaults(wishList bool, proficiency int) TMSkill {
 	if proficiency > 5 {
 		proficiency = 5
 	}
@@ -45,23 +37,8 @@ func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool,
 		proficiency = 0
 	}
 	return TMSkill{
-		ID:           id,
-		SkillID:      skillID,
-		TeamMemberID: teamMemberID,
 		WishList:     wishList,
 		Proficiency:  proficiency,
-	}
-}
-
-/*
-NewTMSkillDTO returns a new TMSkillDTO for the TMSkill it is called on, using
-the specified skillName and teamMemberName.
-*/
-func (t TMSkill) NewTMSkillDTO(skillName, teamMemberName string) TMSkillDTO {
-	return TMSkillDTO{
-		TMSkill:        t,
-		SkillName:      skillName,
-		TeamMemberName: teamMemberName,
 	}
 }
 
