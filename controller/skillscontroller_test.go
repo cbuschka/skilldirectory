@@ -22,7 +22,7 @@ func TestSkillsControllerBase(t *testing.T) {
 }
 
 func TestGetAllSkills(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skills", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skills", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
@@ -32,7 +32,7 @@ func TestGetAllSkills(t *testing.T) {
 }
 
 func TestGetAllSkills_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skills", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skills", nil)
 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
@@ -42,7 +42,7 @@ func TestGetAllSkills_Error(t *testing.T) {
 }
 
 func TestGetSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skills/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
@@ -52,7 +52,7 @@ func TestGetSkill(t *testing.T) {
 }
 
 func TestGetSkill_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skills/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
@@ -62,7 +62,7 @@ func TestGetSkill_Error(t *testing.T) {
 }
 
 func TestDeleteSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skills/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
@@ -72,7 +72,7 @@ func TestDeleteSkill(t *testing.T) {
 }
 
 func TestDeleteSkill_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skills/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Delete()
@@ -82,7 +82,7 @@ func TestDeleteSkill_Error(t *testing.T) {
 }
 
 func TestDeleteSkill_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skills/", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
@@ -93,7 +93,7 @@ func TestDeleteSkill_NoKey(t *testing.T) {
 
 func TestPostSkill(t *testing.T) {
 	body := getReaderForNewSkill("", "BestSkillNameEver", model.ScriptedSkillType)
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills", body), &data.MockDataAccessor{})
+	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/api/skills", body), &data.MockDataAccessor{})
 
 	err := sc.Post()
 	if err != nil {
@@ -103,7 +103,7 @@ func TestPostSkill(t *testing.T) {
 
 func TestPostSkill_NoName(t *testing.T) {
 	body := getReaderForNewSkill("1234", "", model.ScriptedSkillType)
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills", body), &data.MockDataAccessor{})
+	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/api/skills", body), &data.MockDataAccessor{})
 
 	err := sc.Post()
 	if err == nil {
@@ -113,7 +113,7 @@ func TestPostSkill_NoName(t *testing.T) {
 
 func TestPostSkill_NoSkillType(t *testing.T) {
 	body := getReaderForNewSkill("1234", "SomeName", "")
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills", body), &data.MockDataAccessor{})
+	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/api/skills", body), &data.MockDataAccessor{})
 
 	err := sc.Post()
 	if err == nil {
@@ -123,7 +123,7 @@ func TestPostSkill_NoSkillType(t *testing.T) {
 
 func TestPostSkill_InvalidType(t *testing.T) {
 	body := getReaderForNewSkill("", "", "badtype")
-	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/skills", body), &data.MockDataAccessor{})
+	sc := getSkillsController(httptest.NewRequest(http.MethodPost, "/api/skills", body), &data.MockDataAccessor{})
 
 	err := sc.Post()
 	if err == nil {
@@ -132,7 +132,7 @@ func TestPostSkill_InvalidType(t *testing.T) {
 }
 
 func TestPostSkill_NoSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPost, "/skills/", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/skills/", nil)
 	sc := getSkillsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -143,7 +143,7 @@ func TestPostSkill_NoSkill(t *testing.T) {
 
 func TestPostSkill_Error(t *testing.T) {
 	body := getReaderForNewSkill("", "", model.ScriptedSkillType)
-	request := httptest.NewRequest(http.MethodPost, "/skills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skills", body)
 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Post()

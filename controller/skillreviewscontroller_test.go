@@ -23,7 +23,7 @@ func TestSkillReviewsController_Base(t *testing.T) {
 }
 
 func TestGetAllSkillReviews(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillreviews", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews", nil)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
@@ -33,7 +33,7 @@ func TestGetAllSkillReviews(t *testing.T) {
 }
 
 func TestGetAllSkillReviews_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillreviews", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews", nil)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
@@ -43,7 +43,7 @@ func TestGetAllSkillReviews_Error(t *testing.T) {
 }
 
 func TestGetSkillReview(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillreviews/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews/1234", nil)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Get()
@@ -53,7 +53,7 @@ func TestGetSkillReview(t *testing.T) {
 }
 
 func TestGetSkillReview_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillreviews/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews/1234", nil)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
@@ -64,7 +64,7 @@ func TestGetSkillReview_Error(t *testing.T) {
 
 func TestDeleteSkillReview(t *testing.T) {
 	body := getReaderForDeleteSkillReview("1234", "2345")
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Delete()
@@ -75,7 +75,7 @@ func TestDeleteSkillReview(t *testing.T) {
 
 func TestDeleteSkillReview_Error(t *testing.T) {
 	body := getReaderForDeleteSkillReview("1234", "2345")
-	request := httptest.NewRequest(http.MethodDelete, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Delete()
@@ -87,7 +87,7 @@ func TestDeleteSkillReview_Error(t *testing.T) {
 func TestPostSkillReview(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
 		"1234", true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -99,7 +99,7 @@ func TestPostSkillReview(t *testing.T) {
 func TestPostSkillReview_NoSkillID(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "", "3456", "blah", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -112,7 +112,7 @@ func TestPostSkillReview_NoSkillID(t *testing.T) {
 func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "", "blah", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -125,7 +125,7 @@ func TestPostSkillReview_NoTeamMemberID(t *testing.T) {
 func TestPostSkillReview_NoBody(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -136,7 +136,7 @@ func TestPostSkillReview_NoBody(t *testing.T) {
 }
 
 func TestPostSkillReview_NoSkillReview(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", nil)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Post()
@@ -148,7 +148,7 @@ func TestPostSkillReview_NoSkillReview(t *testing.T) {
 func TestPostSkillReview_Error(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah",
 		"1234", true)
-	request := httptest.NewRequest(http.MethodPost, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Post()
@@ -160,7 +160,7 @@ func TestPostSkillReview_Error(t *testing.T) {
 func TestPutSkillReview(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPut, "/skillreviews/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews/1234", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Put()
@@ -173,7 +173,7 @@ func TestPutSkillReview(t *testing.T) {
 func TestPutSkillReviewNoId(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPut, "/skillreviews", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews", body)
 	sc := getSkillReviewsController(request, &data.MockDataAccessor{})
 
 	err := sc.Put()
@@ -185,7 +185,7 @@ func TestPutSkillReviewNoId(t *testing.T) {
 func TestPutSkillReviewError(t *testing.T) {
 	body := getReaderForNewSkillReview("1234", "2345", "3456", "blah", "1234",
 		true)
-	request := httptest.NewRequest(http.MethodPut, "/skillreviews/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews/1234", body)
 	sc := getSkillReviewsController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Put()
@@ -263,8 +263,8 @@ func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp strin
 
 func getReaderForDeleteSkillReview(id string, skillID string) *bytes.Reader {
 	newSkillReview := model.SkillReview{
-		ID:           id,
-		SkillID:      skillID,
+		ID:      id,
+		SkillID: skillID,
 	}
 	b, _ := json.Marshal(newSkillReview)
 	return bytes.NewReader(b)

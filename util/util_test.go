@@ -18,7 +18,7 @@ func TestGetProperty(t *testing.T) {
 
 func TestCheckForId(t *testing.T) {
 	url := url.URL{}
-	url.Path = "/skills/"
+	url.Path = "/api/skills/"
 
 	if CheckForID(&url) != "" {
 		t.Errorf("No id failed")
@@ -28,7 +28,7 @@ func TestCheckForId(t *testing.T) {
 
 func TestCheckForIdError(t *testing.T) {
 	url := url.URL{}
-	url.Path = "/skils/"
+	url.Path = "/api/skils/"
 
 	if CheckForID(&url) == "" {
 		t.Errorf("No id failed")
@@ -37,7 +37,7 @@ func TestCheckForIdError(t *testing.T) {
 
 func TestURLIdParse(t *testing.T) {
 	url := url.URL{}
-	url.Path = "/skills/abc"
+	url.Path = "/api/skills/abc"
 
 	if CheckForID(&url) != "abc" {
 		t.Errorf("Id match failed")
@@ -61,10 +61,10 @@ func TestRootDirNoId(t *testing.T) {
 }
 
 func TestRootDirSlash(t *testing.T) {
-	path := "/skills"
+	path := "/api/skills"
 	rootDir := getRootDir(path)
 	if rootDir != "skills/" {
-		t.Errorf("Rootdir parse failed")
+		t.Errorf("Rootdir parse failed. Root = %s", rootDir)
 	}
 }
 

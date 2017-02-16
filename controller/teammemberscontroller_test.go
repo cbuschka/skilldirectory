@@ -23,7 +23,7 @@ func TestTeamMembersControllerBase(t *testing.T) {
 }
 
 func TestGetAllTeamMembers(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/teammembers", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/teammembers", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Get()
@@ -33,7 +33,7 @@ func TestGetAllTeamMembers(t *testing.T) {
 }
 
 func TestGetAllTeamMembers_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/teammembers", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/teammembers", nil)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Get()
@@ -43,7 +43,7 @@ func TestGetAllTeamMembers_Error(t *testing.T) {
 }
 
 func TestGetTeamMember(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/teammembers/1234", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Get()
@@ -53,7 +53,7 @@ func TestGetTeamMember(t *testing.T) {
 }
 
 func TestGetTeamMember_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/teammembers/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/teammembers/1234", nil)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Get()
@@ -63,7 +63,7 @@ func TestGetTeamMember_Error(t *testing.T) {
 }
 
 func TestDeleteTeamMember(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Delete()
@@ -73,7 +73,7 @@ func TestDeleteTeamMember(t *testing.T) {
 }
 
 func TestDeleteTeamMember_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/teammembers/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Delete()
@@ -83,7 +83,7 @@ func TestDeleteTeamMember_Error(t *testing.T) {
 }
 
 func TestDeleteTeamMember_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/teammembers/", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Delete()
@@ -94,7 +94,7 @@ func TestDeleteTeamMember_NoKey(t *testing.T) {
 
 func TestPostTeamMember(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -105,7 +105,7 @@ func TestPostTeamMember(t *testing.T) {
 
 func TestPostTeamMember_NoName(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -116,7 +116,7 @@ func TestPostTeamMember_NoName(t *testing.T) {
 
 func TestPostTeamMember_NoTitle(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
-	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -126,7 +126,7 @@ func TestPostTeamMember_NoTitle(t *testing.T) {
 }
 
 func TestPostTeamMember_NoTeamMember(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPost, "/teammembers", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -137,7 +137,7 @@ func TestPostTeamMember_NoTeamMember(t *testing.T) {
 
 func TestPostTeamMember_Error(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPost, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Post()
@@ -148,7 +148,7 @@ func TestPostTeamMember_Error(t *testing.T) {
 
 func TestPutTeamMember(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "John Smith", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -159,7 +159,7 @@ func TestPutTeamMember(t *testing.T) {
 
 func TestPutTeamMember_NoName(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -170,7 +170,7 @@ func TestPutTeamMember_NoName(t *testing.T) {
 
 func TestPutTeamMember_NoTitle(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
-	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -180,7 +180,7 @@ func TestPutTeamMember_NoTitle(t *testing.T) {
 }
 
 func TestPutTeamMember_NoTeamMember(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPut, "/teammembers", nil)
+	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", nil)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -191,7 +191,7 @@ func TestPutTeamMember_NoTeamMember(t *testing.T) {
 
 func TestPutTeamMember_Error(t *testing.T) {
 	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
-	request := httptest.NewRequest(http.MethodPut, "/teammembers", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Put()
