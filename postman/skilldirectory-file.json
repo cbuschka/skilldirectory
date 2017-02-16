@@ -291,6 +291,35 @@
 				"description": ""
 			},
 			"response": []
+		},
+		{
+			"name": " Skill",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Init Vars",
+							"const code = responseCode.code;",
+							"",
+							"// Tests",
+							"tests['Status code is 200']  = responseCode.code === 200;",
+							"tests['Body is correct']     = responseBody      === '';",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}/skills/{{skillID}}",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }
