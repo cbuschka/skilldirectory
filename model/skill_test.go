@@ -18,6 +18,16 @@ func TestNewSkill(t *testing.T) {
 	}
 }
 
+func TestQuerySkill(t *testing.T) {
+	var skillOne, skillTwo Skill
+	skillOne = QuerySkill(1234)
+	skillTwo.ID = 1234
+	// Verify that all of skillOne and skillTwo's fields are equal
+	if !reflect.DeepEqual(skillOne, skillTwo) {
+		t.Error("\"model.QuerySkill()\" produced incorrect Skill.")
+	}
+}
+
 func TestInvalidSkillType(t *testing.T) {
 	if IsValidSkillType("InvalidSkillType") {
 		t.Error("func IsValidSkillType() failed to detect invalid SkillType.")

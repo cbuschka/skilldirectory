@@ -47,6 +47,12 @@ func NewSkill(name, skillType, iconURL string) Skill {
 	}
 }
 
+func QuerySkill(id uint) Skill {
+	var skill Skill
+	skill.ID = id
+	return skill
+}
+
 // GetType satisfies data.ReadAllInterface
 func (s Skill) GetType() interface{} {
 	return Skill{}
