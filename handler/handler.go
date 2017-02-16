@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"sync"
 	"net/http"
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/util"
+	"sync"
 )
 
 // This mutex will prevent race conditions on concurrent requests

@@ -23,7 +23,7 @@ func TestUsersControllerBase(t *testing.T) {
 
 func TestPostUser(t *testing.T) {
 	body := getReaderForUserLogin("test", "test")
-	request := httptest.NewRequest(http.MethodPost, "/users", body)
+	request := httptest.NewRequest(http.MethodPost, "/api.users", body)
 	tc := getUsersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -34,7 +34,7 @@ func TestPostUser(t *testing.T) {
 
 func TestPostUser_NoLogin(t *testing.T) {
 	body := getReaderForUserLogin("", "test")
-	request := httptest.NewRequest(http.MethodPost, "/users", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -45,7 +45,7 @@ func TestPostUser_NoLogin(t *testing.T) {
 
 func TestPostUser_NoPassword(t *testing.T) {
 	body := getReaderForUserLogin("test", "")
-	request := httptest.NewRequest(http.MethodPost, "/users", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -56,7 +56,7 @@ func TestPostUser_NoPassword(t *testing.T) {
 
 func TestPostUser_Error(t *testing.T) {
 	body := getReaderForUserLogin("test", "test")
-	request := httptest.NewRequest(http.MethodPost, "/users", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Post()

@@ -74,7 +74,7 @@ func initFileSystem() {
 			err := http.ListenAndServe(":2121", http.FileServer(http.Dir(
 				user.HomeDir+"/skilldirectory")))
 			if err != nil {
-				log.Error("Error produced while running static file server: %s", err)
+				log.Errorf("Error produced while running static file server: %s", err)
 			}
 		}()
 	}
@@ -118,20 +118,20 @@ func loadRoutes() {
 	usersHandlerFunc := handler.MakeHandler(handler.Handler, &usersController, session, fileSystem)
 
 	routes = []Route{
-		{"/skills/", skillsHandlerFunc},
-		{"/skills", skillsHandlerFunc},
-		{"/teammembers/", teamMembersHandlerFunc},
-		{"/teammembers", teamMembersHandlerFunc},
-		{"/tmskills/", tmSkillsHandlerFunc},
-		{"/tmskills", tmSkillsHandlerFunc},
-		{"/links/", linksHandlerFunc},
-		{"/links", linksHandlerFunc},
-		{"/skillreviews", skillReviewsHandlerFunc},
-		{"/skillreviews/", skillReviewsHandlerFunc},
-		{"/skillicons", skillIconsHandlerFunc},
-		{"/skillicons/", skillIconsHandlerFunc},
-		{"/users", usersHandlerFunc},
-		{"/users/", usersHandlerFunc},
+		{"/api/skills/", skillsHandlerFunc},
+		{"/api/skills", skillsHandlerFunc},
+		{"/api/teammembers/", teamMembersHandlerFunc},
+		{"/api/teammembers", teamMembersHandlerFunc},
+		{"/api/tmskills/", tmSkillsHandlerFunc},
+		{"/api/tmskills", tmSkillsHandlerFunc},
+		{"/api/links/", linksHandlerFunc},
+		{"/api/links", linksHandlerFunc},
+		{"/api/skillreviews", skillReviewsHandlerFunc},
+		{"/api/skillreviews/", skillReviewsHandlerFunc},
+		{"/api/skillicons", skillIconsHandlerFunc},
+		{"/api/skillicons/", skillIconsHandlerFunc},
+		{"/api/users", usersHandlerFunc},
+		{"/api/users/", usersHandlerFunc},
 	}
 }
 
