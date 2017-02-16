@@ -11,10 +11,10 @@ set of Skills they wish to obtain (WishList).
 type TeamMember struct {
 	gorm.Model
 
-	Name  	string `json:"name"`
-	Title 	string `json:"title"`
+	Name  		string 		`json:"name"`
+	Title 		string 		`json:"title"`
 
-	Skills []Skill `json:"skills" gorm:"many2many:teammember_skills"`
+	TMSkills	[]TMSkill	`json:"teammember_skills"`
 }
 
 func NewTeamMember(name, title string) TeamMember {

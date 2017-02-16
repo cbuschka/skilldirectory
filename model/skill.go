@@ -23,7 +23,7 @@ Each Skill has a Name, SkillType, and a unique ID:
 
  * The SkillType must be one of the predetermined SkillTypes contained within
    model/skills.go as
-	 
+
 */
 type Skill struct {
 	gorm.Model
@@ -35,8 +35,7 @@ type Skill struct {
 
 	Links					[]Link 				`json:"links"`
 	SkillReviews	[]SkillReview	`json:"skills"`
-
-	TeamMembers		[]TeamMember	`gorm:"many2many:teammember_skills" json:"teamembers"`
+	TMSkills			[]TMSkill			`json:"teammember_skills"`
 }
 
 // NewSkill returns a new Skill object with specified params
