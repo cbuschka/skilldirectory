@@ -30,7 +30,7 @@ type AuthCredentials struct {
 }
 
 type TokenResponse struct {
-	Token     string   `json:"access_token"`
-	Scope     []string `json:"scope"`
-	TokenType string   `json:"token_type"`
+	Token     string `json:"access_token"`
+	Scope     string `json:"scope"`
+	TokenType string `json:"token_type"`
 }
