@@ -59,6 +59,7 @@ func (c *UsersController) authenticateUser() error {
 	// Check that the supplied client_id matches the one we have
 
 	githubClientID, isSet := os.LookupEnv("GITHUB_CLIENT_ID")
+	c.Infof("Server Client ID: %s, isSet: %v, Credentials ID: %s", githubClientID, isSet, credentials.Id)
 	if !isSet {
 		return errors.MissingCredentialsError(fmt.Errorf(
 			"Missing client ID credential"))
@@ -70,6 +71,7 @@ func (c *UsersController) authenticateUser() error {
 
 	// Get the Github client secret
 	githubClientSecret, isSet := os.LookupEnv("GITHUB_CLIENT_SECRET")
+	c.Infof("Server Client Secret: %s, isSet: %v", githubClientSecret, isSet)
 	if !isSet {
 		return errors.MissingCredentialsError(fmt.Errorf(
 			"Missing client secret credential"))
