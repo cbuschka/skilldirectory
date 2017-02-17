@@ -64,6 +64,8 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 		err = cont.Delete()
 	case http.MethodPut:
 		err = cont.Put()
+	case http.MethodOptions:
+		err = cont.Options()
 	}
 
 	var statusCode int

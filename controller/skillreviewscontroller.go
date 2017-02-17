@@ -42,6 +42,10 @@ func (c SkillReviewsController) Put() error {
 	return c.updateSkillReview()
 }
 
+func (c SkillReviewsController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c *SkillReviewsController) performGet() error {
 	queries := c.r.URL.Query()
 	if skill_id := queries.Get("skill_id"); skill_id != "" {
@@ -194,13 +198,13 @@ func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
 func (c *SkillReviewsController) removeSkillReview() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-    skillReview := model.SkillReview{}
-    err := json.Unmarshal(body, &skillReview)
-    if err != nil {
-        c.Warn("Marshaling Error: ", errors.MarshalingError(err))
-    }
+	skillReview := model.SkillReview{}
+	err := json.Unmarshal(body, &skillReview)
+	if err != nil {
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
 
-    err = c.session.Delete("skillreviews", skillReview.ID, data.NewCassandraQueryOptions("skill_id", skillReview.SkillID, false))
+	err = c.session.Delete("skillreviews", skillReview.ID, data.NewCassandraQueryOptions("skill_id", skillReview.SkillID, false))
 	// TODO Add skillid field to opts
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+

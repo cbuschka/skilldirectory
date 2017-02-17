@@ -35,6 +35,10 @@ func (c SkillIconsController) Put() error {
 	return c.addSkillIcon()
 }
 
+func (c SkillIconsController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c SkillIconsController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {

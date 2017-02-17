@@ -34,6 +34,10 @@ func (c LinksController) Put() error {
 	return fmt.Errorf("PUT requests not currently supported.")
 }
 
+func (c LinksController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c LinksController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {

@@ -14,55 +14,83 @@ import (
 
 func TestUsersControllerBase(t *testing.T) {
 	base := BaseController{}
-	tc := UsersController{BaseController: &base}
+	sc := UsersController{BaseController: &base}
 
-	if base != *tc.Base() {
-		t.Error("Expected Base() to return base pointer")
+	if base != *sc.Base() {
+		t.Error("Expecting Base() to return base pointer")
 	}
 }
 
-func TestPostUser(t *testing.T) {
-	body := getReaderForUserLogin("test", "test")
-	request := httptest.NewRequest(http.MethodPost, "/api.users", body)
-	tc := getUsersController(request, &data.MockDataAccessor{})
+func TestGet(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/users", bytes.NewBufferString(""))
+	sc := getUsersController(request, &data.MockErrorDataAccessor{})
 
-	err := tc.Post()
-	if err != nil {
-		t.Errorf("Post failed: %s", err.Error())
-	}
-}
-
-func TestPostUser_NoLogin(t *testing.T) {
-	body := getReaderForUserLogin("", "test")
-	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
-	tc := getTeamMembersController(request, &data.MockDataAccessor{})
-
-	err := tc.Post()
-	if err == nil {
-		t.Errorf("Expected error due to empty %q field in User POST request.", "name")
-	}
-}
-
-func TestPostUser_NoPassword(t *testing.T) {
-	body := getReaderForUserLogin("test", "")
-	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
-	tc := getTeamMembersController(request, &data.MockDataAccessor{})
-
-	err := tc.Post()
-	if err == nil {
-		t.Errorf("Expected error due to empty %q field in User POST request.", "title")
-	}
-}
-
-func TestPostUser_Error(t *testing.T) {
-	body := getReaderForUserLogin("test", "test")
-	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
-	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
-
-	err := tc.Post()
+	err := sc.Get()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
+}
+
+func TestDelete(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/users", bytes.NewBufferString(""))
+	sc := getUsersController(request, &data.MockErrorDataAccessor{})
+
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPut(t *testing.T) {
+	request := httptest.NewRequest(http.MethodPut, "/api/users", bytes.NewBufferString(""))
+	sc := getUsersController(request, &data.MockErrorDataAccessor{})
+
+	err := sc.Put()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/users", bytes.NewBufferString(""))
+	sc := getUsersController(request, &data.MockDataAccessor{})
+
+	err := sc.Options()
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestPostUser_NoCode(t *testing.T) {
+	body := getReaderForNewCredentials("", "")
+	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
+	uc := getUsersController(request, &data.MockDataAccessor{})
+
+	err := uc.Post()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestPostUser_NoClientID(t *testing.T) {
+	body := getReaderForNewCredentials("foobarbaz", "")
+	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
+	uc := getUsersController(request, &data.MockDataAccessor{})
+
+	err := uc.Post()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+/*
+getReaderForNewUser is a helper function for a new Skill with the given id, name, and skillType.
+This Skill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
+*/
+func getReaderForNewCredentials(code, clientID string) *bytes.Reader {
+	newCredentials := model.AuthCredentials{Code: code, Id: clientID}
+	b, _ := json.Marshal(newCredentials)
+	return bytes.NewReader(b)
 }
 
 /*
@@ -73,14 +101,4 @@ func getUsersController(request *http.Request, dataAccessor data.DataAccess) Use
 	base := BaseController{}
 	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
 	return UsersController{BaseController: &base}
-}
-
-/*
-getReaderForNewUser is a helper function for a new User with the given login and password.
-This User is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
-*/
-func getReaderForUserLogin(login, password string) *bytes.Reader {
-	newUser := model.NewUser(login, password)
-	b, _ := json.Marshal(newUser)
-	return bytes.NewReader(b)
 }

@@ -5,5 +5,6 @@ type RESTController interface {
 	Post() error
 	Delete() error
 	Put() error
+	Options() error
 	Base() *BaseController
 }

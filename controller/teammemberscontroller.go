@@ -34,6 +34,10 @@ func (c TeamMembersController) Put() error {
 	return fmt.Errorf("PUT requests nor currently supported.")
 }
 
+func (c TeamMembersController) Options() error {
+	return fmt.Errorf("OPTIONS requests not currently supported.")
+}
+
 func (c *TeamMembersController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {

@@ -12,3 +12,4 @@ type InvalidLinkTypeError error
 type InvalidPUTBodyError error
 type InvalidDataModelState error
 type InvalidLoginData error
+type MissingCredentialsError error
