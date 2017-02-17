@@ -23,7 +23,7 @@ func TestTMSkillsController_Base(t *testing.T) {
 }
 
 func TestGetAllTMSkills(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/tmskills", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/tmskills", nil)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Get()
@@ -33,7 +33,7 @@ func TestGetAllTMSkills(t *testing.T) {
 }
 
 func TestGetAllTMSkills_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/tmskills", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/tmskills", nil)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Get()
@@ -43,7 +43,7 @@ func TestGetAllTMSkills_Error(t *testing.T) {
 }
 
 func TestGetTMSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/tmskills/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/tmskills/1234", nil)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Get()
@@ -53,7 +53,7 @@ func TestGetTMSkill(t *testing.T) {
 }
 
 func TestGetTMSkill_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/tmskills/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/tmskills/1234", nil)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Get()
@@ -63,7 +63,7 @@ func TestGetTMSkill_Error(t *testing.T) {
 }
 
 func TestDeleteTMSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/tmskills/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/1234", nil)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Delete()
@@ -73,7 +73,7 @@ func TestDeleteTMSkill(t *testing.T) {
 }
 
 func TestDeleteTMSkill_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/tmskills/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/1234", nil)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Delete()
@@ -83,7 +83,7 @@ func TestDeleteTMSkill_Error(t *testing.T) {
 }
 
 func TestDeleteTMSkill_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/tmskills/", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/", nil)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Delete()
@@ -94,7 +94,7 @@ func TestDeleteTMSkill_NoKey(t *testing.T) {
 
 func TestPostTMSkill(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -105,7 +105,7 @@ func TestPostTMSkill(t *testing.T) {
 
 func TestPostTMSkill_NoSkillID(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -117,7 +117,7 @@ func TestPostTMSkill_NoSkillID(t *testing.T) {
 
 func TestPostTMSkill_NoTeamMemberID(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -128,7 +128,7 @@ func TestPostTMSkill_NoTeamMemberID(t *testing.T) {
 }
 
 func TestPostTMSkill_NoTMSkill(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", nil)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Post()
@@ -139,7 +139,7 @@ func TestPostTMSkill_NoTMSkill(t *testing.T) {
 
 func TestPostTMSkill_Error(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Post()
@@ -245,7 +245,7 @@ func TestConvertSkillsToDTOsError(t *testing.T) {
 
 func TestUpdateTMSkill(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPut, "/tmskills/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/tmskills/1234", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()
@@ -256,7 +256,7 @@ func TestUpdateTMSkill(t *testing.T) {
 
 func TestUpdateTMSkillError(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPut, "/tmskills/1234", body)
+	request := httptest.NewRequest(http.MethodPut, "/api/tmskills/1234", body)
 	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
 
 	err := tc.Put()
@@ -267,7 +267,7 @@ func TestUpdateTMSkillError(t *testing.T) {
 
 func TestUpdateTMSkillNoID(t *testing.T) {
 	body := getReaderForNewTMSkill("1234", "2345", "3456")
-	request := httptest.NewRequest(http.MethodPost, "/tmskills", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
 	tc := getTMSkillsController(request, &data.MockDataAccessor{})
 
 	err := tc.Put()

@@ -20,7 +20,7 @@ func TestUsersControllerBase(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/users", bytes.NewBufferString(""))
+	request := httptest.NewRequest(http.MethodGet, "/api/users", bytes.NewBufferString(""))
 	sc := getUsersController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Get()
@@ -30,7 +30,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/users", bytes.NewBufferString(""))
+	request := httptest.NewRequest(http.MethodDelete, "/api/users", bytes.NewBufferString(""))
 	sc := getUsersController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Delete()
@@ -40,7 +40,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestPut(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPut, "/users", bytes.NewBufferString(""))
+	request := httptest.NewRequest(http.MethodPut, "/api/users", bytes.NewBufferString(""))
 	sc := getUsersController(request, &data.MockErrorDataAccessor{})
 
 	err := sc.Put()

@@ -25,7 +25,7 @@ func TestSkillIconsControllerBase(t *testing.T) {
 }
 
 func TestGetAllSkillIcons(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillicons", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillicons", nil)
 	sc := getSkillIconsController(request, &data.MockDataAccessor{},
 		&data.MockFileSystem{})
 
@@ -36,7 +36,7 @@ func TestGetAllSkillIcons(t *testing.T) {
 }
 
 func TestGetAllSkillIcons_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillicons", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillicons", nil)
 	sc := getSkillIconsController(request, &data.MockErrorDataAccessor{},
 		&data.MockErrorFileSystem{})
 
@@ -47,7 +47,7 @@ func TestGetAllSkillIcons_Error(t *testing.T) {
 }
 
 func TestGetSkillIcon(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillicon/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillicon/1234", nil)
 	sc := getSkillIconsController(request, &data.MockDataAccessor{},
 		&data.MockFileSystem{})
 
@@ -58,7 +58,7 @@ func TestGetSkillIcon(t *testing.T) {
 }
 
 func TestGetSkillIcon_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/skillicons/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/skillicons/1234", nil)
 	sc := getSkillIconsController(request, &data.MockErrorDataAccessor{},
 		&data.MockErrorFileSystem{})
 
@@ -69,7 +69,7 @@ func TestGetSkillIcon_Error(t *testing.T) {
 }
 
 func TestDeleteSkillIcon(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillicons/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillicons/1234", nil)
 	sc := getSkillIconsController(request, &data.MockDataAccessor{},
 		&data.MockFileSystem{})
 
@@ -80,7 +80,7 @@ func TestDeleteSkillIcon(t *testing.T) {
 }
 
 func TestDeleteSkillIcon_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillicons/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillicons/1234", nil)
 	sc := getSkillIconsController(request, &data.MockErrorDataAccessor{},
 		&data.MockErrorFileSystem{})
 
@@ -91,7 +91,7 @@ func TestDeleteSkillIcon_Error(t *testing.T) {
 }
 
 func TestDeleteSkillIcon_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/skillicons/", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillicons/", nil)
 	sc := getSkillIconsController(request, &data.MockDataAccessor{},
 		&data.MockFileSystem{})
 
@@ -133,7 +133,7 @@ func TestPostSkillIcon_InvalidImage(t *testing.T) {
 func TestPostSkillIcon_Error(t *testing.T) {
 	// Open test PNG image file
 	wd, _ := os.Getwd()
-	file, _ := os.Open(path.Dir(wd) + "/resources/test.png")
+	file, _ := os.Open(path.Dir(wd) + "/api/resources/test.png")
 	defer file.Close()
 
 	// Get multipart POST request using test image; and new controller w/ mockers
@@ -177,7 +177,7 @@ func newSkillIconPostRequest(skillID string, icon *os.File) (*http.Request, erro
 		return nil, err
 	}
 
-	req := httptest.NewRequest(http.MethodPost, "/skillicons", body)
+	req := httptest.NewRequest(http.MethodPost, "/api/skillicons", body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req, nil
 }

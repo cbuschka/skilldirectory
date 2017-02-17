@@ -38,12 +38,12 @@ func CheckForID(url *url.URL) string {
 // served by the SkillDirectory server AND doesn't contain an ID.
 func IsValidEndpoint(endpoint string) bool {
 	endpoints := []string{
-		"/skills", "/skills/",
-		"/teammembers", "/teammembers/",
-		"/tmskills", "/tmskills/",
-		"/links", "/links/",
-		"/skillreviews", "/skillreviews/",
-		"/skillicons", "/skillicons/",
+		"/api/skills", "/api/skills/",
+		"/api/teammembers", "/api/teammembers/",
+		"/api/tmskills", "/api/tmskills/",
+		"/api/links", "/api/links/",
+		"/api/skillreviews", "/api/skillreviews/",
+		"/api/skillicons", "/api/skillicons/",
 	}
 	if StringSliceContains(endpoints, endpoint) {
 		return true
@@ -66,6 +66,9 @@ func StringSliceContains(slice []string, target string) bool {
 func getRootDir(path string) string {
 	if path[0] == '/' {
 		path = path[1:]
+	}
+	if path[0:4] == "api/" {
+		path = path[4:]
 	}
 	var rootDir string
 	if strings.Index(path, "/") != -1 {

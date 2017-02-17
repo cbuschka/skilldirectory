@@ -22,7 +22,7 @@ func TestLinksControllerBase(t *testing.T) {
 }
 
 func TestGetAllLinks(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/links", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/links", nil)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Get()
@@ -32,7 +32,7 @@ func TestGetAllLinks(t *testing.T) {
 }
 
 func TestGetAllLinks_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/links", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/links", nil)
 	lc := getLinksController(request, &data.MockErrorDataAccessor{})
 
 	err := lc.Get()
@@ -42,7 +42,7 @@ func TestGetAllLinks_Error(t *testing.T) {
 }
 
 func TestGetLink(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/links/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/links/1234", nil)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Get()
@@ -52,7 +52,7 @@ func TestGetLink(t *testing.T) {
 }
 
 func TestGetLink_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/links/1234", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/links/1234", nil)
 	lc := getLinksController(request, &data.MockErrorDataAccessor{})
 
 	err := lc.Get()
@@ -62,7 +62,7 @@ func TestGetLink_Error(t *testing.T) {
 }
 
 func TestDeleteLink(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/links/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/links/1234", nil)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Delete()
@@ -72,7 +72,7 @@ func TestDeleteLink(t *testing.T) {
 }
 
 func TestDeleteLink_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/links/1234", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/links/1234", nil)
 	lc := getLinksController(request, &data.MockErrorDataAccessor{})
 
 	err := lc.Delete()
@@ -82,7 +82,7 @@ func TestDeleteLink_Error(t *testing.T) {
 }
 
 func TestDeleteLink_NoKey(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/links/", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/links/", nil)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Delete()
@@ -93,7 +93,7 @@ func TestDeleteLink_NoKey(t *testing.T) {
 
 func TestPostLink(t *testing.T) {
 	body := getReaderForNewLink("1234", "A Webpage", "http://webpage.com", "2345", model.WebpageLinkType)
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -104,7 +104,7 @@ func TestPostLink(t *testing.T) {
 
 func TestPostLink_NoName(t *testing.T) {
 	body := getReaderForNewLink("1234", "", "http://webpage.com", "2345", model.WebpageLinkType)
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -115,7 +115,7 @@ func TestPostLink_NoName(t *testing.T) {
 
 func TestPostLink_NoURL(t *testing.T) {
 	body := getReaderForNewLink("1234", "A Webpage", "", "2345", model.WebpageLinkType)
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -126,7 +126,7 @@ func TestPostLink_NoURL(t *testing.T) {
 
 func TestPostLink_NoSkillID(t *testing.T) {
 	body := getReaderForNewLink("1234", "A Webpage", "http://webpage.com", "", model.WebpageLinkType)
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -137,7 +137,7 @@ func TestPostLink_NoSkillID(t *testing.T) {
 
 func TestPostLink_NoLinkType(t *testing.T) {
 	body := getReaderForNewLink("1234", "A Webpage", "http://webpage.com", "2345", "")
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -147,7 +147,7 @@ func TestPostLink_NoLinkType(t *testing.T) {
 }
 
 func TestPostLink_NoLink(t *testing.T) {
-	request := httptest.NewRequest(http.MethodPost, "/links", nil)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", nil)
 	lc := getLinksController(request, &data.MockDataAccessor{})
 
 	err := lc.Post()
@@ -158,7 +158,7 @@ func TestPostLink_NoLink(t *testing.T) {
 
 func TestPostLink_Error(t *testing.T) {
 	body := getReaderForNewLink("1234", "A Webpage", "http://webpage.com", "2345", model.WebpageLinkType)
-	request := httptest.NewRequest(http.MethodPost, "/links", body)
+	request := httptest.NewRequest(http.MethodPost, "/api/links", body)
 	lc := getLinksController(request, &data.MockErrorDataAccessor{})
 
 	err := lc.Post()
