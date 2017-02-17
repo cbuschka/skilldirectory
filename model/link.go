@@ -10,9 +10,10 @@ type Link struct {
 }
 
 const (
-	BlogLinkType     = "blog"     //BlogLinkType is a blog enum
-	TutorialLinkType = "tutorial" //TutorialLinkType is a tutorial enum
-	WebpageLinkType  = "webpage"  //WebpageLinkType is a webpage enum
+	BlogLinkType          = "blog"           // BlogLinkType is a blog enum
+	TutorialLinkType      = "tutorial"       // TutorialLinkType is a tutorial enum
+	WebpageLinkType       = "webpage"        // WebpageLinkType is a webpage enum
+	DeveloperToolLinkType = "developer-tool" // DeveloperToolLinkType is a developer-tool enum
 )
 
 // NewLink is a Link constructor
@@ -32,7 +33,8 @@ func IsValidLinkType(linkType string) bool {
 	case
 		BlogLinkType,
 		TutorialLinkType,
-		WebpageLinkType:
+		WebpageLinkType,
+		DeveloperToolLinkType:
 		return true
 	}
 	return false
