@@ -11,12 +11,12 @@ type BaseController struct {
 	w http.ResponseWriter
 	r *http.Request
 	*logrus.Logger
-	session    data.DataAccess
+	session    data.PostgresConnector
 	fileSystem data.FileSystem
 }
 
 func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request,
-	session data.DataAccess, fs data.FileSystem, logger *logrus.Logger) {
+	session data.PostgresConnector, fs data.FileSystem, logger *logrus.Logger) {
 	bc.w = w
 	bc.r = r
 	bc.Logger = logger

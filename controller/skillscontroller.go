@@ -3,13 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
-	"skilldirectory/data"
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
 	"skilldirectory/util"
 
 	"fmt"
+	"strconv"
 )
 
 type SkillsController struct {
@@ -41,20 +41,17 @@ func (c SkillsController) performGet() error {
 	if path == "" {
 		return c.getAllSkills()
 	}
-	return c.getSkill(path)
+	id, err := strconv.Atoi(path)
+	if err != nil {
+		return err
+	}
+	return c.getSkill(uint(id))
 }
 
 func (c *SkillsController) getAllSkills() error {
-	var skills []interface{}
-	var err error
-	filter := c.r.URL.Query().Get("skilltype")
-	var opts data.QueryOptions
+	var skills []model.Skill
 
-	// Add approved query filters here
-	if filter != "" {
-		opts = data.NewQueryOptions("skilltype", filter, false)
-	}
-	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
+	err := c.session.DB.Find(&skills).Error
 
 	if err != nil {
 		return err
@@ -65,8 +62,9 @@ func (c *SkillsController) getAllSkills() error {
 	return err
 }
 
-func (c *SkillsController) getSkill(id string) error {
-	skill, err := c.loadSkill(id)
+func (c *SkillsController) getSkill(id uint) error {
+	skill := model.QuerySkill(id)
+	err := c.session.DB.Find(skill).Error
 	if err != nil {
 		return err
 	}
@@ -75,59 +73,15 @@ func (c *SkillsController) getSkill(id string) error {
 	return err
 }
 
-func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
-	skill := model.Skill{}
-	err := c.session.Read("skills", id, data.QueryOptions{}, &skill)
-	if err != nil {
-		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %s", id))
-	}
-	skillDTO, _ := c.addLinks(skill)
-	c.addIcon(&skillDTO)
-	return &skillDTO, nil
-}
-
-func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
-	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links",
-		data.NewQueryOptions("skill_id", skill.ID, true), model.Link{})
-	if err != nil {
-		c.Print(err)
-		return skillDTO, err
-	}
-	linksRaw, err := json.Marshal(linksInterface)
-	if err != nil {
-		return skillDTO, nil
-	}
-	links := &[]model.Link{}
-	err = json.Unmarshal(linksRaw, links)
-	if err != nil {
-		c.Print(err)
-	}
-	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
-	return skillDTO, nil
-}
-
-func (c *SkillsController) addIcon(skillDTO *model.SkillDTO) {
-	skillIcon := model.SkillIcon{}
-	c.session.Read("skillicons", "",
-		data.NewQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
-	skillDTO.Icon = skillIcon
-}
-
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	skillID := util.CheckForID(c.r.URL)
-	if skillID == "" {
+	path := util.CheckForID(c.r.URL)
+	skillID, err := strconv.Atoi(path)
+	if err != nil {
 		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
 	}
-	err1 := c.removeSkillChildren(skillID)
-	if err1 != nil {
-		c.Printf("removingSkillChildren: %v", err1)
-
-	}
-
-	err := c.session.Delete("skills", skillID, data.QueryOptions{})
+	skill := model.QuerySkill(uint(skillID))
+	err = c.session.DB.Delete(skill).Error
 
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
@@ -137,11 +91,6 @@ func (c *SkillsController) removeSkill() error {
 
 	c.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
-}
-
-func (c *SkillsController) removeSkillChildren(skillID string) error {
-	return c.session.Delete("links", "", data.NewQueryOptions("skill_ID", skillID, true))
-
 }
 
 func (c *SkillsController) addSkill() error {
@@ -166,8 +115,7 @@ func (c *SkillsController) addSkill() error {
 	}
 
 	// Save to database
-	skill.ID = util.NewID()
-	err = c.session.Save("skills", skill.ID, skill)
+	err = c.session.DB.Save(skill).Error
 	if err != nil {
 		return errors.SavingError(err)
 	}
