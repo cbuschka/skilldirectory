@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -56,24 +57,24 @@ func (c *UsersController) authenticateUser() error {
 	}
 
 	// Check that the supplied client_id matches the one we have
-	clientIDFile, _ := c.fileSystem.Read("/client_id.txt")
-	b, err := ioutil.ReadAll(clientIDFile)
-	if err != nil {
-		return err
+
+	githubClientID, isSet := os.LookupEnv("GITHUB_CLIENT_ID")
+	if !isSet {
+		return errors.MissingCredentialsError(fmt.Errorf(
+			"Missing client ID credential"))
 	}
-	clientID := c.stripFileContents(b)
-	if credentials.Id != clientID {
+	if credentials.Id != githubClientID {
 		return errors.InvalidPOSTBodyError(fmt.Errorf(
 			"Invalid client_id supplied"))
 	}
 
 	// Get the Github client secret
-	clientSecretFile, _ := c.fileSystem.Read("/client_secret.txt")
-	b, err = ioutil.ReadAll(clientSecretFile)
-	if err != nil {
-		return err
+	githubClientSecret, isSet := os.LookupEnv("GITHUB_CLIENT_SECRET")
+	if !isSet {
+		return errors.MissingCredentialsError(fmt.Errorf(
+			"Missing client secret credential"))
 	}
-	credentials.Secret = c.stripFileContents(b)
+	credentials.Secret = githubClientSecret
 
 	// Get the access token from Github
 	response, err := c.getAccessToken(&credentials)

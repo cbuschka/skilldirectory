@@ -12,6 +12,9 @@ export CASSANDRA_KEYSPACE=skill_directory_keyspace
 export DEBUG_FLAG=true
 export FILE_SYSTEM=LOCAL
 
+### Export Github credentials
+source ./credentials.sh
+
 ### Parse all command line flags
 for arg in "$@"
 do
