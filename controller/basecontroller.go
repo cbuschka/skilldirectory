@@ -24,22 +24,15 @@ func (bc *BaseController) Init(w http.ResponseWriter, r *http.Request,
 	bc.fileSystem = fs
 }
 
-// SetAllowDefaultMethods adds the following methods to the
-// "Access-Control-Allow-Methods" header of w:
-// GET, POST, DELETE, OPTIONS
-func SetAllowDefaultMethods(w http.ResponseWriter) {
-	headers := w.Header().Get("Access-Control-Allow-Methods")
-	w.Header().Set("Access-Control-Allow-Methods",
-		headers+", GET, POST, DELETE, OPTIONS")
+// GetDefaultMethods returns a string containing a ", " seperated list of the
+// default HTTP methods for an endpoint.
+func GetDefaultMethods() string {
+	return "GET, POST, DELETE, OPTIONS"
 }
 
-// SetAllowDefaultHeaders adds the following headers to the
-// "Access-Control-Allow-Headers" header of w:
-// Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method,
-// Access-Control-Request-Headers
-func SetAllowDefaultHeaders(w http.ResponseWriter) {
-	headers := w.Header().Get("Access-Control-Allow-Headers")
-	w.Header().Set("Access-Control-Allow-Headers",
-		headers+", Origin, Accept, X-Requested-With, Content-Type, "+
-			"Access-Control-Request-Method, Access-Control-Request-Headers")
+// GetDefaultHeaders returns s string containing a ", " seperated list of the
+// default HTTP methods for an endpoint.
+func GetDefaultHeaders() string {
+	return "Origin, Accept, X-Requested-With, Content-Type, " +
+		"Access-Control-Request-Method, Access-Control-Request-Headers"
 }

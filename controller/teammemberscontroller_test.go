@@ -219,6 +219,24 @@ func TestGetTeamMemberSkillNameError(t *testing.T) {
 	}
 }
 
+func TestTeamMemberOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/teammembers", nil)
+	tc := getTeamMembersController(request, nil)
+
+	err := tc.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if tc.w.Header().Get("Access-Control-Allow-Methods") != GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if tc.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
 /*
 getTeamMembersController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new TeamMembersController created with that BaseController.

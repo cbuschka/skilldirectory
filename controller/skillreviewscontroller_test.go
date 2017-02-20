@@ -248,6 +248,24 @@ func getSkillReviewsController(request *http.Request,
 	return SkillReviewsController{BaseController: &base}
 }
 
+func TestSkillReviewOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/skillreviews", nil)
+	src := getSkillReviewsController(request, nil)
+
+	err := src.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if src.w.Header().Get("Access-Control-Allow-Methods") != "PUT, "+GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if src.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
 /*
 getReaderForNewSkillReview is a helper function for a new SkillReview with the given
 id, skillID, teamMemberID, body, date, and positive flag. This SkillReview is then

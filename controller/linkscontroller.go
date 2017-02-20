@@ -35,8 +35,8 @@ func (c LinksController) Put() error {
 }
 
 func (c LinksController) Options() error {
-	SetAllowDefaultHeaders(c.w)
-	SetAllowDefaultMethods(c.w)
+	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
+	c.w.Header().Set("Access-Control-Allow-Methods", GetDefaultMethods())
 	return nil
 }
 

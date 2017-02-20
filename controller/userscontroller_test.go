@@ -51,13 +51,21 @@ func TestPut(t *testing.T) {
 	}
 }
 
-func TestOptions(t *testing.T) {
-	request := httptest.NewRequest(http.MethodOptions, "/api/users", bytes.NewBufferString(""))
-	sc := getUsersController(request, &data.MockDataAccessor{})
+func TestUsersOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/users", nil)
+	uc := getUsersController(request, &data.MockDataAccessor{})
 
-	err := sc.Options()
+	err := uc.Options()
 	if err != nil {
-		t.Error(err)
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if uc.w.Header().Get("Access-Control-Allow-Methods") != "GET, POST" {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if uc.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
 	}
 }
 

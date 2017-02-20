@@ -43,9 +43,8 @@ func (c SkillReviewsController) Put() error {
 }
 
 func (c SkillReviewsController) Options() error {
-	SetAllowDefaultHeaders(c.w)
-	c.w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	SetAllowDefaultMethods(c.w)
+	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
+	c.w.Header().Set("Access-Control-Allow-Methods", "PUT, "+GetDefaultMethods())
 	return nil
 }
 

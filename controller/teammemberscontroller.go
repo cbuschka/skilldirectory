@@ -35,8 +35,8 @@ func (c TeamMembersController) Put() error {
 }
 
 func (c TeamMembersController) Options() error {
-	SetAllowDefaultHeaders(c.w)
-	SetAllowDefaultMethods(c.w)
+	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
+	c.w.Header().Set("Access-Control-Allow-Methods", GetDefaultMethods())
 	return nil
 }
 

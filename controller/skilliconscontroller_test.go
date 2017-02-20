@@ -148,6 +148,24 @@ func TestPostSkillIcon_Error(t *testing.T) {
 	}
 }
 
+func TestSkillIconsOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/skillicons", nil)
+	sic := getSkillIconsController(request, nil, nil)
+
+	err := sic.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if sic.w.Header().Get("Access-Control-Allow-Methods") != "PUT, "+GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if sic.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
 /*
 getSkillIconsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new
