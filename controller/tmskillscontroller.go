@@ -41,7 +41,10 @@ func (c TMSkillsController) Put() error {
 }
 
 func (c TMSkillsController) Options() error {
-	return fmt.Errorf("OPTIONS requests not currently supported.")
+	SetAllowDefaultHeaders(c.w)
+	c.w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	SetAllowDefaultMethods(c.w)
+	return nil
 }
 
 func (c *TMSkillsController) performGet() error {

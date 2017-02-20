@@ -35,7 +35,9 @@ func (c LinksController) Put() error {
 }
 
 func (c LinksController) Options() error {
-	return fmt.Errorf("OPTIONS requests not currently supported.")
+	SetAllowDefaultHeaders(c.w)
+	SetAllowDefaultMethods(c.w)
+	return nil
 }
 
 func (c LinksController) performGet() error {

@@ -39,7 +39,10 @@ func (c UsersController) Put() error {
 }
 
 func (c UsersController) Options() error {
-	return c.handleOptionsRequest()
+	c.w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+	c.w.Header().Set("Access-Control-Allow-Headers",
+		"Accept, Content-Type, access-control-allow-methods")
+	return nil
 }
 
 func (c *UsersController) authenticateUser() error {
@@ -88,14 +91,6 @@ func (c *UsersController) authenticateUser() error {
 	tokenBody, _ := ioutil.ReadAll(response.Body)
 	c.w.Write(tokenBody)
 
-	return nil
-}
-
-func (c *UsersController) handleOptionsRequest() error {
-	c.w.Header().Set("Access-Control-Allow-Origin", "*")
-	c.w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-	c.w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, access-control-allow-methods")
-	c.w.Write([]byte(""))
 	return nil
 }
 

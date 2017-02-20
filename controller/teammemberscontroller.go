@@ -35,7 +35,9 @@ func (c TeamMembersController) Put() error {
 }
 
 func (c TeamMembersController) Options() error {
-	return fmt.Errorf("OPTIONS requests not currently supported.")
+	SetAllowDefaultHeaders(c.w)
+	SetAllowDefaultMethods(c.w)
+	return nil
 }
 
 func (c *TeamMembersController) performGet() error {

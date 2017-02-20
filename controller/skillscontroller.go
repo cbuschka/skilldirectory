@@ -37,7 +37,9 @@ func (c SkillsController) Put() error {
 }
 
 func (c SkillsController) Options() error {
-	return fmt.Errorf("OPTIONS requests not currently supported.")
+	SetAllowDefaultHeaders(c.w)
+	SetAllowDefaultMethods(c.w)
+	return nil
 }
 
 func (c SkillsController) performGet() error {
