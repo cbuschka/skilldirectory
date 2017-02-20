@@ -8,7 +8,187 @@
 	},
 	"item": [
 		{
-			"name": "1 - POST",
+			"name": "1 - OPTIONS",
+			"description": "",
+			"item": [
+				{
+					"name": "Team Members",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/teammembers/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Skills",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "TMSkills",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Links",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Skill Reviews",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Tests",
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"tests['Body is empty']      = responseBody      === '';",
+									"",
+									"tests['Access-Control-Allow-Headers is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Headers');",
+									"tests['Access-Control-Allow-Methods is present'] = ",
+									"  postman.getResponseHeader('Access-Control-Allow-Methods');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/users/",
+						"method": "OPTIONS",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2 - POST",
 			"description": "",
 			"item": [
 				{
@@ -252,7 +432,75 @@
 			]
 		},
 		{
-			"name": "2 - GET",
+			"name": "3 - PUT",
+			"description": "",
+			"item": [
+				{
+					"name": "TMSkill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 200'] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tmskills/{{tmSkillID}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"proficiency\":    5,\n    \"skill_id\":       \"{{skillID}}\",\n    \"team_member_id\": \"{{teamMemberID}}\",\n    \"wish_list\":      true\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Skill Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 200'] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/{{skillReviewID}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"body\": \"This here is an updated skill review body!\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4 - GET",
 			"description": "",
 			"item": [
 				{
@@ -691,75 +939,7 @@
 			]
 		},
 		{
-			"name": "3 - PUT",
-			"description": "",
-			"item": [
-				{
-					"name": "TMSkill",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests['Status code is 200'] = responseCode.code === 200;"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/tmskills/{{tmSkillID}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"proficiency\":    5,\n    \"skill_id\":       \"{{skillID}}\",\n    \"team_member_id\": \"{{teamMemberID}}\",\n    \"wish_list\":      true\n}"
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Skill Review",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests['Status code is 200'] = responseCode.code === 200;"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/skillreviews/{{skillReviewID}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"body\": \"This here is an updated skill review body!\"\n}"
-						},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "4 - DELETE",
+			"name": "5 - DELETE",
 			"description": "",
 			"item": [
 				{
