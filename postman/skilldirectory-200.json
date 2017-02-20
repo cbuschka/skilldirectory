@@ -613,7 +613,7 @@
 									"        obj.skill_id         === undefined ||",
 									"        obj.team_member_id   === undefined ||",
 									"        obj.body             === undefined ||",
-									"        obj.timestamp        === undefined ||",
+									"        //obj.timestamp        === undefined ||",
 									"        obj.positive         === undefined ||",
 									"        obj.skill_name       === undefined ||",
 									"        obj.team_member_name === undefined)",
@@ -627,7 +627,7 @@
 									"        obj.skill_id       === prevReview.skill_id       &&",
 									"        obj.team_member_id === prevReview.team_member_id &&",
 									"        obj.body           === prevReview.body           &&",
-									"        obj.timestamp      === prevReview.timestamp      &&",
+									"        //obj.timestamp      === prevReview.timestamp      &&",
 									"        obj.positive       === prevReview.positive)",
 									"      containsPrevReview = true;",
 									"});",
@@ -671,7 +671,7 @@
 									"                                                        skill_id       === prevReview.skill_id       &&",
 									"                                                        team_member_id === prevReview.team_member_id &&",
 									"                                                        body           === prevReview.body           &&",
-									"                                                        timestamp      === prevReview.timestamp      &&",
+									"                                                        //timestamp      === prevReview.timestamp      &&",
 									"                                                        positive       === prevReview.positive;",
 									"tests['Body contains skill review DTO'] = skill_name       !== undefined &&",
 									"                                          team_member_name !== undefined;"
@@ -836,35 +836,6 @@
 					],
 					"request": {
 						"url": "{{url}}/links/{{linkID}}",
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": " Skill",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"// Init Vars",
-									"const code = responseCode.code;",
-									"",
-									"// Tests",
-									"tests['Status code is 200']  = responseCode.code === 200;",
-									"tests['Body is correct']     = responseBody      === '';",
-									"",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/skills/{{skillID}}",
 						"method": "DELETE",
 						"header": [],
 						"body": {},
