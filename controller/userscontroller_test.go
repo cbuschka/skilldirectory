@@ -59,7 +59,7 @@ func TestUsersOptions(t *testing.T) {
 	if err != nil {
 		t.Errorf("OPTIONS requests should always return a 200 response.")
 	}
-	if uc.w.Header().Get("Access-Control-Allow-Methods") != "GET, POST" {
+	if uc.w.Header().Get("Access-Control-Allow-Methods") != "POST" {
 		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
 			" incorrect value")
 	}

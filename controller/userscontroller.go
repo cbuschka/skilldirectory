@@ -39,7 +39,7 @@ func (c UsersController) Put() error {
 }
 
 func (c UsersController) Options() error {
-	c.w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+	c.w.Header().Set("Access-Control-Allow-Methods", "POST")
 	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
 	return nil
 }
