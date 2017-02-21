@@ -474,7 +474,13 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests['Status code is 200'] = responseCode.code === 200;"
+									"tests['Status code is 200'] = responseCode.code === 200;",
+									"",
+									"// Env Vars (for chaining use)",
+									"updatedSkillReview = JSON.parse(environment.skillReview);",
+									"updatedSkillReview.body = 'This here is an updated skill review body!';",
+									"postman.setEnvironmentVariable('skillReview', JSON.stringify(updatedSkillReview))",
+									""
 								]
 							}
 						}
