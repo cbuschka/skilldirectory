@@ -34,5 +34,6 @@ func GetDefaultMethods() string {
 // default HTTP methods for an endpoint.
 func GetDefaultHeaders() string {
 	return "Origin, Accept, X-Requested-With, Content-Type, " +
-		"Access-Control-Request-Method, Access-Control-Request-Headers"
+		"Access-Control-Request-Methods, Access-Control-Request-Headers, " +
+		"Access-Control-Allow-Methods"
 }
