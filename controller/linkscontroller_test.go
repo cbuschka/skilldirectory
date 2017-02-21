@@ -232,6 +232,24 @@ func Test_validateLinkFields(t *testing.T) {
 	}
 }
 
+func TestLinksOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/links", nil)
+	lc := getLinksController(request, nil)
+
+	err := lc.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if lc.w.Header().Get("Access-Control-Allow-Methods") != GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if lc.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
 /*
 getLinksController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new

@@ -43,7 +43,9 @@ func (c SkillReviewsController) Put() error {
 }
 
 func (c SkillReviewsController) Options() error {
-	return fmt.Errorf("OPTIONS requests not currently supported.")
+	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
+	c.w.Header().Set("Access-Control-Allow-Methods", "PUT, "+GetDefaultMethods())
+	return nil
 }
 
 func (c *SkillReviewsController) performGet() error {

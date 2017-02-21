@@ -295,6 +295,24 @@ func TestInvalidProf(t *testing.T) {
 	}
 }
 
+func TestTMSkillOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/tmskills", nil)
+	tsc := getTMSkillsController(request, nil)
+
+	err := tsc.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if tsc.w.Header().Get("Access-Control-Allow-Methods") != "PUT, "+GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if tsc.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
 /*
 getTMSkillsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new
