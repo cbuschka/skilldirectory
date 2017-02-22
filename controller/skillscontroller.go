@@ -80,7 +80,7 @@ func (c *SkillsController) getAllSkills() error {
 
 func (c *SkillsController) getSkill(id uint) error {
 	skill := gormmodel.QuerySkill(id)
-	err := c.first(&skill)
+	err := c.preloadAndFind(&skill, "Links", "SkillReviews")
 	if err != nil {
 		return err
 	}

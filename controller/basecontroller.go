@@ -98,3 +98,16 @@ func (bc BaseController) find(object interface{}) error {
 	}
 	return bc.db.Find(object).Error
 }
+
+func (bc BaseController) preloadAndFind(object interface{}, preload ...string) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+	db := *bc.db
+	for _, p := range preload {
+		db = *db.Preload(p)
+	}
+	return db.Find(object).Error
+}

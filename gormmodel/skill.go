@@ -40,9 +40,9 @@ type Skill struct {
 
 	IconURL string `json:"icon_url"`
 
-	// Links					[]Link 				`json:"links"`
-	// SkillReviews	[]SkillReview	`json:"skills"`
-	TMSkills []TMSkill `json:"teammember_skills"`
+	Links        []Link
+	SkillReviews []SkillReview
+	TMSkills     []TMSkill
 }
 
 func (s Skill) GetID() uint {

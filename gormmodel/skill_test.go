@@ -1,11 +1,22 @@
 package gormmodel
 
 import (
+	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
 )
 
 func TestNewSkill(t *testing.T) {
+	skill := NewSkill(1, "Testing", "database")
+	link := Link{
+		Name:     "Test Link",
+		URL:      "https://test.com",
+		LinkType: "blog",
+	}
+	skill.Links = append(skill.Links, link)
+	b, _ := json.Marshal(skill)
+	fmt.Println(string(b))
 	skillOne := NewSkill(1, "ASkillName", ScriptedSkillType)
 	skillTwo := Skill{
 		Name:      "ASkillName",
