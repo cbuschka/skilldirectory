@@ -48,11 +48,15 @@ func (c SkillsController) performGet() error {
 	if path == "" {
 		return c.getAllSkills()
 	}
-	return c.getSkill(path)
+
+	skillID, err := util.PathToID(c.r.URL)
+	if err != nil {
+		return fmt.Errorf("ID must be an uint")
+	}
+	return c.getSkill(skillID)
 }
 
 func (c *SkillsController) getAllSkills() error {
-	// var skills []interface{}
 	var err error
 	// filter := c.r.URL.Query().Get("skilltype")
 	// var opts data.CassandraQueryOptions
@@ -64,7 +68,7 @@ func (c *SkillsController) getAllSkills() error {
 	// skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
 
 	var skills []model.Skill
-	err = c.db.Find(&skills).Error
+	err = c.find(&skills)
 
 	if err != nil {
 		return err
@@ -75,8 +79,9 @@ func (c *SkillsController) getAllSkills() error {
 	return err
 }
 
-func (c *SkillsController) getSkill(id string) error {
-	skill, err := c.loadSkill(id)
+func (c *SkillsController) getSkill(id uint) error {
+	skill := gormmodel.QuerySkill(id)
+	err := c.first(&skill)
 	if err != nil {
 		return err
 	}
@@ -85,59 +90,19 @@ func (c *SkillsController) getSkill(id string) error {
 	return err
 }
 
-func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
-	skill := model.Skill{}
-	err := c.session.Read("skills", id, data.CassandraQueryOptions{}, &skill)
-	if err != nil {
-		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %s", id))
-	}
-	skillDTO, _ := c.addLinks(skill)
-	c.addIcon(&skillDTO)
-	return &skillDTO, nil
-}
-
-func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
-	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links",
-		data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
-	if err != nil {
-		c.Print(err)
-		return skillDTO, err
-	}
-	linksRaw, err := json.Marshal(linksInterface)
-	if err != nil {
-		return skillDTO, nil
-	}
-	links := &[]model.Link{}
-	err = json.Unmarshal(linksRaw, links)
-	if err != nil {
-		c.Print(err)
-	}
-	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
-	return skillDTO, nil
-}
-
-func (c *SkillsController) addIcon(skillDTO *model.SkillDTO) {
-	skillIcon := model.SkillIcon{}
-	c.session.Read("skillicons", "",
-		data.NewCassandraQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
-	skillDTO.Icon = skillIcon
-}
-
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
 	skillID := util.CheckForID(c.r.URL)
 	if skillID == "" {
 		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
 	}
-	err1 := c.removeSkillChildren(skillID)
-	if err1 != nil {
-		c.Printf("removingSkillChildren: %v", err1)
-
+	skill := gormmodel.Skill{}
+	id, err := util.PathToID(c.r.URL)
+	if err != nil {
+		return err
 	}
-
-	err := c.session.Delete("skills", skillID, data.CassandraQueryOptions{})
+	skill.ID = id
+	err = c.delete(skill)
 
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
@@ -180,7 +145,7 @@ func (c *SkillsController) addSkill() error {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
 	}
 
-	err = c.Create(&skill)
+	err = c.create(&skill)
 	if err != nil {
 		return err
 	}

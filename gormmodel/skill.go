@@ -28,6 +28,10 @@ Each Skill has a Name, SkillType, and a unique ID:
    can be used to identify the skill should it be stored in a database with
 	 other Skills.
 */
+
+type GormInterface interface {
+	GetID() uint
+}
 type Skill struct {
 	gorm.Model
 
@@ -39,6 +43,16 @@ type Skill struct {
 	// Links					[]Link 				`json:"links"`
 	// SkillReviews	[]SkillReview	`json:"skills"`
 	TMSkills []TMSkill `json:"teammember_skills"`
+}
+
+func (s Skill) GetID() uint {
+	return s.ID
+}
+
+func QuerySkill(id uint) Skill {
+	var skill Skill
+	skill.ID = id
+	return skill
 }
 
 // NewSkill returns a new Skill object with specified params

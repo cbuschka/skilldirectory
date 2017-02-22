@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"skilldirectory/data"
+	"skilldirectory/gormmodel"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jinzhu/gorm"
@@ -53,26 +54,47 @@ func GetDefaultHeaders() string {
 		"Access-Control-Allow-Methods"
 }
 
-func (b *BaseController) SetTest(errSwitch bool) {
-	b.testSwitch = true
-	b.errSwitch = errSwitch
+func (bc *BaseController) SetTest(errSwitch bool) {
+	bc.testSwitch = true
+	bc.errSwitch = errSwitch
 }
 
-func (b BaseController) Create(object interface{}) error {
-	if b.errSwitch {
+func (bc BaseController) create(object gormmodel.GormInterface) error {
+	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
-	} else if b.testSwitch {
+	} else if bc.testSwitch {
 		return nil
 	}
-	return b.db.Create(object).Error
+	return bc.db.Create(object).Error
 }
 
 // Delete calls gorm Delete.  Don't forget to assign the object an ID
-func (b BaseController) Delete(object interface{}) error {
-	if b.errSwitch {
+func (bc BaseController) delete(object gormmodel.GormInterface) error {
+	if object.GetID() == 0 {
+		return fmt.Errorf("Can't Delete Nil Object")
+	} else if bc.errSwitch {
 		return fmt.Errorf("Error Test")
-	} else if b.testSwitch {
+	} else if bc.testSwitch {
 		return nil
 	}
-	return b.db.Delete(object).Error
+	return bc.db.Delete(object).Error
+}
+
+func (bc BaseController) first(object gormmodel.GormInterface) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+
+	return bc.db.First(object, object.GetID()).Error
+}
+
+func (bc BaseController) find(object interface{}) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+	return bc.db.Find(object).Error
 }

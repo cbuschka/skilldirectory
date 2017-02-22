@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	"testing"
 
@@ -21,83 +22,86 @@ func TestSkillsControllerBase(t *testing.T) {
 	}
 }
 
-//
-// func TestGetAllSkills(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodGet, "/api/skills", nil)
-// 	sc := getSkillsController(request, &data.MockDataAccessor{})
-//
-// 	err := sc.Get()
-// 	if err != nil {
-// 		t.Error(err.Error())
-// 	}
-// }
-//
-// func TestGetAllSkills_Error(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodGet, "/api/skills", nil)
-// 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
-//
-// 	err := sc.Get()
-// 	if err == nil {
-// 		t.Errorf("Expected error: %s", err.Error())
-// 	}
-// }
-//
-// func TestGetSkill(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
-// 	sc := getSkillsController(request, &data.MockDataAccessor{})
-//
-// 	err := sc.Get()
-// 	if err != nil {
-// 		t.Error(err.Error())
-// 	}
-// }
-//
-// func TestGetSkill_Error(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
-// 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
-//
-// 	err := sc.Get()
-// 	if err == nil {
-// 		t.Errorf("Expected error: %s", err.Error())
-// 	}
-// }
-//
-// func TestDeleteSkill(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
-// 	sc := getSkillsController(request, &data.MockDataAccessor{})
-//
-// 	err := sc.Delete()
-// 	if err != nil {
-// 		t.Errorf("Expected no error, but got one: %s", err.Error())
-// 	}
-// }
-//
-// func TestDeleteSkill_Error(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
-// 	sc := getSkillsController(request, &data.MockErrorDataAccessor{})
-//
-// 	err := sc.Delete()
-// 	if err == nil {
-// 		t.Errorf("Expected error: %s", err.Error())
-// 	}
-// }
-//
-// func TestDeleteSkill_NoKey(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/skills/", nil)
-// 	sc := getSkillsController(request, &data.MockDataAccessor{})
-//
-// 	err := sc.Delete()
-// 	if err == nil {
-// 		t.Errorf("Expected error when no key: %s", err.Error())
-// 	}
-// }
-//
+func TestGetAllSkills(t *testing.T) {
+	sc := getSkillsController(
+		httptest.NewRequest(
+			http.MethodGet,
+			"/api/skills",
+			nil),
+		false)
+
+	err := sc.Get()
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestGetAllSkills_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skills", nil)
+	sc := getSkillsController(request, true)
+
+	err := sc.Get()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestGetSkill(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
+	sc := getSkillsController(request, false)
+
+	err := sc.Get()
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestGetSkill_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
+	sc := getSkillsController(request, true)
+
+	err := sc.Get()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestDeleteSkill(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
+	sc := getSkillsController(request, false)
+
+	err := sc.Delete()
+	if err != nil {
+		t.Errorf("Expected no error, but got one: %s", err.Error())
+	}
+}
+
+func TestDeleteSkill_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/1234", nil)
+	sc := getSkillsController(request, true)
+
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error")
+	}
+}
+
+func TestDeleteSkill_NoKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/", nil)
+	sc := getSkillsController(request, false)
+
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error when no key: %s", err.Error())
+	}
+}
+
 func TestPostSkill(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost,
 			"/api/skills",
-			getReaderForNewSkill("", "BestSkillNameEver", model.ScriptedSkillType)),
+			getReaderForNewSkill(0, "BestSkillNameEver", model.ScriptedSkillType)),
 		false)
 
 	err := sc.Post()
@@ -111,7 +115,7 @@ func TestPostSkill_NoName(t *testing.T) {
 		httptest.NewRequest(
 			http.MethodPost,
 			"/api/skills",
-			getReaderForNewSkill("1234", "", model.ScriptedSkillType)),
+			getReaderForNewSkill(1234, "", model.ScriptedSkillType)),
 		false)
 
 	err := sc.Post()
@@ -124,7 +128,7 @@ func TestPostSkill_NoSkillType(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost,
-			"/api/skills", getReaderForNewSkill("1234", "SomeName", "")),
+			"/api/skills", getReaderForNewSkill(1234, "SomeName", "")),
 		false)
 
 	err := sc.Post()
@@ -137,7 +141,7 @@ func TestPostSkill_InvalidType(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost,
-			"/api/skills", getReaderForNewSkill("", "", "badtype")),
+			"/api/skills", getReaderForNewSkill(0, "", "badtype")),
 		false)
 
 	err := sc.Post()
@@ -161,7 +165,7 @@ func TestPostSkill_Error(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost, "/api/skills",
-			getReaderForNewSkill("", "", model.ScriptedSkillType)),
+			getReaderForNewSkill(0, "", model.ScriptedSkillType)),
 		true)
 
 	err := sc.Post()
@@ -205,8 +209,8 @@ func getSkillsController(request *http.Request, errSwitch bool) SkillsController
 getReaderForNewSkill is a helper function for a new Skill with the given id, name, and skillType.
 This Skill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
-func getReaderForNewSkill(id, name, skillType string) *bytes.Reader {
-	newSkill := model.NewSkill(id, name, skillType)
+func getReaderForNewSkill(id uint, name, skillType string) *bytes.Reader {
+	newSkill := gormmodel.NewSkill(id, name, skillType)
 	b, _ := json.Marshal(newSkill)
 	return bytes.NewReader(b)
 }

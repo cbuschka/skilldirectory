@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"skilldirectory/errors"
+	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -94,4 +95,18 @@ func ValidateIcon(icon io.Reader) (string, error) {
 // SanitizeInput escapes the single quotes in the Cassandra query
 func SanitizeInput(input string) string {
 	return strings.Replace(input, "'", "''", -1)
+}
+
+// PathToID convers a URL path to a uint value, or returns an error
+func PathToID(path *url.URL) (uint, error) {
+	id := CheckForID(path)
+	if id == "" {
+		return 0, errors.MissingIDError(fmt.Errorf("This action requires an ID in the request path"))
+	}
+	intID, err := strconv.Atoi(id)
+	if err != nil || intID < 0 {
+		return 0, errors.MissingIDError(fmt.Errorf("The ID for this request must be an unsigned int"))
+	}
+
+	return uint(intID), nil
 }
