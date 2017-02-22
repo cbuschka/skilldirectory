@@ -66,3 +66,13 @@ func (b BaseController) Create(object interface{}) error {
 	}
 	return b.db.Create(object).Error
 }
+
+// Delete calls gorm Delete.  Don't forget to assign the object an ID
+func (b BaseController) Delete(object interface{}) error {
+	if b.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if b.testSwitch {
+		return nil
+	}
+	return b.db.Delete(object).Error
+}
