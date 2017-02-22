@@ -92,7 +92,17 @@ func TestDeleteSkill_NoKey(t *testing.T) {
 
 	err := sc.Delete()
 	if err == nil {
-		t.Errorf("Expected error when no key: %s", err.Error())
+		t.Errorf("Expected error when no key")
+	}
+}
+
+func TestDeleteSkill_0Key(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/skills/0", nil)
+	sc := getSkillsController(request, false)
+
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expected error when key is 0")
 	}
 }
 

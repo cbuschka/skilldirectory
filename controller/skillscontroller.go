@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
-	"skilldirectory/data"
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
@@ -112,11 +111,6 @@ func (c *SkillsController) removeSkill() error {
 
 	c.Printf("Skill Deleted with ID: %s", skillID)
 	return nil
-}
-
-func (c *SkillsController) removeSkillChildren(skillID string) error {
-	return c.session.Delete("links", "", data.NewCassandraQueryOptions("skill_ID", skillID, true))
-
 }
 
 func (c *SkillsController) addSkill() error {
