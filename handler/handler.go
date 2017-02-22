@@ -7,6 +7,8 @@ import (
 	"skilldirectory/errors"
 	"skilldirectory/util"
 	"sync"
+
+	"github.com/jinzhu/gorm"
 )
 
 // This mutex will prevent race conditions on concurrent requests
@@ -18,12 +20,12 @@ the passed-in function, fn.
 */
 func MakeHandler(
 	fn func(http.ResponseWriter, *http.Request, controller.RESTController,
-		data.DataAccess, data.FileSystem),
+		data.DataAccess, data.FileSystem, *gorm.DB),
 	cont controller.RESTController, session data.DataAccess,
-	fs data.FileSystem) http.HandlerFunc {
+	fs data.FileSystem, db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		fn(w, r, cont, session, fs)
+		fn(w, r, cont, session, fs, db)
 	}
 }
 
@@ -40,7 +42,7 @@ If the RESTController generates any errors, then Handler() will
 log them, and respond to the request with the appropriate error.
 */
 func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTController,
-	session data.DataAccess, fs data.FileSystem) {
+	session data.DataAccess, fs data.FileSystem, db *gorm.DB) {
 
 	//Lock the critical section
 	mutex.Lock()
@@ -51,6 +53,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	log.Printf("Handling Request: %s", r.Method)
 	log.Debugf("Request: %s", r.Body)
 	cont.Base().Init(w, r, session, fs, log)
+	cont.Base().InitWithGorm(w, r, session, fs, log, db)
 
 	var err error
 	switch r.Method {

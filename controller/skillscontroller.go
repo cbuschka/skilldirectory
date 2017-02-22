@@ -7,6 +7,7 @@ import (
 	"skilldirectory/model"
 
 	"skilldirectory/errors"
+	"skilldirectory/gormmodel"
 	"skilldirectory/util"
 
 	"fmt"
@@ -51,16 +52,19 @@ func (c SkillsController) performGet() error {
 }
 
 func (c *SkillsController) getAllSkills() error {
-	var skills []interface{}
+	// var skills []interface{}
 	var err error
-	filter := c.r.URL.Query().Get("skilltype")
-	var opts data.CassandraQueryOptions
+	// filter := c.r.URL.Query().Get("skilltype")
+	// var opts data.CassandraQueryOptions
 
-	// Add approved query filters here
-	if filter != "" {
-		opts = data.NewCassandraQueryOptions("skilltype", filter, false)
-	}
-	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
+	// // Add approved query filters here
+	// if filter != "" {
+	// 	opts = data.NewCassandraQueryOptions("skilltype", filter, false)
+	// }
+	// skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
+
+	var skills []model.Skill
+	err = c.db.Find(&skills).Error
 
 	if err != nil {
 		return err
@@ -154,7 +158,8 @@ func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	skill := model.Skill{}
+	c.Printf("Adding to Postgres")
+	skill := gormmodel.Skill{}
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -171,11 +176,13 @@ func (c *SkillsController) addSkill() error {
 			"invalid Skill type: %s", skill.SkillType))
 	}
 
-	// Save to database
-	skill.ID = util.NewID()
-	err = c.session.Save("skills", skill.ID, skill)
 	if err != nil {
-		return errors.SavingError(err)
+		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+	}
+
+	err = c.Create(&skill)
+	if err != nil {
+		return err
 	}
 
 	// Return object JSON as response
@@ -195,7 +202,7 @@ validity of the state of a Skill initialized via unmarshaled JSON. Ensures that 
 passed-in Skill contains a key-value pair for "Name" and for "SkillType"
 fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
-func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
+func (c *SkillsController) validatePOSTBody(skill *gormmodel.Skill) error {
 	if skill.Name == "" || skill.SkillType == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A Skill must be a JSON object and must contain values for "+
