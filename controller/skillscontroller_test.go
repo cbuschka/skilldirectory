@@ -206,7 +206,7 @@ func TestSkillOptions(t *testing.T) {
 //
 // /*
 // getSkillsController is a helper function for creating and initializing a new BaseController with
-// the given HTTP request and DataAccessor. Returns a new SkillsController created with that BaseController.
+// the given HTTP request and mock err bool. Returns a new SkillsController created with that BaseController.
 // */
 func getSkillsController(request *http.Request, errSwitch bool) SkillsController {
 	base := BaseController{}
