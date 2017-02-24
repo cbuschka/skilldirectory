@@ -97,13 +97,18 @@ func SanitizeInput(input string) string {
 	return strings.Replace(input, "'", "''", -1)
 }
 
-// PathToID convers a URL path to a uint value, or returns an error
+// PathToID converts a URL path to a uint value, or returns an error
 func PathToID(path *url.URL) (uint, error) {
 	id := CheckForID(path)
-	if id == "" {
+	return StringToID(id)
+}
+
+// StringToID converts a string to a uint value, or returns an error
+func StringToID(input string) (uint, error) {
+	if input == "" {
 		return 0, errors.MissingIDError(fmt.Errorf("This action requires an ID in the request path"))
 	}
-	intID, err := strconv.Atoi(id)
+	intID, err := strconv.Atoi(input)
 	if err != nil || intID < 0 {
 		return 0, errors.MissingIDError(fmt.Errorf("The ID for this request must be an unsigned int"))
 	}

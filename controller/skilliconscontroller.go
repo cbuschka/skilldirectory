@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"skilldirectory/data"
 	"skilldirectory/errors"
+	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	"skilldirectory/util"
 )
@@ -87,14 +88,20 @@ func (c *SkillIconsController) removeSkillIcon() error {
 		c.Warn(err)
 		return err
 	}
+	skillIDInt, err := util.StringToID(skillID)
+	if err != nil {
+		return err
+	}
+	skill := gormmodel.QuerySkill(skillIDInt)
 
+	updateMap := make(map[string]interface{})
+	updateMap["icon_url"] = ""
 	// Attempt to delete record from database
-	err = c.session.Delete("skillicons", "",
-		data.NewCassandraQueryOptions("skill_id", skillID, true))
+	err = c.updates(skill, updateMap)
 	if err != nil {
 		c.Warnf("Failed to delete skill icon from database.")
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no skill icon exists with specified ID: %s", skillID))
+			"unable to remove icon url form skill %s", skillID))
 	}
 
 	c.Printf("SkillIcon Deleted with ID: %s", skillID)
@@ -111,10 +118,12 @@ func (c *SkillIconsController) addSkillIcon() error {
 	}
 	defer iconFile.Close()
 
-	// Unmarshal the request body into new object of type SkillIcon
-	skillIcon := model.SkillIcon{
-		SkillID: c.r.FormValue("skill_id"),
+	skillValue := c.r.FormValue("skill_id")
+	skillID, err := util.StringToID(skillValue)
+	if err != nil {
+		return err
 	}
+	skill := gormmodel.QuerySkill(skillID)
 
 	// Capture data for later use before it is consumed by util.ValidateIcon
 	iconFileBytes, _ := ioutil.ReadAll(iconFile)
@@ -127,7 +136,7 @@ func (c *SkillIconsController) addSkillIcon() error {
 		c.Warn("Invalid image data: ", err)
 		return errors.InvalidPOSTBodyError(err)
 	}
-	err = validateSkillID(skillIcon.SkillID, c.session)
+	err = c.first(&skill)
 	if err != nil {
 		c.Warn("ID does not exist: ", err.Error())
 		return errors.InvalidPOSTBodyError(fmt.Errorf(
@@ -135,25 +144,26 @@ func (c *SkillIconsController) addSkillIcon() error {
 	}
 
 	// Upload image to S3 cloud
-	url, err := c.fileSystem.Write("dev/"+skillIcon.SkillID,
+	url, err := c.fileSystem.Write("dev/"+skillValue,
 		bytes.NewReader(iconFileBytes))
 	if err != nil {
 		return fmt.Errorf("failed to save icon: %s", err)
 	}
 
-	// Store its URL in Cassandra table
-	skillIcon.URL = url
-	err = c.session.Save("skillicons", skillIcon.SkillID, skillIcon)
+	updateMap := make(map[string]interface{})
+	updateMap["icon_url"] = url
+	err = c.updates(&skill, updateMap)
 	if err != nil {
+		c.Warnf("Update error: %v", err)
 		return errors.SavingError(err)
 	}
 
-	b, err := json.Marshal(skillIcon)
+	b, err := json.Marshal(skill)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
 	c.w.Write(b)
 
-	c.Printf("Saved icon: %s", skillIcon.URL)
+	c.Printf("Saved icon: %s", url)
 	return nil
 }

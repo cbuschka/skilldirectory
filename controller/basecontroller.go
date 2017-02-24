@@ -111,3 +111,13 @@ func (bc BaseController) preloadAndFind(object interface{}, preload ...string) e
 	}
 	return db.Find(object).Error
 }
+
+func (bc BaseController) updates(object gormmodel.GormInterface, updateMap map[string]interface{}) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+
+	return bc.db.Model(object).Updates(updateMap).Error
+}
