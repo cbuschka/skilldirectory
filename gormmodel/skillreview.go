@@ -13,7 +13,7 @@ type SkillReview struct {
 	Body         string `json:"body"`
 	Positive     bool   `json:"positive"`
 	SkillID      uint   `gorm:"index" json:"skill_id"`
-	TeamMemberID uint   `gorm:"index"`
+	TeamMemberID uint   `gorm:"index" json:"team_member_id"`
 }
 
 /*

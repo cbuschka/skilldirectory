@@ -217,6 +217,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
 	skillReview := gormmodel.SkillReview{}
+	fmt.Println(skillReview)
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -253,7 +254,7 @@ error if not.
 func (c *SkillReviewsController) validatePOSTBody(skillReview *gormmodel.SkillReview) error {
 	fmt.Println(skillReview)
 	if skillReview.SkillID == 0 ||
-		// skillReview.TeamMemberID == 00 ||
+		skillReview.TeamMemberID == 0 ||
 		skillReview.Body == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A SkillReview must be a JSON object and must contain values for"+

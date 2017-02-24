@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"skilldirectory/data"
 	"skilldirectory/errors"
+	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	util "skilldirectory/util"
 )
@@ -45,32 +46,32 @@ func (c *TeamMembersController) performGet() error {
 	if path == "" {
 		return c.getAllTeamMembers()
 	}
-	return c.getTeamMember(path)
-}
 
-func (c *TeamMembersController) getAllTeamMembers() error {
-	teamMembers, err := c.session.ReadAll("teammembers", model.TeamMember{})
+	teamMemberId, err := util.StringToID(path)
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(teamMembers)
+	return c.getTeamMember(teamMemberId)
+}
+
+func (c *TeamMembersController) getTeamMember(id uint) error {
+	teamMember := gormmodel.QueryTeamMember(id)
+	err := c.first(&teamMember)
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(teamMember)
 	c.w.Write(b)
 	return err
 }
 
-func (c *TeamMembersController) getTeamMember(id string) error {
-	teamMember, err := c.loadTeamMember(id)
+func (c *TeamMembersController) getAllTeamMembers() error {
+	var teamMembers []gormmodel.TeamMember
+	err := c.find(&teamMembers)
 	if err != nil {
 		return err
 	}
-
-	tmSkillDTOs, err := c.getAllTMSkills(teamMember)
-	if err != nil {
-		return err
-	}
-
-	teamMemberDTO := teamMember.NewTeamMemberDTO(tmSkillDTOs)
-	b, err := json.Marshal(teamMemberDTO)
+	b, err := json.Marshal(teamMembers)
 	c.w.Write(b)
 	return err
 }
@@ -83,61 +84,6 @@ func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, er
 			"no TeamMeber exists with specified ID: %q", id))
 	}
 	return &teamMember, nil
-}
-
-// Get a []model.TMSkillDTO for all TMSkills in the database associated with the
-// specified TeamMember
-func (c *TeamMembersController) getAllTMSkills(teamMember *model.TeamMember) (
-	[]model.TMSkillDTO, error) {
-	// Get all TMSkills that reference the passed-in TeamMember
-	options := data.NewCassandraQueryOptions(
-		"team_member_id", teamMember.ID, false)
-	tmSkillsInterface, err := c.session.FilteredReadAll("tmskills",
-		options, model.TMSkill{})
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert byte representation to map[string]interface{}
-	tmSkillsRaw, err := json.Marshal(tmSkillsInterface)
-	if err != nil {
-		return nil, err
-	}
-
-	// Convert map[string]interface{} to []model.TMSkill{}
-	tmSkills := []model.TMSkill{}
-	err = json.Unmarshal(tmSkillsRaw, &tmSkills)
-	if err != nil {
-		return nil, err
-	}
-
-	// "Convert" []model.TMSkill{} to []model.TMSkillDTO{} so that the
-	// names of each TMSkill's TeamMember and Skill IDs are returned.
-	tmSkillsDTO := []model.TMSkillDTO{}
-	for _, tmSkill := range tmSkills {
-		// Get name of Skill, skip if encounter an error
-		skillName, err := c.getSkillName(&tmSkill)
-		if err != nil {
-			c.Warnf("Possible invalid id: %v", err)
-			continue
-		}
-
-		// Append new TMSkillDTO to return object w/ the names
-		tmSkillsDTO = append(tmSkillsDTO,
-			tmSkill.NewTMSkillDTO(skillName, teamMember.Name))
-	}
-
-	return tmSkillsDTO, nil
-}
-
-func (c *TeamMembersController) getSkillName(tmSkill *model.TMSkill) (string, error) {
-	skill := model.Skill{}
-	err := c.session.Read("skills", tmSkill.SkillID, data.CassandraQueryOptions{},
-		&skill)
-	if err != nil {
-		return "", err
-	}
-	return skill.Name, nil
 }
 
 func (c *TeamMembersController) removeTeamMember() error {
@@ -162,7 +108,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	teamMember := model.TeamMember{}
+	teamMember := gormmodel.TeamMember{}
 	err := json.Unmarshal(body, &teamMember)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -174,8 +120,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	}
 
 	// Save to database
-	teamMember.ID = util.NewID()
-	err = c.session.Save("teammembers", teamMember.ID, teamMember)
+	err = c.create(&teamMember)
 	if err != nil {
 		return errors.SavingError(err)
 	}
@@ -197,7 +142,7 @@ validity of the state of a TeamMember initialized via unmarshaled JSON. Ensures 
 passed-in TeamMember contains a key-value pair for "Name" and for "Title"
 fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
-func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
+func (c *TeamMembersController) validatePOSTBody(teamMember *gormmodel.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A Team Member must be a JSON object and must contain values for"+
