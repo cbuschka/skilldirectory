@@ -96,7 +96,7 @@ func (bc BaseController) find(object interface{}) error {
 	} else if bc.testSwitch {
 		return nil
 	}
-	return bc.db.Find(object).Error
+	return bc.db.Where("deleted_at IS NULL").Find(object).Error
 }
 
 func (bc BaseController) preloadAndFind(object interface{}, preload ...string) error {
@@ -120,4 +120,17 @@ func (bc BaseController) updates(object gormmodel.GormInterface, updateMap map[s
 	}
 
 	return bc.db.Model(object).Updates(updateMap).Error
+}
+
+/*
+append takes a reference to a parentObject (&Skill), a childAppend value (SkillReview) and that
+association sting ("SkillReviews")
+*/
+func (bc BaseController) append(parentObject, childAppend gormmodel.GormInterface, association string) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+	return bc.db.Model(parentObject).Association(association).Append(childAppend).Error
 }

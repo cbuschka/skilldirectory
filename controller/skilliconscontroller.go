@@ -40,31 +40,6 @@ func (c SkillIconsController) Options() error {
 	return nil
 }
 
-// func (c *SkillIconsController) getAllSkillIcons() error {
-// 	skillIcons, err := c.session.ReadAll("skillIcons", model.SkillIcon{})
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	b, err := json.Marshal(skillIcons)
-// 	c.w.Write(b)
-// 	return err
-// }
-
-// func (c *SkillIconsController) getSkillIcon(skillID string) error {
-// 	skillIcon := model.SkillIcon{}
-// 	err := c.session.Read("skillicons", "",
-// 		data.NewCassandraQueryOptions("skill_id", skillID, true), &skillIcon)
-// 	if err != nil {
-// 		return errors.NoSuchIDError(
-// 			fmt.Errorf("no skill icon exists for skill with ID: %s", skillID))
-// 	}
-//
-// 	b, err := json.Marshal(skillIcon)
-// 	c.w.Write(b)
-// 	return err
-// }
-
 func (c *SkillIconsController) removeSkillIcon() error {
 	// Get ID at end of request; return error if request contains no ID
 	skillID := util.CheckForID(c.r.URL)

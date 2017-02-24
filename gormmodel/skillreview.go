@@ -10,12 +10,10 @@ to a specific Skill and TeamMember, and must also contain a date and body
 */
 type SkillReview struct {
 	gorm.Model
-	Body         string     `json:"body"`
-	Positive     bool       `json:"positive"`
-	SkillID      uint       `json:"skill_id"`
-	Skill        Skill      `json:"skill"`
-	TeamMemberID uint       `json:"team_member_id"`
-	TeamMember   TeamMember `json:"team_member"`
+	Body         string `json:"body"`
+	Positive     bool   `json:"positive"`
+	SkillID      uint   `gorm:"index" json:"skill_id"`
+	TeamMemberID uint   `gorm:"index"`
 }
 
 /*
@@ -40,4 +38,8 @@ func NewSkillReview(id, skillID, teamMemberID uint, body string, positive bool) 
 // GetType returns an interface{} with an underlying concrete type of SkillReview
 func (s SkillReview) GetType() interface{} {
 	return SkillReview{}
+}
+
+func (s SkillReview) GetID() uint {
+	return s.ID
 }

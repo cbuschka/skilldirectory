@@ -1,26 +1,25 @@
 package controller
 
-// import (
-// 	"bytes"
-// 	"encoding/json"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"reflect"
-// 	"skilldirectory/data"
-// 	"skilldirectory/model"
-// 	"testing"
-//
-// 	"github.com/Sirupsen/logrus"
-// )
-//
-// func TestSkillReviewsController_Base(t *testing.T) {
-// 	base := BaseController{}
-// 	sc := SkillReviewsController{BaseController: &base}
-//
-// 	if base != *sc.Base() {
-// 		t.Error("Expected Base() to return base pointer")
-// 	}
-// }
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"skilldirectory/model"
+	"testing"
+
+	"github.com/Sirupsen/logrus"
+)
+
+func TestSkillReviewsController_Base(t *testing.T) {
+	base := BaseController{}
+	sc := SkillReviewsController{BaseController: &base}
+
+	if base != *sc.Base() {
+		t.Error("Expected Base() to return base pointer")
+	}
+}
+
 //
 // func TestGetAllSkillReviews(t *testing.T) {
 // 	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews", nil)
@@ -236,54 +235,54 @@ package controller
 // 	}
 // }
 //
-// /*
-// getSkillReviewsController is a helper function for creating and initializing a new
-// BaseController with the given HTTP request and DataAccessor. Returns a new
-// SkillReviewsController created with that BaseController.
-// */
-// func getSkillReviewsController(request *http.Request,
-// 	dataAccessor data.DataAccess) SkillReviewsController {
-// 	base := BaseController{}
-// 	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
-// 	return SkillReviewsController{BaseController: &base}
-// }
-//
-// func TestSkillReviewOptions(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodOptions, "/api/skillreviews", nil)
-// 	src := getSkillReviewsController(request, nil)
-//
-// 	err := src.Options()
-// 	if err != nil {
-// 		t.Errorf("OPTIONS requests should always return a 200 response.")
-// 	}
-// 	if src.w.Header().Get("Access-Control-Allow-Methods") != "PUT, "+GetDefaultMethods() {
-// 		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
-// 			" incorrect value")
-// 	}
-// 	if src.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
-// 		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
-// 			" incorrect value")
-// 	}
-// }
-//
-// /*
-// getReaderForNewSkillReview is a helper function for a new SkillReview with the given
-// id, skillID, teamMemberID, body, date, and positive flag. This SkillReview is then
-// marshaled into JSON. A new Reader is created and returned for the resulting []byte.
-// */
-// func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp string,
-// 	positive bool) *bytes.Reader {
-// 	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
-// 		body, timestamp, positive)
-// 	b, _ := json.Marshal(newSkillReview)
-// 	return bytes.NewReader(b)
-// }
-//
-// func getReaderForDeleteSkillReview(id string, skillID string) *bytes.Reader {
-// 	newSkillReview := model.SkillReview{
-// 		ID:      id,
-// 		SkillID: skillID,
-// 	}
-// 	b, _ := json.Marshal(newSkillReview)
-// 	return bytes.NewReader(b)
-// }
+/*
+getSkillReviewsController is a helper function for creating and initializing a new
+BaseController with the given HTTP request and DataAccessor. Returns a new
+SkillReviewsController created with that BaseController.
+*/
+func getSkillReviewsController(request *http.Request, errSwitch bool) SkillReviewsController {
+	base := BaseController{}
+	base.SetTest(errSwitch)
+	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
+	return SkillReviewsController{BaseController: &base}
+}
+
+func TestSkillReviewOptions(t *testing.T) {
+	request := httptest.NewRequest(http.MethodOptions, "/api/skillreviews", nil)
+	src := getSkillReviewsController(request, false)
+
+	err := src.Options()
+	if err != nil {
+		t.Errorf("OPTIONS requests should always return a 200 response.")
+	}
+	if src.w.Header().Get("Access-Control-Allow-Methods") != "PUT, "+GetDefaultMethods() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Methods' contains" +
+			" incorrect value")
+	}
+	if src.w.Header().Get("Access-Control-Allow-Headers") != GetDefaultHeaders() {
+		t.Errorf("OPTIONS response header 'Access-Control-Allow-Headers' contains" +
+			" incorrect value")
+	}
+}
+
+/*
+getReaderForNewSkillReview is a helper function for a new SkillReview with the given
+id, skillID, teamMemberID, body, date, and positive flag. This SkillReview is then
+marshaled into JSON. A new Reader is created and returned for the resulting []byte.
+*/
+func getReaderForNewSkillReview(id, skillID, teamMemberID, body, timestamp string,
+	positive bool) *bytes.Reader {
+	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
+		body, timestamp, positive)
+	b, _ := json.Marshal(newSkillReview)
+	return bytes.NewReader(b)
+}
+
+func getReaderForDeleteSkillReview(id string, skillID string) *bytes.Reader {
+	newSkillReview := model.SkillReview{
+		ID:      id,
+		SkillID: skillID,
+	}
+	b, _ := json.Marshal(newSkillReview)
+	return bytes.NewReader(b)
+}
