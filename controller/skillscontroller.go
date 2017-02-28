@@ -84,6 +84,14 @@ func (c *SkillsController) getSkill(id uint) error {
 	if err != nil {
 		return err
 	}
+	for i := range skill.SkillReviews {
+		review := &skill.SkillReviews[i]
+		err = c.preloadAndFind(&review, "TeamMember")
+		if err != nil {
+			c.Printf("Preload TeamMembers Error: %v", err)
+		}
+		fmt.Println(review)
+	}
 	b, err := json.Marshal(skill)
 	c.w.Write(b)
 	return err
