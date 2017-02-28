@@ -46,14 +46,13 @@ func (c SkillReviewsController) Options() error {
 	return nil
 }
 
-//
 func (c *SkillReviewsController) performGet() error {
 	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		return c.getAllSkillReviews()
 	}
 
-	skillID, err := util.StringToID(path)
+	skillID, err := c.pathToID(c.r.URL)
 	if err != nil {
 		return err
 	}
@@ -103,67 +102,13 @@ func (c *SkillReviewsController) getSkillReview(id uint) error {
 		return err
 	}
 
-	// teamMemberName, err := c.getTeamMemberName(skillReview)
-	// if err != nil {
-	// 	c.Warnf("Possible invalid id: %v", err)
-	// 	return errors.NoSuchIDError(fmt.Errorf(
-	// 		"no TeamMember exists with specified ID: %q", skillReview.TeamMemberID))
-	// }
-	//
-	// skillName, err := c.getSkillName(skillReview)
-	// if err != nil {
-	// 	c.Warnf("Possible invalid id: %v", err)
-	// 	return errors.NoSuchIDError(fmt.Errorf(
-	// 		"no Skill exists with specified ID: %q", skillReview.SkillID))
-	// }
-
-	// skillReviewDTO := skillReview.NewSkillReviewDTO(skillName, teamMemberName)
 	b, err := json.Marshal(skillReview)
 	c.w.Write(b)
 	return err
 }
 
-// func (c *SkillReviewsController) loadSkillReview(id string) (*gormmodel.SkillReview,
-// 	error) {
-// 	skillReview := gormmodel.SkillReview{}
-// 	err := c.first(&skillReview)
-// 	if err != nil {
-// 		log.Printf("loadSkillReview() generated the following error:\n\t%q", err)
-// 		return nil, errors.NoSuchIDError(fmt.Errorf(
-// 			"no SkillReview exists with specified ID: %d", id))
-// 	}
-// 	return &skillReview, nil
-// }
-
-// func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
-// 	error) {
-// 	teamMember := model.TeamMember{}
-// 	err := c.session.Read("teammembers", sr.TeamMemberID,
-// 		data.CassandraQueryOptions{}, &teamMember)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return teamMember.Name, nil
-// }
-//
-// func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
-// 	error) {
-// 	skill := model.Skill{}
-// 	err := c.session.Read("skills", sr.SkillID, data.CassandraQueryOptions{},
-// 		&skill)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return skill.Name, nil
-// }
-
 func (c *SkillReviewsController) removeSkillReview() error {
-	path := util.CheckForID(c.r.URL)
-	if path == "" {
-		return errors.MissingIDError(fmt.Errorf("Missing required id for DELETE call"))
-	}
-
-	skillID, err := util.StringToID(path)
+	skillID, err := c.pathToID(c.r.URL)
 	if err != nil {
 		return err
 	}
@@ -232,7 +177,6 @@ func (c *SkillReviewsController) addSkillReview() error {
 	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
 	skillReview := gormmodel.SkillReview{}
-	fmt.Println(skillReview)
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -243,10 +187,11 @@ func (c *SkillReviewsController) addSkillReview() error {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
 	skill := gormmodel.QuerySkill(skillReview.SkillID)
-	err = c.append(&skill, skillReview, "SkillReviews")
+	err = c.append(&skill, &skillReview, "SkillReviews")
 	if err != nil {
 		return errors.SavingError(err)
 	}
+	fmt.Println(skillReview)
 
 	// Return review JSON as response
 	b, err := json.Marshal(skillReview)

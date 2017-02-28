@@ -3,8 +3,11 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"skilldirectory/data"
+	"skilldirectory/errors"
 	"skilldirectory/gormmodel"
+	"skilldirectory/util"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jinzhu/gorm"
@@ -132,4 +135,18 @@ func (bc BaseController) append(parentObject, childAppend gormmodel.GormInterfac
 		return nil
 	}
 	return bc.db.Model(parentObject).Association(association).Append(childAppend).Error
+}
+
+func (bc BaseController) pathToID(url *url.URL) (uint, error) {
+	path := util.CheckForID(url)
+	if path == "" {
+		return 0, errors.MissingIDError(fmt.Errorf("Missing required id for DELETE call"))
+	}
+
+	id, err := util.StringToID(path)
+	if err != nil {
+		return 0, errors.MissingIDError(fmt.Errorf("ID: %s is not a valid uint id", path))
+	}
+
+	return id, nil
 }
