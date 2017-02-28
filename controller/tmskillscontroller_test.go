@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
-	"skilldirectory/data"
-	"skilldirectory/model"
+	"skilldirectory/gormmodel"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -24,7 +22,7 @@ func TestTMSkillsController_Base(t *testing.T) {
 
 func TestGetAllTMSkills(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/tmskills", nil)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Get()
 	if err != nil {
@@ -34,7 +32,7 @@ func TestGetAllTMSkills(t *testing.T) {
 
 func TestGetAllTMSkills_Error(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/tmskills", nil)
-	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+	tc := getTMSkillsController(request, true)
 
 	err := tc.Get()
 	if err == nil {
@@ -44,7 +42,7 @@ func TestGetAllTMSkills_Error(t *testing.T) {
 
 func TestGetTMSkill(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/tmskills/1234", nil)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Get()
 	if err != nil {
@@ -54,7 +52,7 @@ func TestGetTMSkill(t *testing.T) {
 
 func TestGetTMSkill_Error(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/tmskills/1234", nil)
-	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+	tc := getTMSkillsController(request, true)
 
 	err := tc.Get()
 	if err == nil {
@@ -64,7 +62,7 @@ func TestGetTMSkill_Error(t *testing.T) {
 
 func TestDeleteTMSkill(t *testing.T) {
 	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/1234", nil)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Delete()
 	if err != nil {
@@ -74,7 +72,7 @@ func TestDeleteTMSkill(t *testing.T) {
 
 func TestDeleteTMSkill_Error(t *testing.T) {
 	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/1234", nil)
-	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+	tc := getTMSkillsController(request, true)
 
 	err := tc.Delete()
 	if err == nil {
@@ -84,7 +82,7 @@ func TestDeleteTMSkill_Error(t *testing.T) {
 
 func TestDeleteTMSkill_NoKey(t *testing.T) {
 	request := httptest.NewRequest(http.MethodDelete, "/api/tmskills/", nil)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Delete()
 	if err == nil {
@@ -93,9 +91,9 @@ func TestDeleteTMSkill_NoKey(t *testing.T) {
 }
 
 func TestPostTMSkill(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	body := getReaderForNewTMSkill(1234, 2345, 3456)
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Post()
 	if err != nil {
@@ -104,9 +102,9 @@ func TestPostTMSkill(t *testing.T) {
 }
 
 func TestPostTMSkill_NoSkillID(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "", "3456")
+	body := getReaderForNewTMSkill(1234, 0, 3456)
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Post()
 	if err == nil {
@@ -116,9 +114,9 @@ func TestPostTMSkill_NoSkillID(t *testing.T) {
 }
 
 func TestPostTMSkill_NoTeamMemberID(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "")
+	body := getReaderForNewTMSkill(1234, 2345, 0)
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Post()
 	if err == nil {
@@ -129,7 +127,7 @@ func TestPostTMSkill_NoTeamMemberID(t *testing.T) {
 
 func TestPostTMSkill_NoTMSkill(t *testing.T) {
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", nil)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Post()
 	if err == nil {
@@ -138,9 +136,9 @@ func TestPostTMSkill_NoTMSkill(t *testing.T) {
 }
 
 func TestPostTMSkill_Error(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	body := getReaderForNewTMSkill(1234, 2345, 3456)
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
-	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+	tc := getTMSkillsController(request, true)
 
 	err := tc.Post()
 	if err == nil {
@@ -149,9 +147,9 @@ func TestPostTMSkill_Error(t *testing.T) {
 }
 
 func Test_validateTMSkillFields(t *testing.T) {
-	tc := getTMSkillsController(nil, &data.MockErrorDataAccessor{})
-	tmSkill := model.TMSkill{
-		SkillID: "1234",
+	tc := getTMSkillsController(nil, true)
+	tmSkill := gormmodel.TMSkill{
+		SkillID: 1234,
 	}
 	err := tc.validateTMSkillFields(&tmSkill)
 	if err == nil {
@@ -159,8 +157,8 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"TMSkill.TeamMemberID field.")
 	}
 
-	tmSkill = model.TMSkill{
-		TeamMemberID: "1234",
+	tmSkill = gormmodel.TMSkill{
+		TeamMemberID: 1234,
 	}
 	err = tc.validateTMSkillFields(&tmSkill)
 	if err == nil {
@@ -168,9 +166,9 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"TMSkill.SkillID field.")
 	}
 
-	tmSkill = model.TMSkill{
-		SkillID:      "1234",
-		TeamMemberID: "1234",
+	tmSkill = gormmodel.TMSkill{
+		SkillID:      1234,
+		TeamMemberID: 1234,
 	}
 	err = tc.validateTMSkillFields(&tmSkill)
 	if err == nil {
@@ -178,9 +176,9 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"ID field.")
 	}
 
-	tmSkill = model.TMSkill{
-		SkillID:      "1234",
-		TeamMemberID: "1234",
+	tmSkill = gormmodel.TMSkill{
+		SkillID:      1234,
+		TeamMemberID: 1234,
 		Proficiency:  9000,
 	}
 	err = tc.validateTMSkillFields(&tmSkill)
@@ -190,63 +188,10 @@ func Test_validateTMSkillFields(t *testing.T) {
 	}
 }
 
-func Test_validateTMSkillID(t *testing.T) {
-	tc := getTMSkillsController(nil, &data.MockErrorDataAccessor{})
-	tmSkill := model.TMSkill{
-		ID: "1234",
-	}
-	err := tc.validateTMSkillID(&tmSkill)
-	if err == nil {
-		t.Errorf("validateTMSkillID() failed to detect invalid TMSkill.ID field.")
-	}
-}
-
-func TestConvertToStruct(t *testing.T) {
-	preTMSkills := []interface{}{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
-	pretTMSkillsStruct := []model.TMSkill{model.TMSkill{SkillID: "1234"}, model.TMSkill{SkillID: "5678"}}
-	tmskill, err := convertToStruct(preTMSkills)
-	if err != nil {
-		t.Errorf("Convert to struct failed: %v", err)
-	}
-
-	if !reflect.DeepEqual(pretTMSkillsStruct, tmskill) {
-		t.Error("Deep equal failed fro Convert to struct")
-	}
-}
-
-func TestConvertTMSkillsToDTOs(t *testing.T) {
-	preTMSkills := []model.TMSkill{
-		model.TMSkill{SkillID: "1234"},
-		model.TMSkill{SkillID: "5678"},
-	}
-	preTMSkillsDTO := []model.TMSkillDTO{
-		preTMSkills[0].NewTMSkillDTO("", ""),
-		preTMSkills[1].NewTMSkillDTO("", ""),
-	}
-	tmController := getTMSkillsController(nil, data.MockDataAccessor{})
-	tmSkillsDTO := tmController.convertTMSkillsToDTOs(preTMSkills)
-	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
-		t.Error("Expecting a match of tmskills -> tmskillsDTO")
-	}
-}
-
-func TestConvertSkillsToDTOsError(t *testing.T) {
-	preTMSkills := []model.TMSkill{
-		model.TMSkill{SkillID: "1234"},
-		model.TMSkill{SkillID: "5678"},
-	}
-	preTMSkillsDTO := []model.TMSkillDTO{}
-	tmController := getTMSkillsController(nil, data.MockErrorDataAccessor{})
-	tmSkillsDTO := tmController.convertTMSkillsToDTOs(preTMSkills)
-	if !reflect.DeepEqual(preTMSkillsDTO, tmSkillsDTO) {
-		t.Error("Expecting an array of 0 TMSkills")
-	}
-}
-
 func TestUpdateTMSkill(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	body := getReaderForNewTMSkill(1234, 2345, 3456)
 	request := httptest.NewRequest(http.MethodPut, "/api/tmskills/1234", body)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Put()
 	if err != nil {
@@ -255,9 +200,9 @@ func TestUpdateTMSkill(t *testing.T) {
 }
 
 func TestUpdateTMSkillError(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	body := getReaderForNewTMSkill(1234, 2345, 3456)
 	request := httptest.NewRequest(http.MethodPut, "/api/tmskills/1234", body)
-	tc := getTMSkillsController(request, &data.MockErrorDataAccessor{})
+	tc := getTMSkillsController(request, true)
 
 	err := tc.Put()
 	if err == nil {
@@ -266,9 +211,9 @@ func TestUpdateTMSkillError(t *testing.T) {
 }
 
 func TestUpdateTMSkillNoID(t *testing.T) {
-	body := getReaderForNewTMSkill("1234", "2345", "3456")
+	body := getReaderForNewTMSkill(1234, 2345, 3456)
 	request := httptest.NewRequest(http.MethodPost, "/api/tmskills", body)
-	tc := getTMSkillsController(request, &data.MockDataAccessor{})
+	tc := getTMSkillsController(request, false)
 
 	err := tc.Put()
 	if err == nil {
@@ -277,27 +222,17 @@ func TestUpdateTMSkillNoID(t *testing.T) {
 }
 
 func TestValidProf(t *testing.T) {
-	tmskill := model.NewTMSkillSetDefaults("id", "skillID", "teamMemberID", false, 0)
-	c := getTMSkillsController(nil, &data.MockDataAccessor{})
+	tmskill := gormmodel.NewTMSkillSetDefaults(1, 2, 3, 0)
+	c := getTMSkillsController(nil, false)
 	err := c.validateTMSkillFields(&tmskill)
 	if err != nil {
 		t.Errorf("Expecting a valid tmskill: %v", tmskill)
 	}
 }
 
-func TestInvalidProf(t *testing.T) {
-	tmskill := model.NewTMSkillSetDefaults("id", "skillID", "teamMemberID", false, -1)
-	c := getTMSkillsController(nil, &data.MockDataAccessor{})
-	tmskill.Proficiency = -1
-	err := c.validateTMSkillFields(&tmskill)
-	if err == nil {
-		t.Error("Proficiency of -1 should not be valid")
-	}
-}
-
 func TestTMSkillOptions(t *testing.T) {
 	request := httptest.NewRequest(http.MethodOptions, "/api/tmskills", nil)
-	tsc := getTMSkillsController(request, nil)
+	tsc := getTMSkillsController(request, false)
 
 	err := tsc.Options()
 	if err != nil {
@@ -318,9 +253,10 @@ getTMSkillsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new
 TMSkillsController created with that BaseController.
 */
-func getTMSkillsController(request *http.Request, dataAccessor data.DataAccess) TMSkillsController {
+func getTMSkillsController(request *http.Request, errSwitch bool) TMSkillsController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
+	base.SetTest(errSwitch)
+	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
 	return TMSkillsController{BaseController: &base}
 }
 
@@ -329,12 +265,8 @@ getReaderForNewTMSkill is a helper function for a new TMSkill with the given id,
 skillID, and teamMemberID. This TMSkill is then marshaled into JSON. A new Reader
 is created and returned for the resulting []byte.
 */
-func getReaderForNewTMSkill(id, skillID, teamMemberID string) *bytes.Reader {
-	newTMSkill := model.NewTMSkillDefaults(id, skillID, teamMemberID)
+func getReaderForNewTMSkill(id, skillID, teamMemberID uint) *bytes.Reader {
+	newTMSkill := gormmodel.NewTMSkillDefaults(id, skillID, teamMemberID)
 	b, _ := json.Marshal(newTMSkill)
 	return bytes.NewReader(b)
-}
-
-type WrapInterface struct {
-	array []interface{}
 }

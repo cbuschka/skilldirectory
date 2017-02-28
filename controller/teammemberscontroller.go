@@ -131,7 +131,6 @@ func (c *TeamMembersController) addTeamMember() error {
 		return errors.MarshalingError(err)
 	}
 	c.w.Write(b)
-
 	c.Infof("Saved Team Member: %s", teamMember.Name)
 	return nil
 }

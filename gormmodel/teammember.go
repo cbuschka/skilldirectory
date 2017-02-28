@@ -14,12 +14,6 @@ type TeamMember struct {
 	Title string `json:"title"`
 }
 
-// TeamMemberDTO is the transfer object that includes TMSkills that a TeamMember has
-type TeamMemberDTO struct {
-	TeamMember
-	TMSkillDTOs []TMSkillDTO `json:"tm_skills"`
-}
-
 /*
 NewTeamMember is a constructor for the TeamMember type. Returns a new instance
 of TeamMember, initialized to the specified ID, Name, and Title.
@@ -31,17 +25,6 @@ func NewTeamMember(id uint, name, title string) TeamMember {
 	}
 	tm.ID = id
 	return tm
-}
-
-/*
-NewTeamMemberDTO returns a new instance of TeamMemberDTO for the TeamMember
-it is called on, using the specified []TMSkillDTO.
-*/
-func (t TeamMember) NewTeamMemberDTO(tmSkillDTOs []TMSkillDTO) TeamMemberDTO {
-	return TeamMemberDTO{
-		TeamMember:  t,
-		TMSkillDTOs: tmSkillDTOs,
-	}
 }
 
 /*
