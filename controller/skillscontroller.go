@@ -99,25 +99,19 @@ func (c *SkillsController) getSkill(id uint) error {
 
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	skillID := util.CheckForID(c.r.URL)
-	if skillID == "" {
-		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
-	}
-	skill := gormmodel.Skill{}
-	id, err := util.PathToID(c.r.URL)
+	skillID, err := util.PathToID(c.r.URL)
 	if err != nil {
 		return err
 	}
-	skill.ID = id
+	skill := gormmodel.QuerySkill(skillID)
 	err = c.delete(skill)
-
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %s", skillID))
+			"no Skill exists with specified ID: %d", skillID))
 	}
 
-	c.Printf("Skill Deleted with ID: %s", skillID)
+	c.Printf("Skill Deleted with ID: %d", skillID)
 	return nil
 }
 

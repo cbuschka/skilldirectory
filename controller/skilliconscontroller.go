@@ -59,10 +59,9 @@ func (c *SkillIconsController) removeSkillIcon() error {
 	}
 	skill := gormmodel.QuerySkill(skillIDInt)
 
-	updateMap := make(map[string]interface{})
-	updateMap["icon_url"] = ""
+	updateMap := util.NewFilterMap("icon_url", "")
 	// Attempt to delete record from database
-	err = c.updates(skill, updateMap)
+	err = c.updates(skill, updateMap.Map)
 	if err != nil {
 		c.Warnf("Failed to delete skill icon from database.")
 		return errors.NoSuchIDError(fmt.Errorf(
@@ -115,9 +114,8 @@ func (c *SkillIconsController) addSkillIcon() error {
 		return fmt.Errorf("failed to save icon: %s", err)
 	}
 
-	updateMap := make(map[string]interface{})
-	updateMap["icon_url"] = url
-	err = c.updates(&skill, updateMap)
+	updateMap := util.NewFilterMap("icon_url", url)
+	err = c.updates(&skill, updateMap.Map)
 	if err != nil {
 		c.Warnf("Update error: %v", err)
 		return errors.SavingError(err)
