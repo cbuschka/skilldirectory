@@ -40,6 +40,7 @@ func (c SkillReviewsController) Put() error {
 	return c.updateSkillReview()
 }
 
+// Options implemented
 func (c SkillReviewsController) Options() error {
 	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
 	c.w.Header().Set("Access-Control-Allow-Methods", "PUT, "+GetDefaultMethods())
@@ -74,27 +75,6 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 	return nil
 }
 
-// func (c *SkillReviewsController) getReviewsForSkill(skill_id string) error {
-// 	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
-// 	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
-// 	if err != nil {
-// 		return err
-// 	}
-// 	skillReviews, err := convertToReviewsStruct(skillReviewsInterface)
-// 	if err != nil {
-// 		return errors.MarshalingError(err)
-// 	}
-//
-// 	skillReviewDTOs := c.convertReviewsToDTOs(skillReviews)
-//
-// 	b, err := json.Marshal(skillReviewDTOs)
-// 	if err != nil {
-// 		return errors.MarshalingError(err)
-// 	}
-// 	c.w.Write(b)
-// 	return err
-// }
-//
 func (c *SkillReviewsController) getSkillReview(id uint) error {
 	var skillReview gormmodel.SkillReview
 	err := c.first(&skillReview)
@@ -127,18 +107,12 @@ func (c *SkillReviewsController) removeSkillReview() error {
 }
 
 func (c *SkillReviewsController) updateSkillReview() error {
-	path := util.CheckForID(c.r.URL)
-	if path == "" {
-		return errors.MissingIDError(fmt.Errorf(
-			"must specify a SkillReview ID in PUT request URL"))
-	}
-
-	skillReviewId, err := util.StringToID(path)
+	skillReviewID, err := util.PathToID(c.r.URL)
 	if err != nil {
 		return err
 	}
 
-	skillReviewSaved := gormmodel.QuerySkillReview(skillReviewId)
+	skillReviewSaved := gormmodel.QuerySkillReview(skillReviewID)
 	err = c.first(&skillReviewSaved)
 	if err != nil {
 		return err
@@ -149,24 +123,17 @@ func (c *SkillReviewsController) updateSkillReview() error {
 		return err
 	}
 
-	var bodyStr struct {
-		Body     string
-		Positive bool
-	}
-	json.Unmarshal(bodyBytes, &bodyStr)
+	var skillReviewUpdates gormmodel.SkillReview
+	json.Unmarshal(bodyBytes, &skillReviewUpdates)
 
-	skillReview := gormmodel.QuerySkillReview(skillReviewId)
-	skillReview.Body = bodyStr.Body
-	skillReview.Positive = bodyStr.Positive
-	err = c.validatePUTBody(&skillReview)
+	err = c.validatePUTBody(&skillReviewUpdates)
 	if err != nil {
 		return err
 	}
+	skillReview := gormmodel.QuerySkillReview(skillReviewID)
 
-	updateMap := make(map[string]interface{})
-	updateMap["body"] = bodyStr.Body
-	updateMap["positive"] = bodyStr.Positive
-	err = c.updates(&skillReview, updateMap)
+	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body).Append("positive", skillReviewUpdates.Positive)
+	err = c.updates(&skillReview, updateMap.Map)
 	if err != nil {
 		return errors.SavingError(err)
 	}
@@ -191,7 +158,6 @@ func (c *SkillReviewsController) addSkillReview() error {
 	if err != nil {
 		return errors.SavingError(err)
 	}
-	fmt.Println(skillReview)
 
 	// Return review JSON as response
 	b, err := json.Marshal(skillReview)
@@ -212,7 +178,6 @@ the passed-in SkillReview contains a key-value pair for "SkillID", "TeamMemberID
 error if not.
 */
 func (c *SkillReviewsController) validatePOSTBody(skillReview *gormmodel.SkillReview) error {
-	fmt.Println(skillReview)
 	if skillReview.SkillID == 0 ||
 		skillReview.TeamMemberID == 0 ||
 		skillReview.Body == "" {

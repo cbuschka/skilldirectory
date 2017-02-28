@@ -239,7 +239,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
+									"tests['Response body is correct'] = responseBody.has('ID: invalid-id is not a valid uint id');"
 								]
 							}
 						}
@@ -271,7 +271,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID: 0');"
+									"tests['Response body is correct'] = responseBody.has('ID: 0 is not a valid uint id');"
 								]
 							}
 						}
@@ -392,7 +392,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
+									"tests['Response body is correct'] = responseBody.has('ID: invalid-id is not a valid uint id');"
 								]
 							}
 						}

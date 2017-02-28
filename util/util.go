@@ -109,7 +109,7 @@ func StringToID(input string) (uint, error) {
 		return 0, errors.MissingIDError(fmt.Errorf("This action requires an ID in the request path"))
 	}
 	intID, err := strconv.Atoi(input)
-	if err != nil || intID < 0 {
+	if err != nil || intID <= 0 {
 		return 0, errors.MissingIDError(fmt.Errorf("The ID for this request must be an unsigned int"))
 	}
 

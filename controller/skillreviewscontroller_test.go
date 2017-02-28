@@ -50,6 +50,26 @@ func TestGetSkillReview(t *testing.T) {
 	}
 }
 
+func TestGetSkillReviewNonIntKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews/as", nil)
+	sc := getSkillReviewsController(request, false)
+
+	err := sc.Get()
+	if err == nil {
+		t.Error("Expecting error for non uint path")
+	}
+}
+
+func TestGetSkillReviewNilKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews/0", nil)
+	sc := getSkillReviewsController(request, false)
+
+	err := sc.Get()
+	if err == nil {
+		t.Error("Expecting error for non uint path")
+	}
+}
+
 func TestGetSkillReview_Error(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/skillreviews/1234", nil)
 	sc := getSkillReviewsController(request, true)
@@ -69,8 +89,18 @@ func TestDeleteSkillReview(t *testing.T) {
 	}
 }
 
+func TestDeleteSkillNoKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillreviews/", nil)
+	sc := getSkillReviewsController(request, false)
+
+	err := sc.Delete()
+	if err == nil {
+		t.Errorf("Expecting error for no key on delete")
+	}
+}
+
 func TestDeleteSkillReview_Error(t *testing.T) {
-	request := httptest.NewRequest(http.MethodDelete, "/api/skillreviews", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/api/skillreviews/1", nil)
 	sc := getSkillReviewsController(request, true)
 
 	err := sc.Delete()
@@ -161,7 +191,7 @@ func TestPutSkillReview(t *testing.T) {
 func TestPutSkillReviewNoId(t *testing.T) {
 	body := getReaderForNewSkillReview(1234, 2345, 3456, "blah", true)
 	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews", body)
-	sc := getSkillReviewsController(request, true)
+	sc := getSkillReviewsController(request, false)
 
 	err := sc.Put()
 	if err == nil {
@@ -173,6 +203,17 @@ func TestPutSkillReviewError(t *testing.T) {
 	body := getReaderForNewSkillReview(1234, 2345, 3456, "blah", true)
 	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews/1234", body)
 	sc := getSkillReviewsController(request, true)
+
+	err := sc.Put()
+	if err == nil {
+		t.Errorf("Expected error due to no backend fail")
+	}
+}
+
+func TestPutSkillReviewNoBody(t *testing.T) {
+	body := getReaderForNewSkillReview(1234, 2345, 3456, "", true)
+	request := httptest.NewRequest(http.MethodPut, "/api/skillreviews/1234", body)
+	sc := getSkillReviewsController(request, false)
 
 	err := sc.Put()
 	if err == nil {
