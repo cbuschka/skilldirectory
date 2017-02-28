@@ -158,58 +158,73 @@ func (c *SkillReviewsController) getSkillReview(id uint) error {
 // }
 
 func (c *SkillReviewsController) removeSkillReview() error {
-	// body, _ := ioutil.ReadAll(c.r.Body)
-	//
-	// skillReview := model.SkillReview{}
-	// err := json.Unmarshal(body, &skillReview)
-	// if err != nil {
-	// 	c.Warn("Marshaling Error: ", errors.MarshalingError(err))
-	// }
-	//
-	// err = c.session.Delete("skillreviews", skillReview.ID, data.NewCassandraQueryOptions("skill_id", skillReview.SkillID, false))
-	// // TODO Add skillid field to opts
-	// if err != nil {
-	// 	log.Printf("removeSkillReview() failed for the following reason:"+
-	// 		"\n\t%q\n", err)
-	// 	return errors.NoSuchIDError(fmt.Errorf(
-	// 		"no SkillReview exists with specified ID: %s", skillReview.ID))
-	// }
-	//
-	// log.Printf("SkillReview Deleted with ID: %s", skillReview.ID)
+	path := util.CheckForID(c.r.URL)
+	if path == "" {
+		return errors.MissingIDError(fmt.Errorf("Missing required id for DELETE call"))
+	}
+
+	skillID, err := util.StringToID(path)
+	if err != nil {
+		return err
+	}
+
+	skillReview := gormmodel.QuerySkill(skillID)
+	err = c.delete(&skillReview)
+	if err != nil {
+		log.Printf("removeSkillReview() failed for the following reason:"+
+			"\n\t%q\n", err)
+		return errors.NoSuchIDError(fmt.Errorf(
+			"no SkillReview exists with specified ID: %d", skillReview.ID))
+	}
+
+	log.Printf("SkillReview Deleted with ID: %d", skillReview.ID)
 	return nil
 }
 
 func (c *SkillReviewsController) updateSkillReview() error {
-	// skillReviewID := util.CheckForID(c.r.URL)
-	// if skillReviewID == "" {
-	// 	return errors.MissingIDError(fmt.Errorf(
-	// 		"must specify a SkillReview ID in PUT request URL"))
-	// }
-	//
-	// skillReview, err := c.loadSkillReview(skillReviewID)
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// bodyBytes, err := ioutil.ReadAll(c.r.Body)
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// var bodyStr struct{ Body string }
-	// json.Unmarshal(bodyBytes, &bodyStr)
-	//
-	// skillReview.Body = bodyStr.Body
-	// err = c.validatePUTBody(skillReview)
-	// if err != nil {
-	// 	return err
-	// }
-	//
-	// skillReview.Timestamp = time.Now().Format(data.TimestampFormat)
-	// err = c.session.Save("skillreviews", skillReviewID, skillReview)
-	// if err != nil {
-	// 	return errors.SavingError(err)
-	// }
+	path := util.CheckForID(c.r.URL)
+	if path == "" {
+		return errors.MissingIDError(fmt.Errorf(
+			"must specify a SkillReview ID in PUT request URL"))
+	}
+
+	skillReviewId, err := util.StringToID(path)
+	if err != nil {
+		return err
+	}
+
+	skillReviewSaved := gormmodel.QuerySkillReview(skillReviewId)
+	err = c.first(&skillReviewSaved)
+	if err != nil {
+		return err
+	}
+
+	bodyBytes, err := ioutil.ReadAll(c.r.Body)
+	if err != nil {
+		return err
+	}
+
+	var bodyStr struct {
+		Body     string
+		Positive bool
+	}
+	json.Unmarshal(bodyBytes, &bodyStr)
+
+	skillReview := gormmodel.QuerySkillReview(skillReviewId)
+	skillReview.Body = bodyStr.Body
+	skillReview.Positive = bodyStr.Positive
+	err = c.validatePUTBody(&skillReview)
+	if err != nil {
+		return err
+	}
+
+	updateMap := make(map[string]interface{})
+	updateMap["body"] = bodyStr.Body
+	updateMap["positive"] = bodyStr.Positive
+	err = c.updates(&skillReview, updateMap)
+	if err != nil {
+		return errors.SavingError(err)
+	}
 	return nil
 }
 

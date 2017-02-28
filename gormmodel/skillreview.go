@@ -42,6 +42,12 @@ func (s SkillReview) GetType() interface{} {
 	return SkillReview{}
 }
 
+func QuerySkillReview(id uint) SkillReview {
+	skillReview := SkillReview{}
+	skillReview.ID = id
+	return skillReview
+}
+
 func (s SkillReview) GetID() uint {
 	return s.ID
 }

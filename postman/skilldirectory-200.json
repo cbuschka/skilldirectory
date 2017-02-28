@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "SkillDirectory  200",
-		"_postman_id": "8971daea-dbc8-0473-480e-58b970da357f",
+		"_postman_id": "0f65fd8d-d3a1-768b-3368-b02469894e80",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -35,7 +35,10 @@
 						"url": "{{url}}/teammembers/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -64,7 +67,10 @@
 						"url": "{{url}}/skills/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -93,7 +99,10 @@
 						"url": "{{url}}/tmskills/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -122,7 +131,10 @@
 						"url": "{{url}}/links/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -151,7 +163,10 @@
 						"url": "{{url}}/skillreviews/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -180,7 +195,10 @@
 						"url": "{{url}}/users/",
 						"method": "OPTIONS",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -200,17 +218,17 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const { id, name } = JSON.parse(responseBody);",
+									"const { ID, name } = JSON.parse(responseBody);",
 									"const code         = responseCode.code;",
 									"",
 									"// Tests",
 									"tests[\"Status code is 200\"] = code === 200;",
-									"tests['Body contains id']   = id   !== '' && id   !== undefined;",
+									"tests['Body contains ID']   = ID   !== '' && ID   !== undefined;",
 									"tests['Body contains name'] = name !== '' && name !== undefined;",
 									"",
 									"// Env Vars (for chaining use)",
 									"postman.setEnvironmentVariable('teamMember', responseBody);",
-									"postman.setEnvironmentVariable('teamMemberID', id);"
+									"postman.setEnvironmentVariable('teamMemberID', ID);"
 								]
 							}
 						},
@@ -254,18 +272,18 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const { id, name, skill_type } = JSON.parse(responseBody);",
+									"const { ID, name, skill_type } = JSON.parse(responseBody);",
 									"var code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200'] =       code       === 200;",
-									"tests['Body contains id']   =       id         !== '' && id         !== undefined;",
+									"tests['Body contains ID']   =       ID         !== '' && ID         !== undefined;",
 									"tests['Body contains name'] =       name       !== '' && name       !== undefined;",
 									"tests['Body contains skill_type'] = skill_type !== '' && skill_type !== undefined;",
 									"",
 									"// Env Vars (for chaining use)",
 									"postman.setEnvironmentVariable('skill', responseBody)",
-									"postman.setEnvironmentVariable('skillID', id);"
+									"postman.setEnvironmentVariable('skillID', ID);"
 								]
 							}
 						}
@@ -297,15 +315,14 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const {id, skill_id, team_member_id, wish_list, proficiency } = JSON.parse(responseBody);",
+									"const {id, skill_id, team_member_id, proficiency } = JSON.parse(responseBody);",
 									"const code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']           = code           === 200;",
-									"tests['Body contains id']             = id             !== '' && id             !== undefined;",
+									"tests['Body contains ID']             = ID             !== '' && ID             !== undefined;",
 									"tests['Body contains skill_id']       = skill_id       !== '' && skill_id       !== undefined;",
 									"tests['Body contains team_member_id'] = team_member_id !== '' && team_member_id !== undefined;",
-									"tests['Body contains wish_list']      = wish_list      !== '' && wish_list      !== undefined;",
 									"tests['Body contains proficiency']    = proficiency    !== '' && proficiency    !== undefined;",
 									"",
 									"tests['Received team_member_id === {{teamMemberID}}'] = team_member_id === environment.teamMemberID;",
@@ -313,7 +330,7 @@
 									"",
 									"// Env Vars",
 									"postman.setEnvironmentVariable('tmSkill', responseBody)",
-									"postman.setEnvironmentVariable('tmSkillID', id);"
+									"postman.setEnvironmentVariable('tmSkillID', ID);"
 								]
 							}
 						}
@@ -345,12 +362,12 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const { id, name, url, skill_id, link_type } = JSON.parse(responseBody);",
+									"const { ID, name, url, skill_id, link_type } = JSON.parse(responseBody);",
 									"const code     = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']      = code      === 200;",
-									"tests['Body contains id']        = id        !== '' && id        !== undefined;",
+									"tests['Body contains ID']        = ID        !== '' && ID        !== undefined;",
 									"tests['Body contains name']      = name      !== '' && name      !== undefined;",
 									"tests['Body contains url']       = url       !== '' && name      !== undefined;",
 									"tests['Body contains skill_id']  = skill_id  !== '' && skill_id  !== undefined;",
@@ -360,7 +377,7 @@
 									"",
 									"// Env Vars",
 									"postman.setEnvironmentVariable('link', responseBody);",
-									"postman.setEnvironmentVariable('linkID', id);"
+									"postman.setEnvironmentVariable('linkID', ID);"
 								]
 							}
 						}
@@ -392,12 +409,12 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const { id, skill_id, team_member_id, body, timestamp, positive } = JSON.parse(responseBody);",
+									"const { ID, skill_id, team_member_id, body, timestamp, positive } = JSON.parse(responseBody);",
 									"const code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']           = code           === 200;",
-									"tests['Body contains id']             = id             !== '' && id             !== undefined;",
+									"tests['Body contains ID']             = ID             !== '' && ID             !== undefined;",
 									"tests['Body contains skill_id']       = skill_id       !== '' && skill_id       !== undefined;",
 									"tests['Body contains team_member_id'] = team_member_id !== '' && team_member_id !== undefined;",
 									"tests['Body contains body']           = body           !== '' && body           !== undefined;",
@@ -406,7 +423,7 @@
 									"",
 									"// Env Vars (for chaining use)",
 									"postman.setEnvironmentVariable('skillReview', responseBody)",
-									"postman.setEnvironmentVariable('skillReviewID', id);"
+									"postman.setEnvironmentVariable('skillReviewID', ID);"
 								]
 							}
 						}
@@ -564,13 +581,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { id, name, skill_type, links, icon } = JSON.parse(responseBody);",
+									"const { ID, name, skill_type, links, icon } = JSON.parse(responseBody);",
 									"const prevSkill = JSON.parse(environment.skill);",
 									"const code      = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                    = code === 200;",
-									"tests['Body contains previously POSTed skill'] = id         === prevSkill.id   &&",
+									"tests['Body contains previously POSTed skill'] = ID         === prevSkill.id   &&",
 									"                                                 name       === prevSkill.name &&",
 									"                                                 skill_type === prevSkill.skill_type;",
 									"tests['Body contains skill DTO'] = links !== undefined &&",
@@ -646,13 +663,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { id, name, title, tm_skills } = JSON.parse(responseBody);",
+									"const { ID, name, title, tm_skills } = JSON.parse(responseBody);",
 									"const prevTM = JSON.parse(environment.teamMember);",
 									"const code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                          = code  === 200;",
-									"tests['Body contains previously POSTed team member'] = id    === prevTM.id   &&",
+									"tests['Body contains previously POSTed team member'] = ID    === prevTM.id   &&",
 									"                                                       name  === prevTM.name &&",
 									"                                                       title === prevTM.title;",
 									"tests['Body contains team member DTO'] = tm_skills !== undefined;"
@@ -727,16 +744,15 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { id, skill_id, team_member_id, wish_list, proficiency, skill_name, team_member_name } = JSON.parse(responseBody);",
+									"const { ID, skill_id, team_member_id, proficiency, skill_name, team_member_name } = JSON.parse(responseBody);",
 									"const prevTMSkill = JSON.parse(environment.tmSkill);",
 									"const code        = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                      = code             === 200;",
-									"tests['Body contains previously POSTed tmskill'] = id               === prevTMSkill.id             &&",
+									"tests['Body contains previously POSTed tmskill'] = ID               === prevTMSkill.id             &&",
 									"                                                   skill_id         === prevTMSkill.skill_id       &&",
 									"                                                   team_member_id   === prevTMSkill.team_member_id &&",
-									"                                                   wish_list        === prevTMSkill.wish_list      &&",
 									"                                                   proficiency      === prevTMSkill.proficiency;",
 									"tests['Body contains tmskill DTO'] = skill_name       !== undefined &&",
 									"                                     team_member_name !== undefined;"
@@ -820,13 +836,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { id, name, url, skill_id, link_type } = JSON.parse(responseBody);",
+									"const { ID, name, url, skill_id, link_type } = JSON.parse(responseBody);",
 									"const prevLink = JSON.parse(environment.link);",
 									"const code     = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                   = code === 200;",
-									"tests['Body contains previously POSTed link'] = id        === prevLink.id       &&",
+									"tests['Body contains previously POSTed link'] = ID        === prevLink.id       &&",
 									"                                                name      === prevLink.name     &&",
 									"                                                url       === prevLink.url      &&",
 									"                                                skill_id  === prevLink.skill_id &&",
@@ -915,13 +931,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { id, skill_id, team_member_id, body, timestamp, positive, skill_name, team_member_name } = JSON.parse(responseBody);",
+									"const { ID, skill_id, team_member_id, body, timestamp, positive, skill_name, team_member_name } = JSON.parse(responseBody);",
 									"const prevReview = JSON.parse(environment.skillReview);",
 									"const code       = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                           = code === 200;",
-									"tests['Body contains previously POSTed skill review'] = id             === prevReview.id             &&",
+									"tests['Body contains previously POSTed skill review'] = ID             === prevReview.id             &&",
 									"                                                        skill_id       === prevReview.skill_id       &&",
 									"                                                        team_member_id === prevReview.team_member_id &&",
 									"                                                        body           === prevReview.body           &&",
@@ -937,7 +953,10 @@
 						"url": "{{url}}/skillreviews/{{skillReviewID}}",
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -970,7 +989,10 @@
 						"url": "{{url}}/teammembers/{{teamMemberID}}",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -997,7 +1019,10 @@
 						"url": "{{url}}/tmskills/{{tmSkillID}}",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -1024,7 +1049,10 @@
 						"url": "{{url}}/links/{{linkID}}",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -1089,7 +1117,10 @@
 						"url": "{{url}}/skills/{{skillID}}",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
