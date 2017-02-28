@@ -86,7 +86,6 @@ func (bc BaseController) first(object gormmodel.GormInterface) error {
 	} else if bc.testSwitch {
 		return nil
 	}
-
 	return bc.db.First(object, object.GetID()).Error
 }
 

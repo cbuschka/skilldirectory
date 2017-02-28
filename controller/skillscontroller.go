@@ -90,8 +90,8 @@ func (c *SkillsController) getSkill(id uint) error {
 		if err != nil {
 			c.Printf("Preload TeamMembers Error: %v", err)
 		}
-		fmt.Println(review)
 	}
+	fmt.Println(skill)
 	b, err := json.Marshal(skill)
 	c.w.Write(b)
 	return err

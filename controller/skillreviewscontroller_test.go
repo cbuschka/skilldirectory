@@ -192,49 +192,7 @@ func TestSkillReviewsController_Base(t *testing.T) {
 // 		t.Errorf("Expected error due to no backend fail")
 // 	}
 // }
-//
-// func TestConvertToReviewsStruct(t *testing.T) {
-// 	preReview := []interface{}{model.SkillReview{SkillID: "1234"}, model.SkillReview{SkillID: "5678"}}
-// 	pretReviewStruct := []model.SkillReview{model.SkillReview{SkillID: "1234"}, model.SkillReview{SkillID: "5678"}}
-// 	skillReview, err := convertToReviewsStruct(preReview)
-// 	if err != nil {
-// 		t.Errorf("Convert to struct failed: %v", err)
-// 	}
-//
-// 	if !reflect.DeepEqual(pretReviewStruct, skillReview) {
-// 		t.Error("Deep equal failed for convert review to struct")
-// 	}
-// }
-//
-// func TestConvertReviewsToDTOs(t *testing.T) {
-// 	preReview := []model.SkillReview{
-// 		model.SkillReview{SkillID: "1234"},
-// 		model.SkillReview{SkillID: "5678"},
-// 	}
-// 	preReviewDTO := []model.SkillReviewDTO{
-// 		preReview[0].NewSkillReviewDTO("", ""),
-// 		preReview[1].NewSkillReviewDTO("", ""),
-// 	}
-// 	reviewsController := getSkillReviewsController(nil, data.MockDataAccessor{})
-// 	reviewsDTO := reviewsController.convertReviewsToDTOs(preReview)
-// 	if !reflect.DeepEqual(preReviewDTO, reviewsDTO) {
-// 		t.Error("Expecting a match of tmskills -> tmskillsDTO")
-// 	}
-// }
-//
-// func TestConvertReviewsToDTOsError(t *testing.T) {
-// 	preReview := []model.SkillReview{
-// 		model.SkillReview{SkillID: "1234"},
-// 		model.SkillReview{SkillID: "5678"},
-// 	}
-// 	preReviewDTO := []model.SkillReviewDTO{}
-// 	reviewsController := getSkillReviewsController(nil, data.MockErrorDataAccessor{})
-// 	reviewsDTO := reviewsController.convertReviewsToDTOs(preReview)
-// 	if !reflect.DeepEqual(preReviewDTO, reviewsDTO) {
-// 		t.Error("Expecting an array of 0 SkillReviews")
-// 	}
-// }
-//
+
 /*
 getSkillReviewsController is a helper function for creating and initializing a new
 BaseController with the given HTTP request and DataAccessor. Returns a new

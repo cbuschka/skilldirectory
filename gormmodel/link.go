@@ -7,7 +7,7 @@ type Link struct {
 	gorm.Model
 	Name     string `json:"name"`
 	URL      string `json:"url"`
-	SkillID  uint   `gorm:"index"`
+	SkillID  uint   `gorm:"index" json:"skill_id"`
 	LinkType string `json:"link_type"`
 }
 
@@ -19,15 +19,16 @@ const (
 )
 
 // NewLink is a Link constructor
-// func NewLink(id, name, url, skillID, linkType string) Link {
-// 	return Link{
-// 		ID:       id,
-// 		Name:     name,
-// 		URL:      url,
-// 		SkillID:  skillID,
-// 		LinkType: linkType,
-// 	}
-// }
+func NewLink(id, skillID uint, name, url, linkType string) Link {
+	link := Link{
+		Name:     name,
+		URL:      url,
+		SkillID:  skillID,
+		LinkType: linkType,
+	}
+	link.ID = id
+	return link
+}
 
 // IsValidLinkType is a switch that validates a give linkType string
 func IsValidLinkType(linkType string) bool {
@@ -42,7 +43,17 @@ func IsValidLinkType(linkType string) bool {
 	return false
 }
 
+func (l Link) GetID() uint {
+	return l.ID
+}
+
 //GetType returns the implemented type
 func (l Link) GetType() interface{} {
 	return Link{}
+}
+
+func QueryLink(id uint) Link {
+	var link Link
+	link.ID = id
+	return link
 }
