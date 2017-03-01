@@ -22,24 +22,3 @@ func TestAppend(t *testing.T) {
 		t.Errorf("Map[c] is: %s should be 'd'", filterMap.Map["c"])
 	}
 }
-
-func TestWhereNoKey(t *testing.T) {
-	fm := NewFilterMap("key", "value")
-	if response := fm.WhereQuery(""); response != "" {
-		t.Errorf("Expected '' got: %s", response)
-	}
-}
-
-func TestWhereMissingKey(t *testing.T) {
-	fm := NewFilterMap("key", "value")
-	if response := fm.WhereQuery("key2"); response != "" {
-		t.Errorf("Expected '' got: %s", response)
-	}
-}
-
-func TestWhere(t *testing.T) {
-	fm := NewFilterMap("key", "value")
-	if response := fm.WhereQuery("key"); response != "key IS value" {
-		t.Errorf("Expected '' got: %s", response)
-	}
-}

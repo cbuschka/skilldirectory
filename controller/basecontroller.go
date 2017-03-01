@@ -107,11 +107,8 @@ func (bc BaseController) findWhere(object interface{}, updateMap *util.FilterMap
 	} else if bc.testSwitch {
 		return nil
 	}
-	db := *bc.db
-	for key := range updateMap.Map {
-		db = *db.Where(updateMap.WhereQuery(key))
-	}
-	return db.Where("deleted_at IS NULL").Find(object).Error
+	fmt.Println(updateMap)
+	return bc.db.Where(updateMap.Map).Where("deleted_at IS NULL").Find(object).Error
 }
 
 func (bc BaseController) preloadAndFind(object interface{}, preload ...string) error {

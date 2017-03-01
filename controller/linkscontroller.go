@@ -53,20 +53,18 @@ func (c LinksController) performGet() error {
 }
 
 func (c *LinksController) getAllLinks() error {
-	// var links []interface{}
-	// var err error
-	// filter := c.r.URL.Query().Get("linktype")
-	// var opts data.CassandraQueryOptions
-	//
-	// // Add approved query filters here
-	// if filter != "" {
-	// 	opts = data.NewCassandraQueryOptions("linktype", filter, false)
-	// } else {
-	// 	err = c.
-	// }
-	// links, err = c.session.FilteredReadAll("links", opts, model.Link{})
 	var links []gormmodel.Link
-	err := c.find(&links)
+	var err error
+	filter := c.r.URL.Query().Get("linktype")
+
+	// Add approved query filters here
+	if filter != "" {
+		filterMap := util.NewFilterMap("link_type", filter)
+		err = c.findWhere(&links, filterMap)
+	} else {
+		err = c.find(&links)
+	}
+
 	if err != nil {
 		return err
 	}

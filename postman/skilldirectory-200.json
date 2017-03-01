@@ -440,7 +440,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"skill_id\":       \"{{skillID}}\",\n\t\"team_member_id\": \"{{teamMemberID}}\",\n\t\"body\":           \"It's the best skill ever\",\n\t\"positive\":       true\n}\n"
+							"raw": "{\n\t\"skill_id\":       {{skillID}},\n\t\"team_member_id\": {{teamMemberID}},\n\t\"body\":           \"It's the best skill ever\",\n\t\"positive\":       true\n}\n"
 						},
 						"description": ""
 					},
@@ -947,6 +947,103 @@
 					],
 					"request": {
 						"url": "{{url}}/skillreviews/{{skillReviewID}}",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "All Skills Compiled Filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Parse response",
+									"const resp = JSON.parse(responseBody);",
+									"const code = responseCode.code;",
+									"",
+									"// Make sure response contains valid array of skills",
+									"const skillFields = new Set(['id', 'name', 'skill_type']);",
+									"var respIsValidSkillArr = true;",
+									"var nonCompiledSkill = false;",
+									"resp.forEach((obj) => {",
+									"    if (obj.skill_type !== \"compiled\")",
+									"        nonCompiledSkill = true;",
+									"    const keys = new Set(Object.keys(obj));",
+									"    if(keys.size !== skillFields.size)",
+									"      respIsValidSkillArr = false;",
+									"    else",
+									"      keys.forEach((key) => {",
+									"        if(!skillFields.has(key)) // If key is not in skillFields",
+									"          respIsValidSkillArr = false;",
+									"      });",
+									"});",
+									"",
+									"",
+									"// Tests",
+									"tests['Status code is 200']                    = code === 200;",
+									"tests['Body is array of skills']               = respIsValidSkillArr;",
+									"tests['Body contains non compiled skill']   = nonCompiledSkill === false; "
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skills?skilltype=compiled",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "All Links Webpage Filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Parse response",
+									"const resp     = JSON.parse(responseBody);",
+									"const code     = responseCode.code;",
+									"",
+									"// Make sure all elements in reponse have required fields for a link",
+									"var isValidLinkArr = true;",
+									"var onlyWebpageLinks = true;",
+									"resp.forEach((obj) => {",
+									"    if (obj.ID        === undefined ||",
+									"        obj.link_type === undefined ||",
+									"        obj.name      === undefined ||",
+									"        obj.skill_id  === undefined ||",
+									"        obj.url       === undefined)",
+									"      isValidLinkArr = false;",
+									"    if (obj.link_type !== \"webpage\")",
+									"        onlyWebpageLinks = false;",
+									"});",
+									"",
+									"",
+									"// Tests",
+									"tests['Status code is 200']                   = code === 200;",
+									"tests['Body is array of Links']               = isValidLinkArr;",
+									"tests['Non-webpage link included in request'] = onlyWebpageLinks === true;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/links?linktype=webpage",
 						"method": "GET",
 						"header": [],
 						"body": {

@@ -31,6 +31,26 @@ func TestGetAllLinks(t *testing.T) {
 	}
 }
 
+func TestGetAllLinksLinkTypeFilter(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/links?linktype=blog", nil)
+	lc := getLinksController(request, false)
+
+	err := lc.Get()
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func TestGetAllLinksLinkTypeFilterError(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/links?linktype=blog", nil)
+	lc := getLinksController(request, true)
+
+	err := lc.Get()
+	if err == nil {
+		t.Error("Expected error")
+	}
+}
+
 func TestGetAllLinks_Error(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/links", nil)
 	lc := getLinksController(request, true)

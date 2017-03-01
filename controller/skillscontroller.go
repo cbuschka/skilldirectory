@@ -69,7 +69,7 @@ func (c *SkillsController) getAllSkills() error {
 	filter := c.r.URL.Query().Get("skilltype")
 	// Add approved query filters here
 	if filter != "" {
-		filterMap := util.NewFilterMap("skilltype", filter)
+		filterMap := util.NewFilterMap("skill_type", filter)
 		err = c.findWhere(&skills, filterMap)
 	} else {
 		err = c.find(&skills)
