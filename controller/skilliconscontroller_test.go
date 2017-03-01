@@ -216,7 +216,7 @@ SkillIconsController created with that BaseController.
 func getSkillIconsController(request *http.Request, fileSystem data.FileSystem, errSwitch bool) SkillIconsController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.Init(httptest.NewRecorder(), request, nil, fileSystem, logrus.New())
+	base.InitWithGorm(httptest.NewRecorder(), request, fileSystem, logrus.New(), nil)
 	return SkillIconsController{BaseController: &base}
 }
 

@@ -256,7 +256,7 @@ TMSkillsController created with that BaseController.
 func getTMSkillsController(request *http.Request, errSwitch bool) TMSkillsController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, logrus.New(), nil)
 	return TMSkillsController{BaseController: &base}
 }
 

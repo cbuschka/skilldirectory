@@ -220,7 +220,7 @@ the given HTTP request and DataAccessor. Returns a new TeamMembersController cre
 func getTeamMembersController(request *http.Request, errSwitch bool) TeamMembersController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, logrus.New(), nil)
 	return TeamMembersController{BaseController: &base}
 }
 

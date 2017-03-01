@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"skilldirectory/data"
 	"skilldirectory/model"
 	"testing"
 
@@ -23,7 +22,7 @@ func TestUsersControllerBase(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/api/users", bytes.NewBufferString(""))
-	sc := getUsersController(request, &data.MockErrorDataAccessor{})
+	sc := getUsersController(request, true)
 
 	err := sc.Get()
 	if err == nil {
@@ -33,7 +32,7 @@ func TestGet(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	request := httptest.NewRequest(http.MethodDelete, "/api/users", bytes.NewBufferString(""))
-	sc := getUsersController(request, &data.MockErrorDataAccessor{})
+	sc := getUsersController(request, true)
 
 	err := sc.Delete()
 	if err == nil {
@@ -43,7 +42,7 @@ func TestDelete(t *testing.T) {
 
 func TestPut(t *testing.T) {
 	request := httptest.NewRequest(http.MethodPut, "/api/users", bytes.NewBufferString(""))
-	sc := getUsersController(request, &data.MockErrorDataAccessor{})
+	sc := getUsersController(request, true)
 
 	err := sc.Put()
 	if err == nil {
@@ -53,7 +52,7 @@ func TestPut(t *testing.T) {
 
 func TestUsersOptions(t *testing.T) {
 	request := httptest.NewRequest(http.MethodOptions, "/api/users", nil)
-	uc := getUsersController(request, &data.MockDataAccessor{})
+	uc := getUsersController(request, false)
 
 	err := uc.Options()
 	if err != nil {
@@ -72,7 +71,7 @@ func TestUsersOptions(t *testing.T) {
 func TestPostUser_NoCode(t *testing.T) {
 	body := getReaderForNewCredentials("", "")
 	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
-	uc := getUsersController(request, &data.MockDataAccessor{})
+	uc := getUsersController(request, false)
 
 	err := uc.Post()
 	if err == nil {
@@ -83,8 +82,7 @@ func TestPostUser_NoCode(t *testing.T) {
 func TestPostUser_NoClientID(t *testing.T) {
 	body := getReaderForNewCredentials("foobarbaz", "")
 	request := httptest.NewRequest(http.MethodPost, "/api/users", body)
-	uc := getUsersController(request, &data.MockDataAccessor{})
-
+	uc := getUsersController(request, false)
 	err := uc.Post()
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
@@ -105,8 +103,9 @@ func getReaderForNewCredentials(code, clientID string) *bytes.Reader {
 getUsersController is a helper function for creating and initializing a new BaseController with
 the given HTTP request and DataAccessor. Returns a new UsersController created with that BaseController.
 */
-func getUsersController(request *http.Request, dataAccessor data.DataAccess) UsersController {
+func getUsersController(request *http.Request, errSwitch bool) UsersController {
 	base := BaseController{}
-	base.Init(httptest.NewRecorder(), request, dataAccessor, nil, logrus.New())
+	base.SetTest(errSwitch)
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, logrus.New(), nil)
 	return UsersController{BaseController: &base}
 }

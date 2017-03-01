@@ -39,7 +39,6 @@ var (
 	keyspace   string
 	username   string
 	password   string
-	session    *data.CassandraConnector
 	db         *gorm.DB
 	fileSystem data.FileSystem
 	routes     []Route
@@ -52,13 +51,12 @@ func initCassandra() {
 	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
 	username = util.GetProperty("CASSANDRA_USERNAME")
 	password = util.GetProperty("CASSANDRA_PASSWORD")
-	session = data.NewCassandraConnector(url, port, keyspace, username, password)
 	url = util.GetProperty("POSTGRES_URL")
 	port = util.GetProperty("POSTGRES_PORT")
 	keyspace = util.GetProperty("POSTGRES_KEYSPACE")
 	username = util.GetProperty("POSTGRES_USERNAME")
 	password = util.GetProperty("POSTGRES_PASSWORD")
-	db = data.NewPostgresConnector(url, port, keyspace, username, password, session.Logger).DB()
+	db = data.NewPostgresConnector(url, port, keyspace, username, password).DB()
 }
 
 // initFileSystem sets global variables at start up
@@ -93,37 +91,37 @@ func loadRoutes() {
 	skillsController := controller.SkillsController{
 		BaseController: &controller.BaseController{},
 	}
-	skillsHandlerFunc := handler.MakeHandler(handler.Handler, &skillsController, session, fileSystem, db)
+	skillsHandlerFunc := handler.MakeHandler(handler.Handler, &skillsController, fileSystem, db)
 
 	teamMembersController := controller.TeamMembersController{
 		BaseController: &controller.BaseController{},
 	}
-	teamMembersHandlerFunc := handler.MakeHandler(handler.Handler, &teamMembersController, session, fileSystem, db)
+	teamMembersHandlerFunc := handler.MakeHandler(handler.Handler, &teamMembersController, fileSystem, db)
 
 	tmSkillsController := controller.TMSkillsController{
 		BaseController: &controller.BaseController{},
 	}
-	tmSkillsHandlerFunc := handler.MakeHandler(handler.Handler, &tmSkillsController, session, fileSystem, db)
+	tmSkillsHandlerFunc := handler.MakeHandler(handler.Handler, &tmSkillsController, fileSystem, db)
 
 	linksController := controller.LinksController{
 		BaseController: &controller.BaseController{},
 	}
-	linksHandlerFunc := handler.MakeHandler(handler.Handler, &linksController, session, fileSystem, db)
+	linksHandlerFunc := handler.MakeHandler(handler.Handler, &linksController, fileSystem, db)
 
 	skillReviewsController := controller.SkillReviewsController{
 		BaseController: &controller.BaseController{},
 	}
-	skillReviewsHandlerFunc := handler.MakeHandler(handler.Handler, &skillReviewsController, session, fileSystem, db)
+	skillReviewsHandlerFunc := handler.MakeHandler(handler.Handler, &skillReviewsController, fileSystem, db)
 
 	skillIconsController := controller.SkillIconsController{
 		BaseController: &controller.BaseController{},
 	}
-	skillIconsHandlerFunc := handler.MakeHandler(handler.Handler, &skillIconsController, session, fileSystem, db)
+	skillIconsHandlerFunc := handler.MakeHandler(handler.Handler, &skillIconsController, fileSystem, db)
 
 	usersController := controller.UsersController{
 		BaseController: &controller.BaseController{},
 	}
-	usersHandlerFunc := handler.MakeHandler(handler.Handler, &usersController, session, fileSystem, db)
+	usersHandlerFunc := handler.MakeHandler(handler.Handler, &usersController, fileSystem, db)
 
 	routes = []Route{
 		{"/api/skills/", skillsHandlerFunc},

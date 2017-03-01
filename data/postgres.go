@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"skilldirectory/util"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/jinzhu/gorm"
@@ -23,7 +24,11 @@ type GormInterface interface {
 }
 
 func NewPostgresConnector(path, port, keyspace, username,
-	password string, logger *log.Logger) *PostgresConnector {
+	password string) *PostgresConnector {
+	logger := util.LogInit()
+	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
+		path, port, keyspace, username)
+	logger.Debug("Using Password: " + password)
 	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
 		path, port, keyspace, username)
 	logger.Debug("Using password: " + password)

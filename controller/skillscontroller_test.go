@@ -246,7 +246,7 @@ func TestSkillPut(t *testing.T) {
 func getSkillsController(request *http.Request, errSwitch bool) SkillsController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.InitWithGorm(httptest.NewRecorder(), request, nil, nil, logrus.New(), nil)
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, logrus.New(), nil)
 	return SkillsController{BaseController: &base}
 }
 

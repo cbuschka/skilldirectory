@@ -229,7 +229,7 @@ SkillReviewsController created with that BaseController.
 func getSkillReviewsController(request *http.Request, errSwitch bool) SkillReviewsController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, logrus.New(), nil)
 	return SkillReviewsController{BaseController: &base}
 }
 
