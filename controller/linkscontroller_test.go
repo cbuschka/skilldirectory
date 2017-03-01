@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	"testing"
 
@@ -189,7 +188,7 @@ func TestPostLink_Error(t *testing.T) {
 
 func Test_validateLinkFields(t *testing.T) {
 	lc := getLinksController(nil, false)
-	link := gormmodel.Link{
+	link := model.Link{
 		LinkType: model.WebpageLinkType,
 		Name:     "Google",
 		URL:      "http://www.google.com",
@@ -199,7 +198,7 @@ func Test_validateLinkFields(t *testing.T) {
 		t.Errorf("validateLinkFields() failed to detect empty Link.SkillID field.")
 	}
 
-	link = gormmodel.Link{
+	link = model.Link{
 		SkillID: 1234,
 		Name:    "Google",
 		URL:     "http://www.google.com",
@@ -209,7 +208,7 @@ func Test_validateLinkFields(t *testing.T) {
 		t.Errorf("validateLinkFields() failed to detect empty Link.LinkType field.")
 	}
 
-	link = gormmodel.Link{
+	link = model.Link{
 		SkillID:  1234,
 		LinkType: model.WebpageLinkType,
 		URL:      "http://www.google.com",
@@ -219,7 +218,7 @@ func Test_validateLinkFields(t *testing.T) {
 		t.Errorf("validateLinkFields() failed to detect empty Link.Name field.")
 	}
 
-	link = gormmodel.Link{
+	link = model.Link{
 		SkillID:  1234,
 		LinkType: model.WebpageLinkType,
 		Name:     "Google",
@@ -229,7 +228,7 @@ func Test_validateLinkFields(t *testing.T) {
 		t.Errorf("validateLinkFields() failed to detect empty Link.URL field.")
 	}
 
-	link = gormmodel.Link{
+	link = model.Link{
 		SkillID:  0,
 		LinkType: model.WebpageLinkType,
 		Name:     "Google",
@@ -240,7 +239,7 @@ func Test_validateLinkFields(t *testing.T) {
 		t.Errorf("validateLinkFields() failed to detect invalid Link.SkillID.")
 	}
 
-	link = gormmodel.Link{
+	link = model.Link{
 		SkillID:  1234,
 		LinkType: "MumboJumbo",
 		Name:     "Google",
@@ -287,7 +286,7 @@ getReaderForNewLink is a helper function for a new Link with the given id, name,
 This Link is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
 func getReaderForNewLink(id, skillID uint, name, url, linkType string) *bytes.Reader {
-	newLink := gormmodel.NewLink(id, skillID, name, url, linkType)
+	newLink := model.NewLink(id, skillID, name, url, linkType)
 	b, _ := json.Marshal(newLink)
 
 	return bytes.NewReader(b)

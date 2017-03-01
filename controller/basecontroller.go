@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"skilldirectory/data"
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"skilldirectory/util"
 
 	"github.com/Sirupsen/logrus"
@@ -62,7 +62,7 @@ func (bc *BaseController) SetTest(errSwitch bool) {
 	bc.errSwitch = errSwitch
 }
 
-func (bc BaseController) create(object gormmodel.GormInterface) error {
+func (bc BaseController) create(object model.GormInterface) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
 	} else if bc.testSwitch {
@@ -72,7 +72,7 @@ func (bc BaseController) create(object gormmodel.GormInterface) error {
 }
 
 // Delete calls gorm Delete.  Don't forget to assign the object an ID
-func (bc BaseController) delete(object gormmodel.GormInterface) error {
+func (bc BaseController) delete(object model.GormInterface) error {
 	if object.GetID() == 0 {
 		return fmt.Errorf("Can't Delete Nil Object")
 	} else if bc.errSwitch {
@@ -83,7 +83,7 @@ func (bc BaseController) delete(object gormmodel.GormInterface) error {
 	return bc.db.Delete(object).Error
 }
 
-func (bc BaseController) first(object gormmodel.GormInterface) error {
+func (bc BaseController) first(object model.GormInterface) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
 	} else if bc.testSwitch {
@@ -124,7 +124,7 @@ func (bc BaseController) preloadAndFind(object interface{}, preload ...string) e
 	return db.Find(object).Error
 }
 
-func (bc BaseController) updates(object gormmodel.GormInterface, updateMap *util.FilterMap) error {
+func (bc BaseController) updates(object model.GormInterface, updateMap *util.FilterMap) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
 	} else if bc.testSwitch {
@@ -138,7 +138,7 @@ func (bc BaseController) updates(object gormmodel.GormInterface, updateMap *util
 append takes a reference to a parentObject (&Skill), a childAppend value (SkillReview) and that
 association sting ("SkillReviews")
 */
-func (bc BaseController) append(parentObject, childAppend gormmodel.GormInterface, association string) error {
+func (bc BaseController) append(parentObject, childAppend model.GormInterface, association string) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
 	} else if bc.testSwitch {

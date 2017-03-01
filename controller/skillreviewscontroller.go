@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"skilldirectory/util"
 )
 
@@ -61,7 +61,7 @@ func (c *SkillReviewsController) performGet() error {
 }
 
 func (c *SkillReviewsController) getAllSkillReviews() error {
-	var skillReviews []gormmodel.SkillReview
+	var skillReviews []model.SkillReview
 	err := c.find(&skillReviews)
 	if err != nil {
 		return err
@@ -76,7 +76,7 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 }
 
 func (c *SkillReviewsController) getSkillReview(id uint) error {
-	var skillReview gormmodel.SkillReview
+	var skillReview model.SkillReview
 	err := c.first(&skillReview)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (c *SkillReviewsController) removeSkillReview() error {
 		return err
 	}
 
-	skillReview := gormmodel.QuerySkill(skillID)
+	skillReview := model.QuerySkill(skillID)
 	err = c.delete(&skillReview)
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
@@ -112,7 +112,7 @@ func (c *SkillReviewsController) updateSkillReview() error {
 		return err
 	}
 
-	skillReviewSaved := gormmodel.QuerySkillReview(skillReviewID)
+	skillReviewSaved := model.QuerySkillReview(skillReviewID)
 	err = c.first(&skillReviewSaved)
 	if err != nil {
 		return err
@@ -123,14 +123,14 @@ func (c *SkillReviewsController) updateSkillReview() error {
 		return err
 	}
 
-	var skillReviewUpdates gormmodel.SkillReview
+	var skillReviewUpdates model.SkillReview
 	json.Unmarshal(bodyBytes, &skillReviewUpdates)
 
 	err = c.validatePUTBody(&skillReviewUpdates)
 	if err != nil {
 		return err
 	}
-	skillReview := gormmodel.QuerySkillReview(skillReviewID)
+	skillReview := model.QuerySkillReview(skillReviewID)
 
 	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body).Append("positive", skillReviewUpdates.Positive)
 	err = c.updates(&skillReview, updateMap)
@@ -143,7 +143,7 @@ func (c *SkillReviewsController) updateSkillReview() error {
 func (c *SkillReviewsController) addSkillReview() error {
 	// Read the body of the HTTP request into an array of bytes
 	body, _ := ioutil.ReadAll(c.r.Body)
-	skillReview := gormmodel.SkillReview{}
+	skillReview := model.SkillReview{}
 	err := json.Unmarshal(body, &skillReview)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -153,7 +153,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
-	skill := gormmodel.QuerySkill(skillReview.SkillID)
+	skill := model.QuerySkill(skillReview.SkillID)
 	err = c.append(&skill, &skillReview, "SkillReviews")
 	if err != nil {
 		return errors.SavingError(err)
@@ -177,7 +177,7 @@ the passed-in SkillReview contains a key-value pair for "SkillID", "TeamMemberID
 "Body", and "Date" fields. Returns nil error if it does, IncompletePOSTBodyError
 error if not.
 */
-func (c *SkillReviewsController) validatePOSTBody(skillReview *gormmodel.SkillReview) error {
+func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview) error {
 	if skillReview.SkillID == 0 ||
 		skillReview.TeamMemberID == 0 ||
 		skillReview.Body == "" {
@@ -193,7 +193,7 @@ validatePUTBody() accepts a model.SkillReview pointer. It can be used to verify 
 validity of the state of a SkillReview updated via a PUT request. Ensures that the
 passed-in SkillReview's "Body" field is not empty.
 */
-func (c *SkillReviewsController) validatePUTBody(skillReview *gormmodel.SkillReview) error {
+func (c *SkillReviewsController) validatePUTBody(skillReview *model.SkillReview) error {
 	if skillReview.Body == "" {
 		return errors.InvalidPUTBodyError(fmt.Errorf(
 			"The JSON in a PUT request for new SkillReview must contain a value "+

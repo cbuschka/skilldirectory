@@ -3,10 +3,9 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
-	"skilldirectory/model"
 
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"skilldirectory/util"
 
 	"fmt"
@@ -85,7 +84,7 @@ func (c *SkillsController) getAllSkills() error {
 }
 
 func (c *SkillsController) getSkill(id uint) error {
-	skill := gormmodel.QuerySkill(id)
+	skill := model.QuerySkill(id)
 	err := c.preloadAndFind(&skill, "Links", "SkillReviews")
 	if err != nil {
 		return err
@@ -97,7 +96,7 @@ func (c *SkillsController) getSkill(id uint) error {
 	return err
 }
 
-func (c *SkillsController) populateSkillReviews(skill *gormmodel.Skill) {
+func (c *SkillsController) populateSkillReviews(skill *model.Skill) {
 	for i := range skill.SkillReviews {
 		review := &skill.SkillReviews[i]
 		err := c.preloadAndFind(&review, "TeamMember")
@@ -113,7 +112,7 @@ func (c *SkillsController) removeSkill() error {
 	if err != nil {
 		return err
 	}
-	skill := gormmodel.QuerySkill(skillID)
+	skill := model.QuerySkill(skillID)
 	err = c.delete(skill)
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
@@ -129,7 +128,7 @@ func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	var skill gormmodel.Skill
+	var skill model.Skill
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -168,7 +167,7 @@ validity of the state of a Skill initialized via unmarshaled JSON. Ensures that 
 passed-in Skill contains a key-value pair for "Name" and for "SkillType"
 fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
-func (c *SkillsController) validatePOSTBody(skill *gormmodel.Skill) error {
+func (c *SkillsController) validatePOSTBody(skill *model.Skill) error {
 	if skill.Name == "" || skill.SkillType == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A Skill must be a JSON object and must contain values for "+

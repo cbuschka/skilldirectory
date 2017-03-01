@@ -144,7 +144,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('No Team Member Exists with Specified ID: \"invalid-id\"');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}

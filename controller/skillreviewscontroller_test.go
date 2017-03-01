@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -258,14 +258,14 @@ marshaled into JSON. A new Reader is created and returned for the resulting []by
 */
 func getReaderForNewSkillReview(id, skillID, teamMemberID uint, body string,
 	positive bool) *bytes.Reader {
-	newSkillReview := gormmodel.NewSkillReview(id, skillID, teamMemberID,
+	newSkillReview := model.NewSkillReview(id, skillID, teamMemberID,
 		body, positive)
 	b, _ := json.Marshal(newSkillReview)
 	return bytes.NewReader(b)
 }
 
 func getReaderForDeleteSkillReview(id, skillID uint) *bytes.Reader {
-	newSkillReview := gormmodel.QuerySkillReview(id)
+	newSkillReview := model.QuerySkillReview(id)
 	newSkillReview.SkillID = skillID
 
 	b, _ := json.Marshal(newSkillReview)

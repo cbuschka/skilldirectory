@@ -1,5 +1,7 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 const (
 	// ScriptedSkillType indicates a skill like writing Python or Bash scripts
 	ScriptedSkillType = "scripted"
@@ -26,19 +28,41 @@ Each Skill has a Name, SkillType, and a unique ID:
    can be used to identify the skill should it be stored in a database with
 	 other Skills.
 */
+
+type GormInterface interface {
+	GetID() uint
+}
 type Skill struct {
-	ID        string `json:"id"`
+	gorm.Model
+
 	Name      string `json:"name"`
 	SkillType string `json:"skill_type"`
+
+	IconURL string `json:"icon_url"`
+
+	Links        []Link
+	SkillReviews []SkillReview
+	TMSkills     []TMSkill
+}
+
+func (s Skill) GetID() uint {
+	return s.ID
+}
+
+func QuerySkill(id uint) Skill {
+	var skill Skill
+	skill.ID = id
+	return skill
 }
 
 // NewSkill returns a new Skill object with specified params
-func NewSkill(id, name, skillType string) Skill {
-	return Skill{
-		ID:        id,
+func NewSkill(id uint, name, skillType string) Skill {
+	skill := Skill{
 		Name:      name,
 		SkillType: skillType,
 	}
+	skill.ID = id
+	return skill
 }
 
 // GetType satisfies data.ReadAllInterface
@@ -57,25 +81,4 @@ func IsValidSkillType(skillType string) bool {
 		return true
 	}
 	return false
-}
-
-// SkillDTO holds additional content relevant to a Skill
-type SkillDTO struct {
-	Skill
-	Links []Link    `json:"links"`
-	Icon  SkillIcon `json:"icon"`
-}
-
-// NewSkillDTO returns a new SkillDTO object using receiver and specified params
-func (s Skill) NewSkillDTO(links []Link, icon SkillIcon) SkillDTO {
-	return SkillDTO{
-		Skill: s,
-		Links: links,
-		Icon:  icon,
-	}
-}
-
-// AddLink adds a new link to the receiver's Links slice
-func (s *SkillDTO) AddLink(link Link) {
-	s.Links = append(s.Links, link)
 }

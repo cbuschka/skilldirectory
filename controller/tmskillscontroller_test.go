@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -148,7 +148,7 @@ func TestPostTMSkill_Error(t *testing.T) {
 
 func Test_validateTMSkillFields(t *testing.T) {
 	tc := getTMSkillsController(nil, true)
-	tmSkill := gormmodel.TMSkill{
+	tmSkill := model.TMSkill{
 		SkillID: 1234,
 	}
 	err := tc.validateTMSkillFields(&tmSkill)
@@ -157,7 +157,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"TMSkill.TeamMemberID field.")
 	}
 
-	tmSkill = gormmodel.TMSkill{
+	tmSkill = model.TMSkill{
 		TeamMemberID: 1234,
 	}
 	err = tc.validateTMSkillFields(&tmSkill)
@@ -166,7 +166,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"TMSkill.SkillID field.")
 	}
 
-	tmSkill = gormmodel.TMSkill{
+	tmSkill = model.TMSkill{
 		SkillID:      1234,
 		TeamMemberID: 1234,
 	}
@@ -176,7 +176,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 			"ID field.")
 	}
 
-	tmSkill = gormmodel.TMSkill{
+	tmSkill = model.TMSkill{
 		SkillID:      1234,
 		TeamMemberID: 1234,
 		Proficiency:  9000,
@@ -222,7 +222,7 @@ func TestUpdateTMSkillNoID(t *testing.T) {
 }
 
 func TestValidProf(t *testing.T) {
-	tmskill := gormmodel.NewTMSkillSetDefaults(1, 2, 3, 0)
+	tmskill := model.NewTMSkillSetDefaults(1, 2, 3, 0)
 	c := getTMSkillsController(nil, false)
 	err := c.validateTMSkillFields(&tmskill)
 	if err != nil {
@@ -266,7 +266,7 @@ skillID, and teamMemberID. This TMSkill is then marshaled into JSON. A new Reade
 is created and returned for the resulting []byte.
 */
 func getReaderForNewTMSkill(id, skillID, teamMemberID uint) *bytes.Reader {
-	newTMSkill := gormmodel.NewTMSkillDefaults(id, skillID, teamMemberID)
+	newTMSkill := model.NewTMSkillDefaults(id, skillID, teamMemberID)
 	b, _ := json.Marshal(newTMSkill)
 	return bytes.NewReader(b)
 }

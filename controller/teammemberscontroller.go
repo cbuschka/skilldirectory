@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"skilldirectory/data"
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	util "skilldirectory/util"
 )
@@ -55,7 +53,7 @@ func (c *TeamMembersController) performGet() error {
 }
 
 func (c *TeamMembersController) getTeamMember(id uint) error {
-	teamMember := gormmodel.QueryTeamMember(id)
+	teamMember := model.QueryTeamMember(id)
 	err := c.first(&teamMember)
 	if err != nil {
 		return err
@@ -66,7 +64,7 @@ func (c *TeamMembersController) getTeamMember(id uint) error {
 }
 
 func (c *TeamMembersController) getAllTeamMembers() error {
-	var teamMembers []gormmodel.TeamMember
+	var teamMembers []model.TeamMember
 	err := c.find(&teamMembers)
 	if err != nil {
 		return err
@@ -76,31 +74,26 @@ func (c *TeamMembersController) getAllTeamMembers() error {
 	return err
 }
 
-func (c *TeamMembersController) loadTeamMember(id string) (*model.TeamMember, error) {
-	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", id, data.CassandraQueryOptions{}, &teamMember)
-	if err != nil {
-		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"no TeamMeber exists with specified ID: %q", id))
-	}
-	return &teamMember, nil
-}
-
 func (c *TeamMembersController) removeTeamMember() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	teamMemberID := util.CheckForID(c.r.URL)
-	if teamMemberID == "" {
+	path := util.CheckForID(c.r.URL)
+	if path == "" {
 		return errors.MissingIDError(fmt.Errorf("no TeamMember ID in request URL"))
 	}
 
-	err := c.session.Delete("teammembers", teamMemberID, data.CassandraQueryOptions{})
+	teamMemberID, err := util.StringToID(path)
+	if err != nil {
+		return err
+	}
+	teamMember := model.QueryTeamMember(teamMemberID)
+	err = c.delete(&teamMember)
 	if err != nil {
 		c.Printf("removeTeamMember() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
 			"No Team Member Exists with Specified ID: %q", teamMemberID))
 	}
 
-	c.Printf("Team Member Deleted with ID: %s", teamMemberID)
+	c.Printf("Team Member Deleted with ID: %d", teamMemberID)
 	return nil
 }
 
@@ -108,7 +101,7 @@ func (c *TeamMembersController) addTeamMember() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	teamMember := gormmodel.TeamMember{}
+	teamMember := model.TeamMember{}
 	err := json.Unmarshal(body, &teamMember)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -141,7 +134,7 @@ validity of the state of a TeamMember initialized via unmarshaled JSON. Ensures 
 passed-in TeamMember contains a key-value pair for "Name" and for "Title"
 fields. Returns nil error if it does, IncompletePOSTBodyError error if not.
 */
-func (c *TeamMembersController) validatePOSTBody(teamMember *gormmodel.TeamMember) error {
+func (c *TeamMembersController) validatePOSTBody(teamMember *model.TeamMember) error {
 	if teamMember.Name == "" || teamMember.Title == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A Team Member must be a JSON object and must contain values for"+

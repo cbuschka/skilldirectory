@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
+	"skilldirectory/model"
 	"skilldirectory/util"
 )
 
@@ -57,7 +57,7 @@ func (c *SkillIconsController) removeSkillIcon() error {
 	if err != nil {
 		return err
 	}
-	skill := gormmodel.QuerySkill(skillIDInt)
+	skill := model.QuerySkill(skillIDInt)
 
 	updateMap := util.NewFilterMap("icon_url", "")
 	// Attempt to delete record from database
@@ -87,7 +87,7 @@ func (c *SkillIconsController) addSkillIcon() error {
 	if err != nil {
 		return err
 	}
-	skill := gormmodel.QuerySkill(skillID)
+	skill := model.QuerySkill(skillID)
 
 	// Capture data for later use before it is consumed by util.ValidateIcon
 	iconFileBytes, _ := ioutil.ReadAll(iconFile)

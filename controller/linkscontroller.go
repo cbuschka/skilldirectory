@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"skilldirectory/errors"
-	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	"skilldirectory/util"
 )
@@ -53,7 +52,7 @@ func (c LinksController) performGet() error {
 }
 
 func (c *LinksController) getAllLinks() error {
-	var links []gormmodel.Link
+	var links []model.Link
 	var err error
 	filter := c.r.URL.Query().Get("linktype")
 
@@ -84,8 +83,8 @@ func (c *LinksController) getLink(id uint) error {
 	return err
 }
 
-func (c *LinksController) loadLink(id uint) (*gormmodel.Link, error) {
-	link := gormmodel.QueryLink(id)
+func (c *LinksController) loadLink(id uint) (*model.Link, error) {
+	link := model.QueryLink(id)
 	err := c.first(&link)
 	if err != nil {
 		return nil, errors.NoSuchIDError(
@@ -105,7 +104,7 @@ func (c *LinksController) removeLink() error {
 	if err != nil {
 		return err
 	}
-	link := gormmodel.QueryLink(linkID)
+	link := model.QueryLink(linkID)
 	err = c.delete(&link)
 
 	if err != nil {
@@ -124,7 +123,7 @@ func (c *LinksController) addLink() error {
 	body, _ := ioutil.ReadAll(c.r.Body)
 
 	// Unmarshal the request body into new object of type Link
-	link := gormmodel.Link{}
+	link := model.Link{}
 	err := json.Unmarshal(body, &link)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -157,7 +156,7 @@ Link that is passed-in:
 	* the SkillID field contains the UUID of an existing Skill in the database.
 	* the LinkType field contains valid link type (see model.IsValidLinkType)
 */
-func (c *LinksController) validateLinkFields(link *gormmodel.Link) error {
+func (c *LinksController) validateLinkFields(link *model.Link) error {
 	// Validate that SkillID field exists
 	if link.SkillID == 0 || link.LinkType == "" ||
 		link.Name == "" || link.URL == "" {
@@ -167,7 +166,7 @@ func (c *LinksController) validateLinkFields(link *gormmodel.Link) error {
 	}
 
 	// Validate that SkillID points to valid data
-	skill := gormmodel.QuerySkill(link.SkillID)
+	skill := model.QuerySkill(link.SkillID)
 	err := c.first(&skill)
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(

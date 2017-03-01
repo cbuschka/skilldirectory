@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"skilldirectory/gormmodel"
 	"skilldirectory/model"
 	"testing"
 
@@ -78,8 +77,8 @@ func TestGetSkill_Error(t *testing.T) {
 
 // No logic, only checking for nil pointers
 func TestPopulateSkillReviews(t *testing.T) {
-	skill := gormmodel.NewSkill(1, "Skill", gormmodel.CompiledSkillType)
-	skill.SkillReviews = append(skill.SkillReviews, gormmodel.NewSkillReview(2, 0, 0, "", false))
+	skill := model.NewSkill(1, "Skill", model.CompiledSkillType)
+	skill.SkillReviews = append(skill.SkillReviews, model.NewSkillReview(2, 0, 0, "", false))
 	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
 	sc := getSkillsController(request, false)
 	sc.populateSkillReviews(&skill)
@@ -87,8 +86,8 @@ func TestPopulateSkillReviews(t *testing.T) {
 
 // No logic, only checking for nil pointers
 func TestPopulateSkillReviewsError(t *testing.T) {
-	skill := gormmodel.NewSkill(1, "Skill", gormmodel.CompiledSkillType)
-	skill.SkillReviews = append(skill.SkillReviews, gormmodel.NewSkillReview(2, 0, 0, "", false))
+	skill := model.NewSkill(1, "Skill", model.CompiledSkillType)
+	skill.SkillReviews = append(skill.SkillReviews, model.NewSkillReview(2, 0, 0, "", false))
 	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
 	sc := getSkillsController(request, true)
 	sc.populateSkillReviews(&skill)
@@ -153,7 +152,7 @@ func TestPostSkill_NoName(t *testing.T) {
 		httptest.NewRequest(
 			http.MethodPost,
 			"/api/skills",
-			getReaderForNewSkill(1234, "", gormmodel.ScriptedSkillType)),
+			getReaderForNewSkill(1234, "", model.ScriptedSkillType)),
 		false)
 
 	err := sc.Post()
@@ -203,7 +202,7 @@ func TestPostSkill_Error(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost, "/api/skills",
-			getReaderForNewSkill(0, "SkillName", gormmodel.ScriptedSkillType)),
+			getReaderForNewSkill(0, "SkillName", model.ScriptedSkillType)),
 		true)
 
 	err := sc.Post()
@@ -256,7 +255,7 @@ getReaderForNewSkill is a helper function for a new Skill with the given id, nam
 This Skill is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
 func getReaderForNewSkill(id uint, name, skillType string) *bytes.Reader {
-	newSkill := gormmodel.NewSkill(id, name, skillType)
+	newSkill := model.NewSkill(id, name, skillType)
 	b, _ := json.Marshal(newSkill)
 	return bytes.NewReader(b)
 }

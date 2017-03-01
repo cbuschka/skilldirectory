@@ -6,14 +6,14 @@ import (
 )
 
 func TestLink_NewLink(t *testing.T) {
-	linkOne := NewLink("1234", "Google", "http://www.google.com", "1234", WebpageLinkType)
+	linkOne := NewLink(1234, 2345, "Google", "http://www.google.com", WebpageLinkType)
 	linkTwo := Link{
-		ID:       "1234",
 		Name:     "Google",
 		URL:      "http://www.google.com",
-		SkillID:  "1234",
+		SkillID:  2345,
 		LinkType: WebpageLinkType,
 	}
+	linkTwo.ID = 1234
 
 	if linkOne != linkTwo {
 		t.Errorf("\"model.NewLink()\" produced incorrect Link.")
@@ -33,7 +33,7 @@ func TestIsValidLinkType2(t *testing.T) {
 }
 
 func TestGetLinkType(t *testing.T) {
-	l := NewLink("", "", "", "", "")
+	l := NewLink(0, 0, "", "", "")
 	if !reflect.DeepEqual(l.GetType(), Link{}) {
 		t.Error("Link getType not returning empty link")
 	}

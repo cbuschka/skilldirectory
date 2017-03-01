@@ -59,39 +59,38 @@ func TestGetTeamMember_Error(t *testing.T) {
 	}
 }
 
-//
-// func TestDeleteTeamMember(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
-// 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
-//
-// 	err := tc.Delete()
-// 	if err != nil {
-// 		t.Errorf("Expected error: %s", err.Error())
-// 	}
-// }
-//
-// func TestDeleteTeamMember_Error(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
-// 	tc := getTeamMembersController(request, &data.MockErrorDataAccessor{})
-//
-// 	err := tc.Delete()
-// 	if err == nil {
-// 		t.Errorf("Expected error: %s", err.Error())
-// 	}
-// }
-//
-// func TestDeleteTeamMember_NoKey(t *testing.T) {
-// 	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/", nil)
-// 	tc := getTeamMembersController(request, &data.MockDataAccessor{})
-//
-// 	err := tc.Delete()
-// 	if err == nil {
-// 		t.Errorf("Expected error when no key: %s", err.Error())
-// 	}
-// }
-//
+func TestDeleteTeamMember(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
+	tc := getTeamMembersController(request, false)
+
+	err := tc.Delete()
+	if err != nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestDeleteTeamMember_Error(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/1234", nil)
+	tc := getTeamMembersController(request, true)
+
+	err := tc.Delete()
+	if err == nil {
+		t.Errorf("Expected error: %s", err.Error())
+	}
+}
+
+func TestDeleteTeamMember_NoKey(t *testing.T) {
+	request := httptest.NewRequest(http.MethodDelete, "/api/teammembers/", nil)
+	tc := getTeamMembersController(request, false)
+
+	err := tc.Delete()
+	if err == nil {
+		t.Errorf("Expected error when no key: %s", err.Error())
+	}
+}
+
 func TestPostTeamMember(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "Joe Smith", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 
@@ -102,7 +101,7 @@ func TestPostTeamMember(t *testing.T) {
 }
 
 func TestPostTeamMember_NoName(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 
@@ -113,7 +112,7 @@ func TestPostTeamMember_NoName(t *testing.T) {
 }
 
 func TestPostTeamMember_NoTitle(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
+	body := getReaderForNewTeamMember(1234, "Joe Smith", "")
 	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 	err := tc.Post()
@@ -133,7 +132,7 @@ func TestPostTeamMember_NoTeamMember(t *testing.T) {
 }
 
 func TestPostTeamMember_Error(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "Joe Smith", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPost, "/api/teammembers", body)
 	tc := getTeamMembersController(request, true)
 
@@ -144,7 +143,7 @@ func TestPostTeamMember_Error(t *testing.T) {
 }
 
 func TestPutTeamMember(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "John Smith", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "John Smith", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 
@@ -155,7 +154,7 @@ func TestPutTeamMember(t *testing.T) {
 }
 
 func TestPutTeamMember_NoName(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 
@@ -166,7 +165,7 @@ func TestPutTeamMember_NoName(t *testing.T) {
 }
 
 func TestPutTeamMember_NoTitle(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "Joe Smith", "")
+	body := getReaderForNewTeamMember(1234, "Joe Smith", "")
 	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, false)
 
@@ -186,7 +185,7 @@ func TestPutTeamMember_NoTeamMember(t *testing.T) {
 }
 
 func TestPutTeamMember_Error(t *testing.T) {
-	body := getReaderForNewTeamMember("1234", "Joe Smith", "Cabbage Plucker")
+	body := getReaderForNewTeamMember(1234, "Joe Smith", "Cabbage Plucker")
 	request := httptest.NewRequest(http.MethodPut, "/api/teammembers", body)
 	tc := getTeamMembersController(request, true)
 
@@ -229,7 +228,7 @@ func getTeamMembersController(request *http.Request, errSwitch bool) TeamMembers
 getReaderForNewTeamMember is a helper function for a new TeamMember with the given id, name, and title.
 This TeamMember is then marshaled into JSON. A new Reader is created and returned for the resulting []byte.
 */
-func getReaderForNewTeamMember(id, name, title string) *bytes.Reader {
+func getReaderForNewTeamMember(id uint, name, title string) *bytes.Reader {
 	newTeamMember := model.NewTeamMember(id, name, title)
 	b, _ := json.Marshal(newTeamMember)
 	return bytes.NewReader(b)
