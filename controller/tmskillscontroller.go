@@ -156,8 +156,7 @@ func (c *TMSkillsController) updateTMSkill() error {
 		return err
 	}
 
-	updateMap := make(map[string]interface{})
-	updateMap["proficiency"] = tmSkill.Proficiency
+	updateMap := util.NewFilterMap("proficiency", tmSkill.Proficiency)
 	err = c.updates(&tmSkill, updateMap)
 	if err != nil {
 		return errors.SavingError(err)

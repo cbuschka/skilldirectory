@@ -42,7 +42,17 @@ func TestGetAllSkills_Error(t *testing.T) {
 
 	err := sc.Get()
 	if err == nil {
-		t.Errorf("Expected error: %s", err.Error())
+		t.Errorf("Expected error")
+	}
+}
+
+func TestGetAllSkillsSkillTypeFilter(t *testing.T) {
+	request := httptest.NewRequest(http.MethodGet, "/api/skills?skilltype=compiled", nil)
+	sc := getSkillsController(request, false)
+
+	err := sc.Get()
+	if err != nil {
+		t.Errorf("Error from Filtered get: %s", err.Error())
 	}
 }
 
@@ -64,6 +74,24 @@ func TestGetSkill_Error(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error: %s", err.Error())
 	}
+}
+
+// No logic, only checking for nil pointers
+func TestPopulateSkillReviews(t *testing.T) {
+	skill := gormmodel.NewSkill(1, "Skill", gormmodel.CompiledSkillType)
+	skill.SkillReviews = append(skill.SkillReviews, gormmodel.NewSkillReview(2, 0, 0, "", false))
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
+	sc := getSkillsController(request, false)
+	sc.populateSkillReviews(&skill)
+}
+
+// No logic, only checking for nil pointers
+func TestPopulateSkillReviewsError(t *testing.T) {
+	skill := gormmodel.NewSkill(1, "Skill", gormmodel.CompiledSkillType)
+	skill.SkillReviews = append(skill.SkillReviews, gormmodel.NewSkillReview(2, 0, 0, "", false))
+	request := httptest.NewRequest(http.MethodGet, "/api/skills/1234", nil)
+	sc := getSkillsController(request, true)
+	sc.populateSkillReviews(&skill)
 }
 
 func TestDeleteSkill(t *testing.T) {
@@ -125,7 +153,7 @@ func TestPostSkill_NoName(t *testing.T) {
 		httptest.NewRequest(
 			http.MethodPost,
 			"/api/skills",
-			getReaderForNewSkill(1234, "", model.ScriptedSkillType)),
+			getReaderForNewSkill(1234, "", gormmodel.ScriptedSkillType)),
 		false)
 
 	err := sc.Post()
@@ -151,7 +179,7 @@ func TestPostSkill_InvalidType(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost,
-			"/api/skills", getReaderForNewSkill(0, "", "badtype")),
+			"/api/skills", getReaderForNewSkill(0, "SkillName", "badtype")),
 		false)
 
 	err := sc.Post()
@@ -175,7 +203,7 @@ func TestPostSkill_Error(t *testing.T) {
 	sc := getSkillsController(
 		httptest.NewRequest(
 			http.MethodPost, "/api/skills",
-			getReaderForNewSkill(0, "", model.ScriptedSkillType)),
+			getReaderForNewSkill(0, "SkillName", gormmodel.ScriptedSkillType)),
 		true)
 
 	err := sc.Post()
@@ -203,6 +231,14 @@ func TestSkillOptions(t *testing.T) {
 	}
 }
 
+func TestSkillPut(t *testing.T) {
+	sc := getSkillsController(nil, false)
+	err := sc.Put()
+	if err == nil {
+		t.Errorf("Expecting error for unimplmented method")
+	}
+}
+
 //
 // /*
 // getSkillsController is a helper function for creating and initializing a new BaseController with
@@ -211,7 +247,7 @@ func TestSkillOptions(t *testing.T) {
 func getSkillsController(request *http.Request, errSwitch bool) SkillsController {
 	base := BaseController{}
 	base.SetTest(errSwitch)
-	base.Init(httptest.NewRecorder(), request, nil, nil, logrus.New())
+	base.InitWithGorm(httptest.NewRecorder(), request, nil, nil, logrus.New(), nil)
 	return SkillsController{BaseController: &base}
 }
 

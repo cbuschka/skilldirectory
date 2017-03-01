@@ -1,5 +1,7 @@
 package util
 
+import "fmt"
+
 // FilterMap is a convenience type for applying filters to GORM calls
 type FilterMap struct {
 	Map map[string]interface{}
@@ -18,4 +20,17 @@ func NewFilterMap(key string, value interface{}) *FilterMap {
 func (f *FilterMap) Append(key string, value interface{}) *FilterMap {
 	f.Map[key] = value
 	return f
+}
+
+// WhereQuery converts a key to a 'key IS value' string for GORM where calls
+func (f *FilterMap) WhereQuery(key string) string {
+	if key == "" {
+		return ""
+	}
+	value := f.Map[key]
+	if value == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%s IS %v", key, value)
 }

@@ -101,6 +101,19 @@ func (bc BaseController) find(object interface{}) error {
 	return bc.db.Where("deleted_at IS NULL").Find(object).Error
 }
 
+func (bc BaseController) findWhere(object interface{}, updateMap *util.FilterMap) error {
+	if bc.errSwitch {
+		return fmt.Errorf("Error Test")
+	} else if bc.testSwitch {
+		return nil
+	}
+	db := *bc.db
+	for key := range updateMap.Map {
+		db = *db.Where(updateMap.WhereQuery(key))
+	}
+	return db.Where("deleted_at IS NULL").Find(object).Error
+}
+
 func (bc BaseController) preloadAndFind(object interface{}, preload ...string) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
@@ -114,14 +127,14 @@ func (bc BaseController) preloadAndFind(object interface{}, preload ...string) e
 	return db.Find(object).Error
 }
 
-func (bc BaseController) updates(object gormmodel.GormInterface, updateMap map[string]interface{}) error {
+func (bc BaseController) updates(object gormmodel.GormInterface, updateMap *util.FilterMap) error {
 	if bc.errSwitch {
 		return fmt.Errorf("Error Test")
 	} else if bc.testSwitch {
 		return nil
 	}
 
-	return bc.db.Model(object).Updates(updateMap).Error
+	return bc.db.Model(object).Updates(updateMap.Map).Error
 }
 
 /*

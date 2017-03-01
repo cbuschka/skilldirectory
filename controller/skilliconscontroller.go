@@ -61,7 +61,7 @@ func (c *SkillIconsController) removeSkillIcon() error {
 
 	updateMap := util.NewFilterMap("icon_url", "")
 	// Attempt to delete record from database
-	err = c.updates(skill, updateMap.Map)
+	err = c.updates(skill, updateMap)
 	if err != nil {
 		c.Warnf("Failed to delete skill icon from database.")
 		return errors.NoSuchIDError(fmt.Errorf(
@@ -115,7 +115,7 @@ func (c *SkillIconsController) addSkillIcon() error {
 	}
 
 	updateMap := util.NewFilterMap("icon_url", url)
-	err = c.updates(&skill, updateMap.Map)
+	err = c.updates(&skill, updateMap)
 	if err != nil {
 		c.Warnf("Update error: %v", err)
 		return errors.SavingError(err)

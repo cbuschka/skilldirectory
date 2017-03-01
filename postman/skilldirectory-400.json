@@ -46,7 +46,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Skill ID in request URL');"
+									"tests['Response body is correct'] = responseBody.has('This action requires an ID in the request path');"
 								]
 							}
 						}
@@ -55,10 +55,7 @@
 						"url": "{{url}}/skills/",
 						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"description": ""
 					},
 					"response": []

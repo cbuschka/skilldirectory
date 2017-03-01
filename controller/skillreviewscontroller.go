@@ -133,7 +133,7 @@ func (c *SkillReviewsController) updateSkillReview() error {
 	skillReview := gormmodel.QuerySkillReview(skillReviewID)
 
 	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body).Append("positive", skillReviewUpdates.Positive)
-	err = c.updates(&skillReview, updateMap.Map)
+	err = c.updates(&skillReview, updateMap)
 	if err != nil {
 		return errors.SavingError(err)
 	}

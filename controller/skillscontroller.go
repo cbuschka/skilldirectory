@@ -12,30 +12,37 @@ import (
 	"fmt"
 )
 
+// SkillsController handles requests for the Skill type
 type SkillsController struct {
 	*BaseController
 }
 
+// Base implemented
 func (c SkillsController) Base() *BaseController {
 	return c.BaseController
 }
 
+// Get implemented
 func (c SkillsController) Get() error {
 	return c.performGet()
 }
 
+// Post implemented
 func (c SkillsController) Post() error {
 	return c.addSkill()
 }
 
+// Delete implemented
 func (c SkillsController) Delete() error {
 	return c.removeSkill()
 }
 
+// Put implemented
 func (c SkillsController) Put() error {
-	return fmt.Errorf("PUT requests not currently supported.")
+	return fmt.Errorf("PUT requests not currently supported")
 }
 
+// Options implemented
 func (c SkillsController) Options() error {
 	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
 	c.w.Header().Set("Access-Control-Allow-Methods", GetDefaultMethods())
@@ -57,17 +64,16 @@ func (c SkillsController) performGet() error {
 
 func (c *SkillsController) getAllSkills() error {
 	var err error
-	// filter := c.r.URL.Query().Get("skilltype")
-	// var opts data.CassandraQueryOptions
-
-	// // Add approved query filters here
-	// if filter != "" {
-	// 	opts = data.NewCassandraQueryOptions("skilltype", filter, false)
-	// }
-	// skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
-
 	var skills []model.Skill
-	err = c.find(&skills)
+
+	filter := c.r.URL.Query().Get("skilltype")
+	// Add approved query filters here
+	if filter != "" {
+		filterMap := util.NewFilterMap("skilltype", filter)
+		err = c.findWhere(&skills, filterMap)
+	} else {
+		err = c.find(&skills)
+	}
 
 	if err != nil {
 		return err
@@ -84,17 +90,21 @@ func (c *SkillsController) getSkill(id uint) error {
 	if err != nil {
 		return err
 	}
+
+	c.populateSkillReviews(&skill)
+	b, err := json.Marshal(skill)
+	c.w.Write(b)
+	return err
+}
+
+func (c *SkillsController) populateSkillReviews(skill *gormmodel.Skill) {
 	for i := range skill.SkillReviews {
 		review := &skill.SkillReviews[i]
-		err = c.preloadAndFind(&review, "TeamMember")
+		err := c.preloadAndFind(&review, "TeamMember")
 		if err != nil {
 			c.Printf("Preload TeamMembers Error: %v", err)
 		}
 	}
-	fmt.Println(skill)
-	b, err := json.Marshal(skill)
-	c.w.Write(b)
-	return err
 }
 
 func (c *SkillsController) removeSkill() error {
@@ -119,8 +129,7 @@ func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	c.Printf("Adding to Postgres")
-	skill := gormmodel.Skill{}
+	var skill gormmodel.Skill
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -137,13 +146,9 @@ func (c *SkillsController) addSkill() error {
 			"invalid Skill type: %s", skill.SkillType))
 	}
 
-	if err != nil {
-		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
-	}
-
 	err = c.create(&skill)
 	if err != nil {
-		return err
+		return errors.SavingError(err)
 	}
 
 	// Return object JSON as response
