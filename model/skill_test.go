@@ -46,3 +46,19 @@ func TestGetSkillType(t *testing.T) {
 		t.Error("Skill getType not returning empty skill")
 	}
 }
+
+func TestSkillGetID(t *testing.T) {
+	s := NewSkill(1, "", "")
+	if s.GetID() != 1 {
+		t.Error("GetID Failed")
+	}
+}
+
+func TestQuerySkill(t *testing.T) {
+	one := QuerySkill(1)
+	two := Skill{}
+	two.ID = 1
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v doesn't match Two: %v", one, two)
+	}
+}

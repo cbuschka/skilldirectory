@@ -26,3 +26,19 @@ func TestGetSkillReviewType(t *testing.T) {
 		t.Error("SkillReview getType not returning empty skill review")
 	}
 }
+
+func TestSkillReviewGetID(t *testing.T) {
+	s := NewSkillReview(1, 0, 0, "", true)
+	if s.GetID() != 1 {
+		t.Error("GetID Failed")
+	}
+}
+
+func TestQuerySkillReview(t *testing.T) {
+	one := QuerySkillReview(1)
+	two := SkillReview{}
+	two.ID = 1
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v doesn't match Two: %v", one, two)
+	}
+}

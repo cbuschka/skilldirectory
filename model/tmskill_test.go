@@ -67,3 +67,27 @@ func TestGetTMSkillType(t *testing.T) {
 		t.Error("TMSkill getType not returning empty tmskill")
 	}
 }
+
+func TestTMSkillGetID(t *testing.T) {
+	s := NewTMSkillDefaults(1, 0, 0)
+	if s.GetID() != 1 {
+		t.Error("GetID Failed")
+	}
+}
+
+func TestQueryTMSkill(t *testing.T) {
+	one := QueryTMSKill(1)
+	two := TMSkill{}
+	two.ID = 1
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v doesn't match Two: %v", one, two)
+	}
+}
+
+func TestTMSkillSetDefaults(t *testing.T) {
+	one := NewTMSkillSetDefaults(1, 2, 3, 0)
+	two := NewTMSkillDefaults(1, 2, 3)
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v does not equal Two: %v", one, two)
+	}
+}

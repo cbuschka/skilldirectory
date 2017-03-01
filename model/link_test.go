@@ -38,3 +38,19 @@ func TestGetLinkType(t *testing.T) {
 		t.Error("Link getType not returning empty link")
 	}
 }
+
+func TestLinkGetID(t *testing.T) {
+	s := NewLink(1, 0, "", "", "")
+	if s.GetID() != 1 {
+		t.Error("GetID Failed")
+	}
+}
+
+func TestQueryLink(t *testing.T) {
+	one := QueryLink(1)
+	two := Link{}
+	two.ID = 1
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v doesn't match Two: %v", one, two)
+	}
+}
