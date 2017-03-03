@@ -76,8 +76,8 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 }
 
 func (c *SkillReviewsController) getSkillReview(id uint) error {
-	var skillReview model.SkillReview
-	err := c.first(&skillReview)
+	skillReview := model.QuerySkillReview(id)
+	err := c.preloadAndFind(&skillReview, "TeamMember", "Skill")
 	if err != nil {
 		return err
 	}
@@ -123,8 +123,16 @@ func (c *SkillReviewsController) updateSkillReview() error {
 		return err
 	}
 
+	type bodyStruct struct {
+		Body string
+	}
+	var body bodyStruct
+	err = json.Unmarshal(bodyBytes, &body)
+	if err != nil {
+		c.Warn(err)
+	}
 	var skillReviewUpdates model.SkillReview
-	json.Unmarshal(bodyBytes, &skillReviewUpdates)
+	skillReviewUpdates.Body = body.Body
 
 	err = c.validatePUTBody(&skillReviewUpdates)
 	if err != nil {
@@ -132,7 +140,7 @@ func (c *SkillReviewsController) updateSkillReview() error {
 	}
 	skillReview := model.QuerySkillReview(skillReviewID)
 
-	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body).Append("positive", skillReviewUpdates.Positive)
+	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body)
 	err = c.updates(&skillReview, updateMap)
 	if err != nil {
 		return errors.SavingError(err)

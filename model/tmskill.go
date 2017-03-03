@@ -5,8 +5,8 @@ import "github.com/jinzhu/gorm"
 // TMSkill has a many-to-one relationship to Skills and TeamMembers
 type TMSkill struct {
 	gorm.Model
-	SkillID      uint `json:"skill_id"`
-	TeamMemberID uint `json:"team_member_id"`
+	SkillID      uint `gorm:"index" json:"skill_id"`
+	TeamMemberID uint `gorm:"index" json:"team_member_id"`
 	Proficiency  uint `json:"proficiency"`
 	TeamMember   TeamMember
 	Skill        Skill

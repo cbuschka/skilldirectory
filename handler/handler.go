@@ -48,7 +48,7 @@ func Handler(w http.ResponseWriter, r *http.Request, cont controller.RESTControl
 	defer mutex.Unlock()
 
 	log := util.LogInit()
-	log.Printf("Handling Request: %s", r.Method)
+	log.Printf("Handling Request: [%s] Path: [%s]", r.Method, r.RequestURI)
 	log.Debugf("Request: %s", r.Body)
 	cont.Base().InitWithGorm(w, r, fs, log, db)
 

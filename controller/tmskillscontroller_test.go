@@ -151,7 +151,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 	tmSkill := model.TMSkill{
 		SkillID: 1234,
 	}
-	err := tc.validateTMSkillFields(&tmSkill)
+	err := tc.validateTMSkillFields(tmSkill)
 	if err == nil {
 		t.Errorf("validateTMSkillFields() failed to detect empty " +
 			"TMSkill.TeamMemberID field.")
@@ -160,7 +160,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 	tmSkill = model.TMSkill{
 		TeamMemberID: 1234,
 	}
-	err = tc.validateTMSkillFields(&tmSkill)
+	err = tc.validateTMSkillFields(tmSkill)
 	if err == nil {
 		t.Errorf("validateTMSkillFields() failed to detect empty " +
 			"TMSkill.SkillID field.")
@@ -170,7 +170,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 		SkillID:      1234,
 		TeamMemberID: 1234,
 	}
-	err = tc.validateTMSkillFields(&tmSkill)
+	err = tc.validateTMSkillFields(tmSkill)
 	if err == nil {
 		t.Errorf("validateTMSkillFields() failed to detect invalid " +
 			"ID field.")
@@ -181,7 +181,7 @@ func Test_validateTMSkillFields(t *testing.T) {
 		TeamMemberID: 1234,
 		Proficiency:  9000,
 	}
-	err = tc.validateTMSkillFields(&tmSkill)
+	err = tc.validateTMSkillFields(tmSkill)
 	if err == nil {
 		t.Errorf("validateTMSkillFields() failed to detect invalid " +
 			"TMSkill.Proficiency field.")
@@ -222,11 +222,11 @@ func TestUpdateTMSkillNoID(t *testing.T) {
 }
 
 func TestValidProf(t *testing.T) {
-	tmskill := model.NewTMSkillSetDefaults(1, 2, 3, 0)
+	tmSkill := model.NewTMSkillSetDefaults(1, 2, 3, 0)
 	c := getTMSkillsController(nil, false)
-	err := c.validateTMSkillFields(&tmskill)
+	err := c.validateTMSkillFields(tmSkill)
 	if err != nil {
-		t.Errorf("Expecting a valid tmskill: %v", tmskill)
+		t.Errorf("Expecting a valid tmskill: %v", tmSkill)
 	}
 }
 

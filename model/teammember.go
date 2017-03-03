@@ -10,8 +10,9 @@ set of Skills they wish to obtain (WishList).
 */
 type TeamMember struct {
 	gorm.Model
-	Name  string `json:"name"`
-	Title string `json:"title"`
+	Name     string `json:"name"`
+	Title    string `json:"title"`
+	TMSkills []TMSkill
 }
 
 /*

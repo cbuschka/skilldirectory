@@ -96,7 +96,6 @@ func (bc BaseController) findWhere(object interface{}, updateMap *util.FilterMap
 	} else if bc.testSwitch {
 		return nil
 	}
-	fmt.Println(updateMap)
 	return bc.db.Where(updateMap.Map).Where("deleted_at IS NULL").Find(object).Error
 }
 

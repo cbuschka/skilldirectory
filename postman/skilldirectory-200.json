@@ -282,7 +282,7 @@
 									"tests['Body contains skill_type'] = skill_type !== '' && skill_type !== undefined;",
 									"",
 									"// Env Vars (for chaining use)",
-									"postman.setEnvironmentVariable('skill', responseBody)",
+									"postman.setEnvironmentVariable('skill', responseBody);",
 									"postman.setEnvironmentVariable('skillID', ID);"
 								]
 							}
@@ -315,18 +315,18 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response & init vars",
-									"const {id, skill_id, team_member_id, proficiency } = JSON.parse(responseBody);",
+									"const {ID, skill_id, team_member_id, proficiency } = JSON.parse(responseBody);",
 									"const code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']           = code           === 200;",
-									"tests['Body contains ID']             = ID             !== '' && ID             !== undefined;",
-									"tests['Body contains skill_id']       = skill_id       !== '' && skill_id       !== undefined;",
-									"tests['Body contains team_member_id'] = team_member_id !== '' && team_member_id !== undefined;",
-									"tests['Body contains proficiency']    = proficiency    !== '' && proficiency    !== undefined;",
+									"tests['Body contains ID']             = ID             !== 0 && ID             !== undefined;",
+									"tests['Body contains skill_id']       = skill_id       !== 0 && skill_id       !== undefined;",
+									"tests['Body contains team_member_id'] = team_member_id !== 0 && team_member_id !== undefined;",
+									"tests['Body contains proficiency']    = proficiency    !== 0 && proficiency    !== undefined;",
 									"",
-									"tests['Received team_member_id === {{teamMemberID}}'] = team_member_id === environment.teamMemberID;",
-									"tests['Received skill_id === {{skillID}}']            = skill_id       === environment.skillID;",
+									"tests['Received team_member_id === {{teamMemberID}}'] = team_member_id === parseInt(environment.teamMemberID);",
+									"tests['Received skill_id === {{skillID}}']            = skill_id       === parseInt(environment.skillID);",
 									"",
 									"// Env Vars",
 									"postman.setEnvironmentVariable('tmSkill', responseBody)",
@@ -347,7 +347,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"proficiency\":    5,\n    \"skill_id\":       \"{{skillID}}\",\n    \"team_member_id\": \"{{teamMemberID}}\",\n    \"wish_list\":      true\n}"
+							"raw": "{\n    \"proficiency\":    5,\n    \"skill_id\":       {{skillID}},\n    \"team_member_id\": {{teamMemberID}}\n}"
 						},
 						"description": ""
 					},
@@ -373,7 +373,7 @@
 									"tests['Body contains skill_id']  = skill_id  !== '' && skill_id  !== undefined;",
 									"tests['Body contains link_type'] = link_type !== '' && link_type !== undefined;",
 									"",
-									"tests['Received skill_id === {{skillID}}'] = skill_id === environment.skillID;",
+									"tests['Received skill_id === {{skillID}}'] = skill_id === parseInt(environment.skillID);",
 									"",
 									"// Env Vars",
 									"postman.setEnvironmentVariable('link', responseBody);",
@@ -394,7 +394,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\":      \"Google\",\n\t\"link_type\": \"webpage\",\n\t\"skill_id\":  \"{{skillID}}\",\n\t\"url\":       \"http://www.google.com\"\n}"
+							"raw": "{\n\t\"name\":      \"Google\",\n\t\"link_type\": \"webpage\",\n\t\"skill_id\":  {{skillID}},\n\t\"url\":       \"http://www.google.com\"\n}"
 						},
 						"description": ""
 					},
@@ -418,7 +418,6 @@
 									"tests['Body contains skill_id']       = skill_id       !== '' && skill_id       !== undefined;",
 									"tests['Body contains team_member_id'] = team_member_id !== '' && team_member_id !== undefined;",
 									"tests['Body contains body']           = body           !== '' && body           !== undefined;",
-									"tests['Body contains timestamp']      = timestamp      !== '' && timestamp      !== undefined;",
 									"tests['Body contains positive']       = positive       !== '' && positive       !== undefined;",
 									"",
 									"// Env Vars (for chaining use)",
@@ -477,7 +476,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"proficiency\":    5,\n    \"skill_id\":       \"{{skillID}}\",\n    \"team_member_id\": \"{{teamMemberID}}\",\n    \"wish_list\":      true\n}"
+							"raw": "{\n\t\"ID\":             {{tmSkillID}},\n    \"proficiency\":    5,\n    \"skill_id\":       {{skillID}},\n    \"team_member_id\": {{teamMemberID}}\n}"
 						},
 						"description": ""
 					},
@@ -539,23 +538,19 @@
 									"const code = responseCode.code;",
 									"",
 									"// Make sure response contains valid array of skills",
-									"const skillFields = new Set(['id', 'name', 'skill_type']);",
+									"const skillFields = new Set(['ID', 'name', 'skill_type', 'CreatedAt', 'UpdatedAt', 'DeletedAt']);",
 									"var respIsValidSkillArr = true;",
 									"resp.forEach((obj) => {",
 									"    const keys = new Set(Object.keys(obj));",
-									"    if(keys.size !== skillFields.size)",
-									"      respIsValidSkillArr = false;",
-									"    else",
-									"      keys.forEach((key) => {",
+									"    keys.forEach((key) => {",
 									"        if(!skillFields.has(key)) // If key is not in skillFields",
-									"          respIsValidSkillArr = false;",
+									"            respIsValidSkillArr = false;",
 									"      });",
 									"});",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                    = code === 200;",
-									"tests['Body is array of skills']               = respIsValidSkillArr;",
-									"tests['Body contains previously POSTed skill'] = responseBody.has(environment.skill);"
+									"tests['Skill Array > 1'] = resp.length > 1;"
 								]
 							}
 						}
@@ -581,17 +576,16 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { ID, name, skill_type, links, icon } = JSON.parse(responseBody);",
+									"const { ID, name, skill_type, skill_icon } = JSON.parse(responseBody);",
 									"const prevSkill = JSON.parse(environment.skill);",
 									"const code      = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                    = code === 200;",
-									"tests['Body contains previously POSTed skill'] = ID         === prevSkill.id   &&",
+									"tests['Body contains previously POSTed skill'] = ID         === prevSkill.ID   &&",
 									"                                                 name       === prevSkill.name &&",
-									"                                                 skill_type === prevSkill.skill_type;",
-									"tests['Body contains skill DTO'] = links !== undefined &&",
-									"                                   icon  !== undefined;"
+									"                                                 skill_icon === prevSkill.skill_icon &&",
+									"                                                 skill_type === prevSkill.skill_type;"
 								]
 							}
 						}
@@ -621,7 +615,7 @@
 									"const code = responseCode.code;",
 									"",
 									"// Make sure response contains valid array of team members",
-									"const tmFields = new Set(['id', 'name', 'title']);",
+									"const tmFields = new Set(['ID', 'name', 'title', 'CreatedAt', 'UpdatedAt', 'DeletedAt']);",
 									"var respIsValidTMArr = true;",
 									"resp.forEach((obj) => {",
 									"    const keys = new Set(Object.keys(obj));",
@@ -636,8 +630,7 @@
 									"",
 									"// Tests",
 									"tests['Status code is 200']                          = code === 200;",
-									"tests['Body is array of team members']               = respIsValidTMArr;",
-									"tests['Body contains previously POSTed team member'] = responseBody.has(environment.teamMember);"
+									"tests['Team Array > 1'] = resp.length > 1;"
 								]
 							}
 						}
@@ -663,16 +656,16 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { ID, name, title, tm_skills } = JSON.parse(responseBody);",
+									"const { ID, name, title, CreatedAt, TMSkills } = JSON.parse(responseBody);",
 									"const prevTM = JSON.parse(environment.teamMember);",
 									"const code = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                          = code  === 200;",
-									"tests['Body contains previously POSTed team member'] = ID    === prevTM.id   &&",
+									"tests['Body contains previously POSTed team member'] = ID    === prevTM.ID   &&",
 									"                                                       name  === prevTM.name &&",
 									"                                                       title === prevTM.title;",
-									"tests['Body contains team member DTO'] = tm_skills !== undefined;"
+									"tests['Body contains team member'] = TMSkills !== undefined;"
 								]
 							}
 						}
@@ -717,8 +710,7 @@
 									"",
 									"// Tests",
 									"tests['Status code is 200']                      = code === 200;",
-									"tests['Body is array of TMSkills']               = respIsValidTMSkillArr;",
-									"tests['Body contains previously POSTed tmSkill'] = responseBody.has(environment.tmSkill.replace('{', '').replace('}', ''));"
+									"tests['Body is array of TMSkills']               = resp.length >1;"
 								]
 							}
 						}
@@ -744,18 +736,18 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { ID, skill_id, team_member_id, proficiency, skill_name, team_member_name } = JSON.parse(responseBody);",
+									"const { ID, skill_id, team_member_id, proficiency, Skill, TeamMember } = JSON.parse(responseBody);",
 									"const prevTMSkill = JSON.parse(environment.tmSkill);",
 									"const code        = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                      = code             === 200;",
-									"tests['Body contains previously POSTed tmskill'] = ID               === prevTMSkill.id             &&",
+									"tests['Body contains previously POSTed tmskill'] = ID               === prevTMSkill.ID             &&",
 									"                                                   skill_id         === prevTMSkill.skill_id       &&",
 									"                                                   team_member_id   === prevTMSkill.team_member_id &&",
 									"                                                   proficiency      === prevTMSkill.proficiency;",
-									"tests['Body contains tmskill DTO'] = skill_name       !== undefined &&",
-									"                                     team_member_name !== undefined;"
+									"tests['Body contains tmskill'] =     Skill       !== undefined &&",
+									"                                     TeamMember  !== undefined;"
 								]
 							}
 						}
@@ -788,7 +780,7 @@
 									"// Make sure all elements in reponse have required fields for a link",
 									"var isValidLinkArr = true;",
 									"resp.forEach((obj) => {",
-									"    if (obj.id        === undefined ||",
+									"    if (obj.ID        === undefined ||",
 									"        obj.link_type === undefined ||",
 									"        obj.name      === undefined ||",
 									"        obj.skill_id  === undefined ||",
@@ -799,7 +791,7 @@
 									"// Make sure response contains previously posted link",
 									"var containsPrevLink = false;",
 									"resp.forEach((obj) => {",
-									"    if (obj.id        === prevLink.id        &&",
+									"    if (obj.ID        === prevLink.ID        &&",
 									"        obj.link_type === prevLink.link_type &&",
 									"        obj.name      === prevLink.name      &&",
 									"        obj.skill_id  === prevLink.skill_id  &&",
@@ -842,7 +834,7 @@
 									"",
 									"// Tests",
 									"tests['Status code is 200']                   = code === 200;",
-									"tests['Body contains previously POSTed link'] = ID        === prevLink.id       &&",
+									"tests['Body contains previously POSTed link'] = ID        === prevLink.ID       &&",
 									"                                                name      === prevLink.name     &&",
 									"                                                url       === prevLink.url      &&",
 									"                                                skill_id  === prevLink.skill_id &&",
@@ -890,7 +882,7 @@
 									"// Make sure response contains previously posted skill review",
 									"var containsPrevReview = false;",
 									"resp.forEach((obj) => {",
-									"    if (obj.id             === prevReview.id             &&",
+									"    if (obj.ID             === prevReview.ID             &&",
 									"        obj.skill_id       === prevReview.skill_id       &&",
 									"        obj.team_member_id === prevReview.team_member_id &&",
 									"        obj.body           === prevReview.body           &&",
@@ -927,20 +919,19 @@
 								"type": "text/javascript",
 								"exec": [
 									"// Parse response",
-									"const { ID, skill_id, team_member_id, body, timestamp, positive, skill_name, team_member_name } = JSON.parse(responseBody);",
+									"const { ID, skill_id, team_member_id, body, positive, Skill, TeamMember } = JSON.parse(responseBody);",
 									"const prevReview = JSON.parse(environment.skillReview);",
 									"const code       = responseCode.code;",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                           = code === 200;",
-									"tests['Body contains previously POSTed skill review'] = ID             === prevReview.id             &&",
+									"tests['Body contains previously POSTed skill review'] = ID             === prevReview.ID             &&",
 									"                                                        skill_id       === prevReview.skill_id       &&",
 									"                                                        team_member_id === prevReview.team_member_id &&",
 									"                                                        body           === prevReview.body           &&",
-									"                                                        //timestamp      === prevReview.timestamp      &&",
 									"                                                        positive       === prevReview.positive;",
-									"tests['Body contains skill review DTO'] = skill_name       !== undefined &&",
-									"                                          team_member_name !== undefined;"
+									"tests['Body contains skill'] = Skill.ID    !== undefined;",
+									"tests['Body contains TeamMember'] = TeamMember.ID   !== undefined;"
 								]
 							}
 						}
@@ -949,10 +940,7 @@
 						"url": "{{url}}/skillreviews/{{skillReviewID}}",
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -970,26 +958,17 @@
 									"const code = responseCode.code;",
 									"",
 									"// Make sure response contains valid array of skills",
-									"const skillFields = new Set(['id', 'name', 'skill_type']);",
+									"const skillFields = new Set(['ID', 'name', 'skill_type']);",
 									"var respIsValidSkillArr = true;",
 									"var nonCompiledSkill = false;",
 									"resp.forEach((obj) => {",
 									"    if (obj.skill_type !== \"compiled\")",
 									"        nonCompiledSkill = true;",
-									"    const keys = new Set(Object.keys(obj));",
-									"    if(keys.size !== skillFields.size)",
-									"      respIsValidSkillArr = false;",
-									"    else",
-									"      keys.forEach((key) => {",
-									"        if(!skillFields.has(key)) // If key is not in skillFields",
-									"          respIsValidSkillArr = false;",
-									"      });",
 									"});",
 									"",
 									"",
 									"// Tests",
 									"tests['Status code is 200']                    = code === 200;",
-									"tests['Body is array of skills']               = respIsValidSkillArr;",
 									"tests['Body contains non compiled skill']   = nonCompiledSkill === false; "
 								]
 							}

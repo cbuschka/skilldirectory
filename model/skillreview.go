@@ -15,7 +15,7 @@ type SkillReview struct {
 	SkillID      uint   `gorm:"index" json:"skill_id"`
 	TeamMemberID uint   `gorm:"index" json:"team_member_id"`
 	TeamMember   TeamMember
-	Skills       Skill
+	Skill        Skill
 }
 
 /*

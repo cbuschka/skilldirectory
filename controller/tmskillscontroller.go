@@ -137,14 +137,13 @@ func (c *TMSkillsController) updateTMSkill() error {
 	}
 
 	// Unmarshal the request body into new object of type TMSkill
-	tmSkill := model.TMSkill{}
+	var tmSkill model.TMSkill
 	err = json.Unmarshal(body, &tmSkill)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
-
 	// Validate fields of new TMSkill object
-	err = c.validateTMSkillFields(&tmSkill)
+	err = c.validateTMSkillFields(tmSkill)
 	if err != nil {
 		return err
 	}
@@ -153,6 +152,8 @@ func (c *TMSkillsController) updateTMSkill() error {
 	tmskillSaved := model.QueryTMSKill(tmSkill.ID)
 	err = c.first(&tmskillSaved)
 	if err != nil {
+		fmt.Println("Not Found")
+		fmt.Println(tmSkill)
 		return err
 	}
 
@@ -168,15 +169,15 @@ func (c *TMSkillsController) updateTMSkill() error {
 func (c *TMSkillsController) addTMSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
-
 	// Unmarshal the request body into new object of type TMSkill
 	tmSkill := model.TMSkill{}
 	err := json.Unmarshal(body, &tmSkill)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+		return err
 	}
 	// Validate fields of the TMSkill
-	err = c.validateTMSkillFields(&tmSkill)
+	err = c.validateTMSkillFields(tmSkill)
 	if err != nil {
 		return err
 	}
@@ -205,23 +206,22 @@ the TMSkill that is passed-in:
 	  TeamMembers in the database.
   * the Proficiency field contains a value between 0 and 5.
 */
-func (c *TMSkillsController) validateTMSkillFields(tmSkill *model.TMSkill) error {
+func (c *TMSkillsController) validateTMSkillFields(tmSkill model.TMSkill) error {
 	// Validate that SkillID and TeamMemberID fields exist.
 	if tmSkill.SkillID == 0 || tmSkill.TeamMemberID == 0 {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"A TMSkill must be a JSON object and must contain values for the %q and %q fields.",
 			"skill_id", "team_member_id"))
 	}
-
 	// Validate that the IDs point to valid data.
-	skill := model.QuerySkill(tmSkill.ID)
+	skill := model.QuerySkill(tmSkill.SkillID)
 	err := c.first(&skill)
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all TMSkills must contain ID of an existing Skill "+
 				"in the database", "skill_id"))
 	}
-	teammember := model.QueryTeamMember(tmSkill.ID)
+	teammember := model.QueryTeamMember(tmSkill.TeamMemberID)
 	err = c.first(&teammember)
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
