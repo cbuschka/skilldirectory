@@ -470,7 +470,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('A TMSkill must be a JSON object and must contain values for the \"skill_id\" and \"team_member_id\" fields.');"
+									"tests['Response body is correct'] = responseBody.has('unexpected end of JSON input');"
 								]
 							}
 						}
@@ -479,10 +479,7 @@
 						"url": "{{url}}/tmskills/",
 						"method": "POST",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
+						"body": {},
 						"description": ""
 					},
 					"response": []
