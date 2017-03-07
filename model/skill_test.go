@@ -1,46 +1,30 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
 )
 
 func TestNewSkill(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(
-		[]Link{NewLink("1234", "link", ".com", "ASkillID", BlogLinkType)},
-		NewSkillIcon("1234", "http://abc.xyz/123.png"))
-	skillTwo := SkillDTO{
-		Skill: Skill{
-			ID:        "ASkillID",
-			Name:      "ASkillName",
-			SkillType: ScriptedSkillType},
-		Links: []Link{NewLink("1234", "link", ".com", "ASkillID", BlogLinkType)},
-		Icon:  NewSkillIcon("1234", "http://abc.xyz/123.png"),
+	skill := NewSkill(1, "Testing", "database")
+	link := Link{
+		Name:     "Test Link",
+		URL:      "https://test.com",
+		LinkType: "blog",
 	}
+	skill.Links = append(skill.Links, link)
+	b, _ := json.Marshal(skill)
+	fmt.Println(string(b))
+	skillOne := NewSkill(1, "ASkillName", ScriptedSkillType)
+	skillTwo := Skill{
+		Name:      "ASkillName",
+		SkillType: ScriptedSkillType}
+	skillTwo.ID = 1
 	// Verify that all of skillOne and skillTwo's fields are equal
 	if !reflect.DeepEqual(skillOne, skillTwo) {
 		t.Error("\"model.NewSkill()\" produced incorrect Skill.")
-	}
-}
-
-func TestSkillAddLink(t *testing.T) {
-	skillOne := NewSkill("ASkillID", "ASkillName", ScriptedSkillType).NewSkillDTO(
-		nil, NewSkillIcon("1234", "http://abc.xyz/123.png"))
-	skillOne.AddLink(NewLink("1234", "Google", "http://www.google.com",
-		skillOne.ID, WebpageLinkType))
-	skillTwo := SkillDTO{
-		Skill: Skill{ID: "ASkillID",
-			Name:      "ASkillName",
-			SkillType: ScriptedSkillType,
-		},
-		Links: []Link{NewLink("1234", "Google", "http://www.google.com", skillOne.ID,
-			WebpageLinkType)},
-		Icon: NewSkillIcon("1234", "http://abc.xyz/123.png"),
-	}
-
-	// Verify that all of skillOne and skillTwo's fields are equal
-	if !reflect.DeepEqual(skillOne, skillTwo) {
-		t.Error("model.Skill.AddLink() didn't work.")
 	}
 }
 
@@ -57,15 +41,24 @@ func TestValidSkillType(t *testing.T) {
 }
 
 func TestGetSkillType(t *testing.T) {
-	s := NewSkill("", "", "")
+	s := NewSkill(1, "", "")
 	if !reflect.DeepEqual(s.GetType(), Skill{}) {
 		t.Error("Skill getType not returning empty skill")
 	}
 }
 
-func TestGetSkillIconType(t *testing.T) {
-	s := NewSkillIcon("", "")
-	if !reflect.DeepEqual(s.GetType(), SkillIcon{}) {
-		t.Error("SkillIcon getType not returning empty skillicon")
+func TestSkillGetID(t *testing.T) {
+	s := NewSkill(1, "", "")
+	if s.GetID() != 1 {
+		t.Error("GetID Failed")
+	}
+}
+
+func TestQuerySkill(t *testing.T) {
+	one := QuerySkill(1)
+	two := Skill{}
+	two.ID = 1
+	if !reflect.DeepEqual(one, two) {
+		t.Errorf("One: %v doesn't match Two: %v", one, two)
 	}
 }

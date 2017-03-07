@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	"skilldirectory/util"
@@ -45,20 +44,25 @@ func (c LinksController) performGet() error {
 	if path == "" {
 		return c.getAllLinks()
 	}
-	return c.getLink(path)
+	linkID, err := util.StringToID(path)
+	if err != nil {
+		return err
+	}
+	return c.getLink(linkID)
 }
 
 func (c *LinksController) getAllLinks() error {
-	var links []interface{}
+	var links []model.Link
 	var err error
 	filter := c.r.URL.Query().Get("linktype")
-	var opts data.CassandraQueryOptions
 
 	// Add approved query filters here
 	if filter != "" {
-		opts = data.NewCassandraQueryOptions("linktype", filter, false)
+		filterMap := util.NewFilterMap("link_type", filter)
+		err = c.findWhere(&links, filterMap)
+	} else {
+		err = c.find(&links)
 	}
-	links, err = c.session.FilteredReadAll("links", opts, model.Link{})
 
 	if err != nil {
 		return err
@@ -69,7 +73,7 @@ func (c *LinksController) getAllLinks() error {
 	return err
 }
 
-func (c *LinksController) getLink(id string) error {
+func (c *LinksController) getLink(id uint) error {
 	link, err := c.loadLink(id)
 	if err != nil {
 		return err
@@ -79,32 +83,37 @@ func (c *LinksController) getLink(id string) error {
 	return err
 }
 
-func (c *LinksController) loadLink(id string) (*model.Link, error) {
-	link := model.Link{}
-	err := c.session.Read("links", id, data.CassandraQueryOptions{}, &link)
+func (c *LinksController) loadLink(id uint) (*model.Link, error) {
+	link := model.QueryLink(id)
+	err := c.first(&link)
 	if err != nil {
 		return nil, errors.NoSuchIDError(
-			fmt.Errorf("no Link exists with specified ID: %s", id))
+			fmt.Errorf("no Link exists with specified ID: %d", id))
 	}
 	return &link, nil
 }
 
 func (c *LinksController) removeLink() error {
 	// Get ID at end of request; return error if request contains no ID
-	linkID := util.CheckForID(c.r.URL)
-	if linkID == "" {
+	path := util.CheckForID(c.r.URL)
+	if path == "" {
 		return errors.MissingIDError(fmt.Errorf("no Link ID specified in request URL"))
 	}
 
-	err := c.session.Delete("links", linkID, data.NewCassandraQueryOptions("skill_id", "", true))
+	linkID, err := util.StringToID(path)
+	if err != nil {
+		return err
+	}
+	link := model.QueryLink(linkID)
+	err = c.delete(&link)
 
 	if err != nil {
 		c.Printf("removeLink() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no Link exists with specified ID: %s", linkID))
+			"no Link exists with specified ID: %d", linkID))
 	}
 
-	c.Printf("Link Deleted with ID: %s", linkID)
+	c.Printf("Link Deleted with ID: %d", linkID)
 	return nil
 }
 
@@ -125,9 +134,7 @@ func (c *LinksController) addLink() error {
 		return err
 	}
 
-	// Save the Link to database and send back as response
-	link.ID = util.NewID()
-	err = c.session.Save("links", link.ID, link)
+	err = c.create(&link)
 	if err != nil {
 		return errors.SavingError(err)
 	}
@@ -151,7 +158,7 @@ Link that is passed-in:
 */
 func (c *LinksController) validateLinkFields(link *model.Link) error {
 	// Validate that SkillID field exists
-	if link.SkillID == "" || link.LinkType == "" ||
+	if link.SkillID == 0 || link.LinkType == "" ||
 		link.Name == "" || link.URL == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A Link must be a JSON object and must contain values for "+
@@ -159,8 +166,8 @@ func (c *LinksController) validateLinkFields(link *model.Link) error {
 	}
 
 	// Validate that SkillID points to valid data
-	err := c.session.Read("skills", link.SkillID, data.CassandraQueryOptions{},
-		&model.Skill{})
+	skill := model.QuerySkill(link.SkillID)
+	err := c.first(&skill)
 	if err != nil {
 		return errors.InvalidDataModelState(fmt.Errorf(
 			"the %q field of all Links must contain ID of an existing skill in "+

@@ -1,68 +1,42 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 // TMSkill has a many-to-one relationship to Skills and TeamMembers
 type TMSkill struct {
-	ID           string `json:"id"`
-	SkillID      string `json:"skill_id"`
-	TeamMemberID string `json:"team_member_id"`
-	WishList     bool   `json:"wish_list"`
-	Proficiency  int    `json:"proficiency"`
-}
-
-// TMSkillDTO is the transer object type for pass TMSkills with TeamMember name and Skill Name
-type TMSkillDTO struct {
-	TMSkill
-	SkillName      string `json:"skill_name"`
-	TeamMemberName string `json:"team_member_name"`
+	gorm.Model
+	SkillID      uint `gorm:"index" json:"skill_id"`
+	TeamMemberID uint `gorm:"index" json:"team_member_id"`
+	Proficiency  uint `json:"proficiency"`
+	TeamMember   TeamMember
+	Skill        Skill
 }
 
 /*
 NewTMSkillDefaults returns a new instance of TMSkill, with defaults for WishList
 (false) and Proficiency (0).
 */
-func NewTMSkillDefaults(id, skillID, teamMemberID string) TMSkill {
-	return TMSkill{
-		ID:           id,
+func NewTMSkillDefaults(id, skillID, teamMemberID uint) TMSkill {
+	tmSkill := TMSkill{
 		SkillID:      skillID,
 		TeamMemberID: teamMemberID,
-		WishList:     false,
 		Proficiency:  0,
 	}
+	tmSkill.ID = id
+	return tmSkill
 }
 
 /*
-NewTMSkillSetDefaults returns a new instance of TMSkill, with all fields
-specified by the caller. The proficiency field must be in the range of 0-5. If a
-value is passed in outside of this range, it is clipped to 0 if it's below 0, or
-5 if it's above 5.
+NewTMSkillDefaultsSetDefaults returns a new instance of TMSkill
 */
-func NewTMSkillSetDefaults(id, skillID, teamMemberID string, wishList bool,
-	proficiency int) TMSkill {
-	if proficiency > 5 {
-		proficiency = 5
-	}
-	if proficiency < 0 {
-		proficiency = 0
-	}
-	return TMSkill{
-		ID:           id,
+func NewTMSkillSetDefaults(id, skillID, teamMemberID, profiency uint) TMSkill {
+	tmSkill := TMSkill{
 		SkillID:      skillID,
 		TeamMemberID: teamMemberID,
-		WishList:     wishList,
-		Proficiency:  proficiency,
+		Proficiency:  profiency,
 	}
-}
-
-/*
-NewTMSkillDTO returns a new TMSkillDTO for the TMSkill it is called on, using
-the specified skillName and teamMemberName.
-*/
-func (t TMSkill) NewTMSkillDTO(skillName, teamMemberName string) TMSkillDTO {
-	return TMSkillDTO{
-		TMSkill:        t,
-		SkillName:      skillName,
-		TeamMemberName: teamMemberName,
-	}
+	tmSkill.ID = id
+	return tmSkill
 }
 
 /*
@@ -71,14 +45,11 @@ specified proficiency. The specified proficiency must be in the range of 0-5. If
 a value is passed in outside of this range, it is clipped to 0 if it's below 0,
 or 5 if it's above 5.
 */
-func (t *TMSkill) SetProficiency(proficiency int) {
+func (t *TMSkill) SetProficiency(proficiency uint) {
 	if proficiency > 5 {
 		proficiency = 5
 	}
-	if proficiency < 0 {
-		proficiency = 0
-	}
-	t.Proficiency = proficiency
+	t.Proficiency = uint(proficiency)
 }
 
 /*
@@ -106,4 +77,14 @@ func (t *TMSkill) GetProficiencyString() string {
 // GetType returns an interface{} with an underlying concrete type of TMSkill{}.
 func (t TMSkill) GetType() interface{} {
 	return TMSkill{}
+}
+
+func (t TMSkill) GetID() uint {
+	return t.ID
+}
+
+func QueryTMSKill(id uint) TMSkill {
+	var tmskill TMSkill
+	tmskill.ID = id
+	return tmskill
 }

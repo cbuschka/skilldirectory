@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "SkillDirectory File",
-		"_postman_id": "c80894b2-17ca-1857-3ef0-dd50cbfec553",
+		"_postman_id": "5502f2af-60cf-5434-9a5b-0dbb7e7a2159",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -16,18 +16,18 @@
 						"type": "text/javascript",
 						"exec": [
 							"// Parse response & init vars",
-							"const { id, name, skill_type } = JSON.parse(responseBody);",
+							"const { ID, name, skill_type } = JSON.parse(responseBody);",
 							"var code = responseCode.code;",
 							"",
 							"// Tests",
 							"tests['Status code is 200'] =       code       === 200;",
-							"tests['Body contains id']   =       id         !== '' && id         !== undefined;",
+							"tests['Body contains id']   =       ID         !== '' && ID         !== undefined;",
 							"tests['Body contains name'] =       name       !== '' && name       !== undefined;",
 							"tests['Body contains skill_type'] = skill_type !== '' && skill_type !== undefined;",
 							"",
 							"// Env Vars (for chaining use)",
 							"postman.setEnvironmentVariable('skill', responseBody)",
-							"postman.setEnvironmentVariable('skillID', id);"
+							"postman.setEnvironmentVariable('skillID', ID);"
 						]
 					}
 				}
@@ -288,35 +288,6 @@
 					"mode": "raw",
 					"raw": ""
 				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": " Skill",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"// Init Vars",
-							"const code = responseCode.code;",
-							"",
-							"// Tests",
-							"tests['Status code is 200']  = responseCode.code === 200;",
-							"tests['Body is correct']     = responseBody      === '';",
-							"",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{url}}/skills/{{skillID}}",
-				"method": "DELETE",
-				"header": [],
-				"body": {},
 				"description": ""
 			},
 			"response": []

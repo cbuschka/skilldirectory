@@ -3,39 +3,45 @@ package controller
 import (
 	"encoding/json"
 	"io/ioutil"
-	"skilldirectory/data"
-	"skilldirectory/model"
 
 	"skilldirectory/errors"
+	"skilldirectory/model"
 	"skilldirectory/util"
 
 	"fmt"
 )
 
+// SkillsController handles requests for the Skill type
 type SkillsController struct {
 	*BaseController
 }
 
+// Base implemented
 func (c SkillsController) Base() *BaseController {
 	return c.BaseController
 }
 
+// Get implemented
 func (c SkillsController) Get() error {
 	return c.performGet()
 }
 
+// Post implemented
 func (c SkillsController) Post() error {
 	return c.addSkill()
 }
 
+// Delete implemented
 func (c SkillsController) Delete() error {
 	return c.removeSkill()
 }
 
+// Put implemented
 func (c SkillsController) Put() error {
-	return fmt.Errorf("PUT requests not currently supported.")
+	return fmt.Errorf("PUT requests not currently supported")
 }
 
+// Options implemented
 func (c SkillsController) Options() error {
 	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
 	c.w.Header().Set("Access-Control-Allow-Methods", GetDefaultMethods())
@@ -47,20 +53,26 @@ func (c SkillsController) performGet() error {
 	if path == "" {
 		return c.getAllSkills()
 	}
-	return c.getSkill(path)
+
+	skillID, err := util.PathToID(c.r.URL)
+	if err != nil {
+		return fmt.Errorf("ID must be an uint")
+	}
+	return c.getSkill(skillID)
 }
 
 func (c *SkillsController) getAllSkills() error {
-	var skills []interface{}
 	var err error
-	filter := c.r.URL.Query().Get("skilltype")
-	var opts data.CassandraQueryOptions
+	var skills []model.Skill
 
+	filter := c.r.URL.Query().Get("skilltype")
 	// Add approved query filters here
 	if filter != "" {
-		opts = data.NewCassandraQueryOptions("skilltype", filter, false)
+		filterMap := util.NewFilterMap("skill_type", filter)
+		err = c.findWhere(&skills, filterMap)
+	} else {
+		err = c.find(&skills)
 	}
-	skills, err = c.session.FilteredReadAll("skills", opts, model.SkillDTO{})
 
 	if err != nil {
 		return err
@@ -71,90 +83,52 @@ func (c *SkillsController) getAllSkills() error {
 	return err
 }
 
-func (c *SkillsController) getSkill(id string) error {
-	skill, err := c.loadSkill(id)
+func (c *SkillsController) getSkill(id uint) error {
+	skill := model.QuerySkill(id)
+	err := c.preloadAndFind(&skill, "Links", "SkillReviews")
 	if err != nil {
 		return err
 	}
+
+	c.populateSkillReviews(&skill)
 	b, err := json.Marshal(skill)
 	c.w.Write(b)
 	return err
 }
 
-func (c *SkillsController) loadSkill(id string) (*model.SkillDTO, error) {
-	skill := model.Skill{}
-	err := c.session.Read("skills", id, data.CassandraQueryOptions{}, &skill)
-	if err != nil {
-		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %s", id))
+func (c *SkillsController) populateSkillReviews(skill *model.Skill) {
+	for i := range skill.SkillReviews {
+		review := &skill.SkillReviews[i]
+		err := c.preloadAndFind(&review, "TeamMember")
+		if err != nil {
+			c.Printf("Preload TeamMembers Error: %v", err)
+		}
 	}
-	skillDTO, _ := c.addLinks(skill)
-	c.addIcon(&skillDTO)
-	return &skillDTO, nil
-}
-
-func (c *SkillsController) addLinks(skill model.Skill) (model.SkillDTO, error) {
-	skillDTO := model.SkillDTO{}
-	linksInterface, err := c.session.FilteredReadAll("links",
-		data.NewCassandraQueryOptions("skill_id", skill.ID, true), model.Link{})
-	if err != nil {
-		c.Print(err)
-		return skillDTO, err
-	}
-	linksRaw, err := json.Marshal(linksInterface)
-	if err != nil {
-		return skillDTO, nil
-	}
-	links := &[]model.Link{}
-	err = json.Unmarshal(linksRaw, links)
-	if err != nil {
-		c.Print(err)
-	}
-	skillDTO = skill.NewSkillDTO(*links, model.SkillIcon{})
-	return skillDTO, nil
-}
-
-func (c *SkillsController) addIcon(skillDTO *model.SkillDTO) {
-	skillIcon := model.SkillIcon{}
-	c.session.Read("skillicons", "",
-		data.NewCassandraQueryOptions("skill_id", skillDTO.Skill.ID, true), &skillIcon)
-	skillDTO.Icon = skillIcon
 }
 
 func (c *SkillsController) removeSkill() error {
 	// Get the ID at end of the specified request; return error if request contains no ID
-	skillID := util.CheckForID(c.r.URL)
-	if skillID == "" {
-		return errors.MissingIDError(fmt.Errorf("no Skill ID in request URL"))
+	skillID, err := util.PathToID(c.r.URL)
+	if err != nil {
+		return err
 	}
-	err1 := c.removeSkillChildren(skillID)
-	if err1 != nil {
-		c.Printf("removingSkillChildren: %v", err1)
-
-	}
-
-	err := c.session.Delete("skills", skillID, data.CassandraQueryOptions{})
-
+	skill := model.QuerySkill(skillID)
+	err = c.delete(skill)
 	if err != nil {
 		c.Printf("removeSkill() failed for the following reason:\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %s", skillID))
+			"no Skill exists with specified ID: %d", skillID))
 	}
 
-	c.Printf("Skill Deleted with ID: %s", skillID)
+	c.Printf("Skill Deleted with ID: %d", skillID)
 	return nil
-}
-
-func (c *SkillsController) removeSkillChildren(skillID string) error {
-	return c.session.Delete("links", "", data.NewCassandraQueryOptions("skill_ID", skillID, true))
-
 }
 
 func (c *SkillsController) addSkill() error {
 	// Read the body of the HTTP request into an array of bytes; ignore any errors
 	body, _ := ioutil.ReadAll(c.r.Body)
 
-	skill := model.Skill{}
+	var skill model.Skill
 	err := json.Unmarshal(body, &skill)
 	if err != nil {
 		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
@@ -171,9 +145,7 @@ func (c *SkillsController) addSkill() error {
 			"invalid Skill type: %s", skill.SkillType))
 	}
 
-	// Save to database
-	skill.ID = util.NewID()
-	err = c.session.Save("skills", skill.ID, skill)
+	err = c.create(&skill)
 	if err != nil {
 		return errors.SavingError(err)
 	}

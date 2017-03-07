@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "SkillDirectory 400",
-		"_postman_id": "29fb0937-68b8-24b0-2e5b-d6a3e0fc2179",
+		"_postman_id": "7060abf0-3dd9-dda0-d055-be2ee94ac868",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -29,7 +29,10 @@
 						"url": "{{url}}/teammembers/",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -43,7 +46,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Skill ID in request URL');"
+									"tests['Response body is correct'] = responseBody.has('This action requires an ID in the request path');"
 								]
 							}
 						}
@@ -75,7 +78,10 @@
 						"url": "{{url}}/tmskills/",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -98,7 +104,10 @@
 						"url": "{{url}}/links/",
 						"method": "DELETE",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -112,7 +121,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID');"
+									"tests['Response body is correct'] = responseBody.has('Missing required id for DELETE call');"
 								]
 							}
 						}
@@ -135,7 +144,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('No Team Member Exists with Specified ID: \"invalid-id\"');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -158,7 +167,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Skill exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -181,7 +190,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no TMSkill exists with specified ID: \"invalid-id\"');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -204,7 +213,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Link exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -227,7 +236,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('ID: invalid-id is not a valid uint id');"
 								]
 							}
 						}
@@ -249,6 +258,29 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Nil Skill Review ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests['Status code is 400']       = responseCode.code === 400;",
+									"tests['Response body is correct'] = responseBody.has('ID: 0 is not a valid uint id');"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/skillreviews/0",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -265,7 +297,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no TeamMeber exists with specified ID: \"invalid-id\"');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -288,7 +320,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Skill exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('ID must be an uint');"
 								]
 							}
 						}
@@ -311,7 +343,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('No TMSkill Exists with Specified ID: invalid-id ');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -334,7 +366,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no Link exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('The ID for this request must be an unsigned int');"
 								]
 							}
 						}
@@ -357,7 +389,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"tests['Status code is 400']       = responseCode.code === 400;",
-									"tests['Response body is correct'] = responseBody.has('no SkillReview exists with specified ID: invalid-id');"
+									"tests['Response body is correct'] = responseBody.has('ID: invalid-id is not a valid uint id');"
 								]
 							}
 						}
@@ -395,7 +427,10 @@
 						"url": "{{url}}/teammembers/",
 						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -418,7 +453,10 @@
 						"url": "{{url}}/skills/",
 						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -441,7 +479,10 @@
 						"url": "{{url}}/tmskills/",
 						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -464,7 +505,10 @@
 						"url": "{{url}}/links/",
 						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []
@@ -487,7 +531,10 @@
 						"url": "{{url}}/skillreviews/",
 						"method": "POST",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"description": ""
 					},
 					"response": []

@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"skilldirectory/data"
 	"skilldirectory/errors"
 	"skilldirectory/model"
 	"skilldirectory/util"
-	"time"
 )
 
 // SkillReviewsController handles SkillReview Requests
@@ -42,6 +40,7 @@ func (c SkillReviewsController) Put() error {
 	return c.updateSkillReview()
 }
 
+// Options implemented
 func (c SkillReviewsController) Options() error {
 	c.w.Header().Set("Access-Control-Allow-Headers", GetDefaultHeaders())
 	c.w.Header().Set("Access-Control-Allow-Methods", "PUT, "+GetDefaultMethods())
@@ -49,31 +48,26 @@ func (c SkillReviewsController) Options() error {
 }
 
 func (c *SkillReviewsController) performGet() error {
-	queries := c.r.URL.Query()
-	if skill_id := queries.Get("skill_id"); skill_id != "" {
-		return c.getReviewsForSkill(skill_id)
-	}
 	path := util.CheckForID(c.r.URL)
 	if path == "" {
 		return c.getAllSkillReviews()
 	}
-	return c.getSkillReview(path)
+
+	skillID, err := c.pathToID(c.r.URL)
+	if err != nil {
+		return err
+	}
+	return c.getSkillReview(skillID)
 }
 
 func (c *SkillReviewsController) getAllSkillReviews() error {
-	skillReviewsInterface, err := c.session.ReadAll("skillreviews", model.SkillReview{})
+	var skillReviews []model.SkillReview
+	err := c.find(&skillReviews)
 	if err != nil {
 		return err
 	}
 
-	skillReviews, err := convertToReviewsStruct(skillReviewsInterface)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	skillReviewDTOs := c.convertReviewsToDTOs(skillReviews)
-
-	b, err := json.Marshal(skillReviewDTOs)
+	b, err := json.Marshal(skillReviews)
 	if err != nil {
 		return errors.MarshalingError(err)
 	}
@@ -81,152 +75,45 @@ func (c *SkillReviewsController) getAllSkillReviews() error {
 	return nil
 }
 
-func convertToReviewsStruct(skillReviewInterface []interface{}) ([]model.SkillReview, error) {
-	reviewRaw, err := json.Marshal(skillReviewInterface)
-	if err != nil {
-		return nil, errors.MarshalingError(err)
-	}
-
-	reviewSkills := []model.SkillReview{}
-	err = json.Unmarshal(reviewRaw, &reviewSkills)
-	if err != nil {
-		return nil, errors.MarshalingError(err)
-	}
-	return reviewSkills, nil
-}
-
-func (c *SkillReviewsController) convertReviewsToDTOs(skillReviews []model.SkillReview) []model.SkillReviewDTO {
-	skillReviewDTOs := []model.SkillReviewDTO{}
-	for idx := 0; idx < len(skillReviews); idx++ {
-		skillName, err1 := c.getSkillName(&skillReviews[idx])
-		if err1 != nil {
-			c.Warnf("Possible invalid id: %v", err1)
-			continue
-		}
-
-		teamMemberName, err2 := c.getTeamMemberName(&skillReviews[idx])
-		if err2 != nil {
-			c.Warnf("Possible invalid id: %v", err2)
-			continue
-		}
-		skillReviewDTOs = append(skillReviewDTOs,
-			skillReviews[idx].NewSkillReviewDTO(skillName, teamMemberName))
-	}
-	return skillReviewDTOs
-}
-
-func (c *SkillReviewsController) getReviewsForSkill(skill_id string) error {
-	opts := data.NewCassandraQueryOptions("skill_id", skill_id, false)
-	skillReviewsInterface, err := c.session.FilteredReadAll("skillreviews", opts, model.SkillReview{})
-	if err != nil {
-		return err
-	}
-	skillReviews, err := convertToReviewsStruct(skillReviewsInterface)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-
-	skillReviewDTOs := c.convertReviewsToDTOs(skillReviews)
-
-	b, err := json.Marshal(skillReviewDTOs)
-	if err != nil {
-		return errors.MarshalingError(err)
-	}
-	c.w.Write(b)
-	return err
-}
-
-func (c *SkillReviewsController) getSkillReview(id string) error {
-	skillReview, err := c.loadSkillReview(id)
+func (c *SkillReviewsController) getSkillReview(id uint) error {
+	skillReview := model.QuerySkillReview(id)
+	err := c.preloadAndFind(&skillReview, "TeamMember", "Skill")
 	if err != nil {
 		return err
 	}
 
-	teamMemberName, err := c.getTeamMemberName(skillReview)
-	if err != nil {
-		c.Warnf("Possible invalid id: %v", err)
-		return errors.NoSuchIDError(fmt.Errorf(
-			"no TeamMember exists with specified ID: %q", skillReview.TeamMemberID))
-	}
-
-	skillName, err := c.getSkillName(skillReview)
-	if err != nil {
-		c.Warnf("Possible invalid id: %v", err)
-		return errors.NoSuchIDError(fmt.Errorf(
-			"no Skill exists with specified ID: %q", skillReview.SkillID))
-	}
-
-	skillReviewDTO := skillReview.NewSkillReviewDTO(skillName, teamMemberName)
-	b, err := json.Marshal(skillReviewDTO)
+	b, err := json.Marshal(skillReview)
 	c.w.Write(b)
 	return err
-}
-
-func (c *SkillReviewsController) loadSkillReview(id string) (*model.SkillReview,
-	error) {
-	skillReview := model.SkillReview{}
-	err := c.session.Read("skillreviews", id, data.CassandraQueryOptions{},
-		&skillReview)
-	if err != nil {
-		log.Printf("loadSkillReview() generated the following error:\n\t%q", err)
-		return nil, errors.NoSuchIDError(fmt.Errorf(
-			"no SkillReview exists with specified ID: %s", id))
-	}
-	return &skillReview, nil
-}
-
-func (c *SkillReviewsController) getTeamMemberName(sr *model.SkillReview) (string,
-	error) {
-	teamMember := model.TeamMember{}
-	err := c.session.Read("teammembers", sr.TeamMemberID,
-		data.CassandraQueryOptions{}, &teamMember)
-	if err != nil {
-		return "", err
-	}
-	return teamMember.Name, nil
-}
-
-func (c *SkillReviewsController) getSkillName(sr *model.SkillReview) (string,
-	error) {
-	skill := model.Skill{}
-	err := c.session.Read("skills", sr.SkillID, data.CassandraQueryOptions{},
-		&skill)
-	if err != nil {
-		return "", err
-	}
-	return skill.Name, nil
 }
 
 func (c *SkillReviewsController) removeSkillReview() error {
-	body, _ := ioutil.ReadAll(c.r.Body)
-
-	skillReview := model.SkillReview{}
-	err := json.Unmarshal(body, &skillReview)
+	skillID, err := c.pathToID(c.r.URL)
 	if err != nil {
-		c.Warn("Marshaling Error: ", errors.MarshalingError(err))
+		return err
 	}
 
-	err = c.session.Delete("skillreviews", skillReview.ID, data.NewCassandraQueryOptions("skill_id", skillReview.SkillID, false))
-	// TODO Add skillid field to opts
+	skillReview := model.QuerySkill(skillID)
+	err = c.delete(&skillReview)
 	if err != nil {
 		log.Printf("removeSkillReview() failed for the following reason:"+
 			"\n\t%q\n", err)
 		return errors.NoSuchIDError(fmt.Errorf(
-			"no SkillReview exists with specified ID: %s", skillReview.ID))
+			"no SkillReview exists with specified ID: %d", skillReview.ID))
 	}
 
-	log.Printf("SkillReview Deleted with ID: %s", skillReview.ID)
+	log.Printf("SkillReview Deleted with ID: %d", skillReview.ID)
 	return nil
 }
 
 func (c *SkillReviewsController) updateSkillReview() error {
-	skillReviewID := util.CheckForID(c.r.URL)
-	if skillReviewID == "" {
-		return errors.MissingIDError(fmt.Errorf(
-			"must specify a SkillReview ID in PUT request URL"))
+	skillReviewID, err := util.PathToID(c.r.URL)
+	if err != nil {
+		return err
 	}
 
-	skillReview, err := c.loadSkillReview(skillReviewID)
+	skillReviewSaved := model.QuerySkillReview(skillReviewID)
+	err = c.first(&skillReviewSaved)
 	if err != nil {
 		return err
 	}
@@ -236,17 +123,25 @@ func (c *SkillReviewsController) updateSkillReview() error {
 		return err
 	}
 
-	var bodyStr struct{ Body string }
-	json.Unmarshal(bodyBytes, &bodyStr)
+	type bodyStruct struct {
+		Body string
+	}
+	var body bodyStruct
+	err = json.Unmarshal(bodyBytes, &body)
+	if err != nil {
+		c.Warn(err)
+	}
+	var skillReviewUpdates model.SkillReview
+	skillReviewUpdates.Body = body.Body
 
-	skillReview.Body = bodyStr.Body
-	err = c.validatePUTBody(skillReview)
+	err = c.validatePUTBody(&skillReviewUpdates)
 	if err != nil {
 		return err
 	}
+	skillReview := model.QuerySkillReview(skillReviewID)
 
-	skillReview.Timestamp = time.Now().Format(data.TimestampFormat)
-	err = c.session.Save("skillreviews", skillReviewID, skillReview)
+	updateMap := util.NewFilterMap("body", skillReviewUpdates.Body)
+	err = c.updates(&skillReview, updateMap)
 	if err != nil {
 		return errors.SavingError(err)
 	}
@@ -266,11 +161,8 @@ func (c *SkillReviewsController) addSkillReview() error {
 	if err != nil {
 		return err // Will be of errors.IncompletePOSTBodyError or errors.InvalidPOSTBodyError type
 	}
-
-	// Save to database
-	skillReview.Timestamp = time.Now().Format(data.TimestampFormat) // CSQL-compatible timestamp format
-	skillReview.ID = util.NewID()
-	err = c.session.Save("skillreviews", skillReview.ID, skillReview)
+	skill := model.QuerySkill(skillReview.SkillID)
+	err = c.append(&skill, &skillReview, "SkillReviews")
 	if err != nil {
 		return errors.SavingError(err)
 	}
@@ -282,7 +174,7 @@ func (c *SkillReviewsController) addSkillReview() error {
 	}
 	c.w.Write(b)
 
-	log.Printf("Saved SkillReview: %s", skillReview.ID)
+	log.Printf("Saved SkillReview: %d", skillReview.ID)
 	return nil
 }
 
@@ -294,7 +186,8 @@ the passed-in SkillReview contains a key-value pair for "SkillID", "TeamMemberID
 error if not.
 */
 func (c *SkillReviewsController) validatePOSTBody(skillReview *model.SkillReview) error {
-	if skillReview.SkillID == "" || skillReview.TeamMemberID == "" ||
+	if skillReview.SkillID == 0 ||
+		skillReview.TeamMemberID == 0 ||
 		skillReview.Body == "" {
 		return errors.IncompletePOSTBodyError(fmt.Errorf(
 			"A SkillReview must be a JSON object and must contain values for"+
