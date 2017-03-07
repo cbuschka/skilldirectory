@@ -5,6 +5,7 @@ import (
 	"skilldirectory/controller"
 	"skilldirectory/data"
 	"skilldirectory/handler"
+	"skilldirectory/model"
 	util "skilldirectory/util"
 
 	"os/user"
@@ -39,24 +40,22 @@ var (
 	keyspace   string
 	username   string
 	password   string
+	ssl        string
 	db         *gorm.DB
 	fileSystem data.FileSystem
 	routes     []Route
 )
 
 // initCassandra sets global variables at start up
-func initCassandra() {
-	url = util.GetProperty("CASSANDRA_URL")
-	port = util.GetProperty("CASSANDRA_PORT")
-	keyspace = util.GetProperty("CASSANDRA_KEYSPACE")
-	username = util.GetProperty("CASSANDRA_USERNAME")
-	password = util.GetProperty("CASSANDRA_PASSWORD")
+func initPostgres() {
 	url = util.GetProperty("POSTGRES_URL")
 	port = util.GetProperty("POSTGRES_PORT")
 	keyspace = util.GetProperty("POSTGRES_KEYSPACE")
 	username = util.GetProperty("POSTGRES_USERNAME")
 	password = util.GetProperty("POSTGRES_PASSWORD")
-	db = data.NewPostgresConnector(url, port, keyspace, username, password).DB()
+	ssl = util.GetProperty("SSL")
+	db = data.NewPostgresConnector(url, port, keyspace, username, password, ssl).DB()
+	db.AutoMigrate(model.Skill{}, model.SkillReview{}, model.Link{}, model.TeamMember{}, model.TMSkill{})
 }
 
 // initFileSystem sets global variables at start up
@@ -147,7 +146,7 @@ endpoint that is currently being handled by the SkillDirectory REST API with an
 appropriate handler function for that endpoint. This http.ServeMux is returned.
 */
 func StartRouter() (mux *http.ServeMux) {
-	initCassandra()
+	initPostgres()
 	initFileSystem()
 	loadRoutes()
 	mux = http.NewServeMux()

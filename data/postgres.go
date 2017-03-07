@@ -24,7 +24,7 @@ type GormInterface interface {
 }
 
 func NewPostgresConnector(path, port, keyspace, username,
-	password string) *PostgresConnector {
+	password, ssl string) *PostgresConnector {
 	logger := util.LogInit()
 	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
 		path, port, keyspace, username)
@@ -32,11 +32,13 @@ func NewPostgresConnector(path, port, keyspace, username,
 	logger.Printf("New Connector Path: %s, Port: %s, Keyspace: %s, Username: %s",
 		path, port, keyspace, username)
 	logger.Debug("Using password: " + password)
-
+	sslString := "sslmode=disable "
+	if ssl == "true" {
+		sslString = ""
+	}
 	postgresString := fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		path, port, username, keyspace, password)
-	fmt.Println(postgresString)
+		"host=%s port=%s user=%s dbname=%s %spassword=%s",
+		path, port, username, keyspace, sslString, password)
 	db, err := gorm.Open("postgres", postgresString)
 	if err != nil {
 		fmt.Printf("Error Type: %T\n", err)
