@@ -11,8 +11,7 @@ for improving one's knowledge of a subject, etc... Since SkillDirectory is a
 REST API, from the point of view of a client, all of this information is 
 created, updated, deleted, and otherwise modified via HTTP requests to a server 
 running an instance of SkillDirectory. The server itself stores this data in a
-[Cassandra](http://cassandra.apache.org/) database (though this is irrelevant to
-clients).  
+Postgres database
 
 We are working on [a frontend client using ReactJS](https://github.com/maryvilledev/skilldirectoryui).
 
