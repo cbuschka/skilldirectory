@@ -59,13 +59,12 @@
 						"type": "text/javascript",
 						"exec": [
 							"// Parse response & init vars",
-							"const { skill_id, url } = JSON.parse(responseBody);",
+							"const { icon_url } = JSON.parse(responseBody);",
 							"var code = responseCode.code;",
 							"",
 							"// Tests",
 							"tests['Status code is 200']     = code     === 200;",
-							"tests['Body contains skill_id'] = skill_id !== '' && skill_id !== undefined;",
-							"tests['Body contains url']      = url      !== '' && url      !== undefined;",
+							"tests['Body contains icon_url'] = icon_url !== '' && icon_url !== undefined;",
 							"",
 							"// Env Vars (for chaining use)",
 							"postman.setEnvironmentVariable('skillIcon', responseBody)"
@@ -96,8 +95,7 @@
 							"key": "icon",
 							"type": "file",
 							"enabled": true,
-							"src": "test.png",
-							"value": ""
+							"src": "test.png"
 						}
 					]
 				},
@@ -114,13 +112,12 @@
 						"type": "text/javascript",
 						"exec": [
 							"// Parse response & init vars",
-							"const { skill_id, url } = JSON.parse(responseBody);",
+							"const { icon_url } = JSON.parse(responseBody);",
 							"var code = responseCode.code;",
 							"",
 							"// Tests",
 							"tests['Status code is 200']     = code     === 200;",
-							"tests['Body contains skill_id'] = skill_id !== '' && skill_id !== undefined;",
-							"tests['Body contains url']      = url      !== '' && url      !== undefined;",
+							"tests['Body contains url']      = icon_url      !== '' && icon_url      !== undefined;",
 							"",
 							"// Env Vars (for chaining use)",
 							"postman.setEnvironmentVariable('skillIcon', responseBody)"
@@ -151,110 +148,9 @@
 							"key": "icon",
 							"type": "file",
 							"enabled": true,
-							"src": "test.png",
-							"value": ""
+							"src": "test.png"
 						}
 					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "All Skill Icons",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"// Parse response",
-							"const resp = JSON.parse(responseBody);",
-							"const prevIcon = JSON.parse(environment.skillIcon);",
-							"const code = responseCode.code;",
-							"",
-							"var isValidIconArr = true;",
-							"var containsPrevIcon = false;",
-							"resp.forEach((obj) => {",
-							"  // Make sure all elements in reponse have required fields for a skill icon",
-							"  if (obj.skill_id === undefined ||",
-							"      obj.url === undefined)",
-							"    isValidIconArr = false;",
-							"  // Make sure response contains previously posted icon",
-							"  if (obj.skill_id  === prevIcon.skill_id  &&",
-							"      obj.url       === prevIcon.url)",
-							"    containsPrevIcon = true;",
-							"});",
-							"",
-							"",
-							"// Tests",
-							"tests['Status code is 200'] = code === 200;",
-							"tests['Body is array of Icons'] = isValidIconArr;",
-							"tests['Body contains previously POSTed Icon'] = containsPrevIcon;"
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{url}}/skillicons/",
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "multipart/form-data",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "skill_id",
-							"value": "{{skillID}}",
-							"type": "text",
-							"enabled": true
-						},
-						{
-							"key": "icon",
-							"type": "file",
-							"enabled": true,
-							"src": "test.png",
-							"value": ""
-						}
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "A Skill Icon",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"// Parse response",
-							"const { skill_id, url } = JSON.parse(responseBody);",
-							"const prevIcon = JSON.parse(environment.skillIcon);",
-							"const code     = responseCode.code;",
-							"",
-							"// Tests",
-							"tests['Status code is 200']                   = code === 200;",
-							"tests['Body contains previously POSTed icon'] = skill_id === prevIcon.skill_id &&",
-							"                                                url      === prevIcon.url;"
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{url}}/skillicons/{{skillID}}",
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
 				},
 				"description": ""
 			},
