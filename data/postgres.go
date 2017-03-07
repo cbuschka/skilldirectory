@@ -39,6 +39,8 @@ func NewPostgresConnector(path, port, keyspace, username,
 	postgresString := fmt.Sprintf(
 		"host=%s port=%s user=%s dbname=%s %spassword=%s",
 		path, port, username, keyspace, sslString, password)
+	logger.Debugf("Postgres Connection String: %s", postgresString)
+
 	db, err := gorm.Open("postgres", postgresString)
 	if err != nil {
 		fmt.Printf("Error Type: %T\n", err)
