@@ -62,7 +62,7 @@ func (c *SkillReviewsController) performGet() error {
 
 func (c *SkillReviewsController) getAllSkillReviews() error {
 	var skillReviews []model.SkillReview
-	err := c.find(&skillReviews)
+	err := c.preloadAndFind(&skillReviews, "TeamMember", "Skill")
 	if err != nil {
 		return err
 	}
