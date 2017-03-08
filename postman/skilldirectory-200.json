@@ -710,7 +710,7 @@
 									"",
 									"// Tests",
 									"tests['Status code is 200']                      = code === 200;",
-									"tests['Body is array of TMSkills']               = resp.length >1;"
+									"tests['Body is array of TMSkills']               = resp.length >= 1;"
 								]
 							}
 						}
